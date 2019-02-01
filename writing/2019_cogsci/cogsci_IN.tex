@@ -122,7 +122,7 @@ In summary, we know that we use language and communication to exchange informati
 
 To investigate how crime stories evolve over iterations, we conducted two experiments. First we collected a corpus of reproductions for five crime stories, each addressing a different type of crime (e.g., animal smuggling, arson or sexual assault). Each story existed in a weak and a strong evidence condition. This manipulation has successfully been used by \cite{Van-Prooijen:2006} to uncover in- and out-group effects in guilt judgments. Similar to his study, the different conditions were achieved by changing the last sentence in the story which then either suggested strong or weak evidence.
 
-We want to investigate how these stories develop in a transmission chain paradigm (as displayed in \ek{figure ref}).
+We want to investigate how these stories develop in a transmission chain paradigm (as displayed in Figure \ref{fig:design}).
 
 To evaluate the stories' development, we conducted a second experiment which asked participants to answer questions about the suspect's guilt, the likelihood of conviction and other suspect, author and reader related questions. 
 
@@ -148,13 +148,15 @@ We constructed five stories (\textit{seeds}) that marked the beginning of each r
 \label{tab:examplestory}
 \end{table*}
 
-Each participant read and reproduced five stories (either only seed stories, a mix of seeds and reproductions from previous participants, or only reproductions). The assignment of the condition for each story was random. \mf{not sure if I understand the procedure based on this description; did it even matter which evidence condition a later reproduction was from for the allocation of participants to input stories?} On each trial, participants first read a story. They were told to click the `Continue' button when they were confident that they had internalized the story. Once they clicked the button, the story disappeared and they were asked to reproduce it freely in a text field. Order of stories was randomized.
+Each participant read and reproduced five stories. For each story, they were either assigned to read and reproduce the seed story or continue an already started reproduction chain where they read and reproduced a reproduction from previous participants. The assignment was random.
+% Each participant read and reproduced five stories (either only seed stories, a mix of seeds and reproductions from previous participants, or only reproductions). The assignment of the condition for each story was random. \mf{not sure if I understand the procedure based on this description; did it even matter which evidence condition a later reproduction was from for the allocation of participants to input stories?} 
+ On each trial, participants first read a story. They were told to click the `Continue' button when they were confident that they had internalized the story. Once they clicked the button, the story disappeared and they were asked to reproduce it freely in a text field. Order of stories was randomized.
 
 \subsection{Results}
 
-Participants produced 370 stories. For each seed, we defined a complete chain as one that has 5 reproductions/generations. For subsequent analysis, we randomly selected 50 complete chains, evenly distributed across stories and conditions. This yielded a corpus of 250 reproductions (5 seeds in 2 conditions with 5 complete chains each, see Figure \ref{fig:design}). \mf{Can we further motivate exactly this selection? Was this somehow a maximal set that yielded the same number of obseravations for each cell in the design? This is, after all only 2 thirds of all data points.} This corpus is a rich source of linguistic information which merits detailed investigation. Yet, with an eye to clear operationalizability, we focus here on a few general features, which we will subsequently use as predictors in the analyses of Exp.~2 below.
+Participants produced 370 stories. For each seed, we defined a complete chain as one that has 5 reproductions/generations. For subsequent analysis, we randomly selected 50 complete chains, evenly distributed across stories and conditions. This yielded a corpus of 250 reproductions (5 seeds in 2 conditions with 5 complete chains each, see Figure \ref{fig:design}). This was the maximal set of complete chains that was present in every condition for each seed. This corpus is a rich source of linguistic information which merits detailed investigation. Yet, with an eye to clear operationalizability, we focus here on a few general features, which we will subsequently use as predictors in the analyses of Exp.~2 below.
 
-\textbf{Story length.} As shown in Figure \ref{fig:storylength}, the number of words of a reproduction decreased across generations ($\beta = -17.12$, $SE = 1.02$, $t = -16.79$, $p < 0.0001$), replicating a well-known phenomenon in reproduction studies \cite{Bartlett:1932}. While the original generation 0 seeds consisted on average of 159 words, that number dropped to 25 by generation 5. Examples of reproductions of the seed in Table \ref{tab:examplestory} from generation 1 and 5 are shown in (\ref{gen1}) and (\ref{gen5}) below.
+\textbf{Story length.} As shown in Figure \ref{fig:storylength}, the number of words of a reproduction decreased across generations ($\beta = -17.12$, $SE = 1.02$, $t = -16.79$, $p < 0.0001$), replicating a well-known phenomenon in reproduction studies \cite{Bartlett:1932}. While the original generation 0 seeds consisted on average of 159 words, that number dropped to 25 by generation 5. Examples of reproductions of the seed in Table \ref{tab:examplestory} from generation 1 and 5 are shown in (\ref{gen1}) and (\ref{gen5}) below. There is no significant effect of condition.
 
 %\begin{exe}
 %	\ex\label{gen1} \jd{elisa, add story from gen 1 of seed in table 1}
@@ -166,12 +168,12 @@ Participants produced 370 stories. For each seed, we defined a complete chain as
 
 \begin{figure}[]
 	\includegraphics[width=0.48\textwidth]{pics/corpus_length.pdf}
-	\caption{Mean story length in number of words by generation. Error bars indicate bootstrapped 95\% CIs. Orange dots indicate generation mean, gray dots are individual stories. \mf{would it not be more systematic (and interesting?) to have this also seperately for strong and weak evidence conditions?}} 
+	\caption{Mean story length in number of words by generation in strong (left) and weak (right) evidence condition. Error bars indicate bootstrapped 95\% CIs. Orange dots indicate generation mean, gray dots are individual stories.} 
 	\label{fig:storylength}
 \end{figure}
 
 \textbf{Similarity of seeds and reproductions.} % Of interest is the extent to which stories retain the gist or deviate from it. 
-To assess the similarity of reproductions and their seed stories quantitatively, we computed the Jaccard distance between each reproduction and its generation 0 seed. Jaccard distance captures the amount of overlap between two stories in the following way: \[D_J(X,Y) = 1 - \frac{|X \cap Y|}{|X \cup Y|}\] where X is the reproduction and Y the respective original seed story \mf{should this not better be ``where $X$ is the set of words in one story \dots ''}. In this case, we took words as the basic unit over which distance was computed. Figure \ref{fig:jaccdistance} shows that $D_J$ increased across generations ($\beta = 0.05$, $SE = 0.00$, $t = 14.17$, $p < 0.0001$). \mf{what about an effect of condition? did we test this? if it doesn't come up significant, we should still report that.} This is not surprising given that as story length decreases, $D_J$ between seed and any of its reproductions necessarily increases. However, $D_J$ increased more strongly than expected if the difference between stories was only due to the decrease in length \ek{is this true?} \mf{this is tricky. I wouldn't know how to \emph{quickly} check this; first thing that comes to mind is, unsurprisingly, simulation; we could sample random subsets of words corresponding to the mean story lengths and check JD for that; but that's time consuming and I don't think that this is worthwhile currently; I'd rather suggest we formulate this differently, weaker, less prone to criticism if we do not back it up}, suggesting that information was lost across generations. This can also be observed qualitatively in the comparison of the representative examples (\ref{gen1}) and (\ref{gen5}) above.
+To assess the similarity of reproductions and their seed stories quantitatively, we computed the Jaccard distance between each reproduction and its generation 0 seed. Jaccard distance captures the amount of overlap between two stories in the following way: \[D_J(X,Y) = 1 - \frac{|X \cap Y|}{|X \cup Y|}\] where X is the set of words in the reproduction and Y the set of words in the respective original seed story. In this case, we took words as the basic unit over which distance was computed. Figure \ref{fig:jaccdistance} shows that $D_J$ increased across generations ($\beta = 0.05$, $SE = 0.00$, $t = 14.17$, $p < 0.0001$). There is no significant effect of condition. This is not surprising given that as story length decreases, $D_J$ between seed and any of its reproductions necessarily increases. However, $D_J$ increased more strongly than expected if the difference between stories was only due to the decrease in length \ek{is this true?} \mf{this is tricky. I wouldn't know how to \emph{quickly} check this; first thing that comes to mind is, unsurprisingly, simulation; we could sample random subsets of words corresponding to the mean story lengths and check JD for that; but that's time consuming and I don't think that this is worthwhile currently; I'd rather suggest we formulate this differently, weaker, less prone to criticism if we do not back it up}, suggesting that information was lost across generations. This can also be observed qualitatively in the comparison of the representative examples (\ref{gen1}) and (\ref{gen5}) above.
 
 \begin{figure}[]
 	\includegraphics[width=0.48\textwidth]{pics/jaccdistance.pdf}
@@ -179,7 +181,7 @@ To assess the similarity of reproductions and their seed stories quantitatively,
 	\label{fig:jaccdistance}
 \end{figure}
 
-\textbf{Proportion of Hedges.} As a proxy for vagueness, we extract the number of hedges per story relative to its length. The seed stories were designed to contain various hedges, such as "nearly", "about", "up to" or "allegedly". \ek{Figure ..} shows the proportion of hedges that remain throughout the generations. We can see that this proportion decreases over generations ($\beta = -0.01$, $SE = 0.00$, $t = -4.16$, $p < 0.0001$). The reproductions therefore appear to get less mitigated over iterations.\\
+\textbf{Proportion of Hedges.} As a proxy for vagueness, we extract the number of hedges per story relative to its length. The seed stories were designed to contain various hedges, such as "nearly", "about", "up to" or "allegedly". Figure \ref{fig:hedges} shows the proportion of hedges that remain throughout the generations. We can see that this proportion decreases over generations ($\beta = -0.01$, $SE = 0.00$, $t = -4.16$, $p < 0.0001$). The reproductions therefore appear to get less mitigated over iterations. There is no significant effect of condition.\\
 
 \begin{figure}[]
 	\includegraphics[width=0.48\textwidth]{pics/hedges_points.pdf}
@@ -227,7 +229,7 @@ The difference between the conditions is far smaller (if existent at all) in the
 	\label{fig:exp2results}
 \end{figure*}
 
-The judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation (reference level: 0), condition (reference level: strong), and their interaction. The model also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. \mf{the reader needs help reading this table; what is where how?}
+The judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation (reference level: 0), condition (reference level: strong), and their interaction. The model also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. Each row presents the model results for one of the questions and the columns show the model outcomes for fixed effects.
 
 In the qualitative analysis, we have observed a strong condition effect in the guilt measures. This is reflected in the model results. In the non-guilt measures, story subjectivity shows a significant effect on condition. The trust in the author and the reader's emotional engagement appear to be independent of the condition and therefore cannot explain the difference that we see in the guilt related measures. Even though the subjectivity shows an effect of condition, it is too small \ek{rephrase this...} to explain these effects in the guilt measures either. \ek{We also know that the length and Jaccard distance (and maybe hedges?) doesn't differ in the two conditions, so...} This suggests that the strong effects of condition in the guilt measures \ek{are about some more subtle changes in the actual language and content of the stories}.
 
@@ -239,23 +241,24 @@ We want to emphasize here that even though we intuitively expect the strength of
 
 
 	\begin{table*}
+		\caption{Model output for each fixed effect (condition, generation, and their interaction) for each rated question (rows).}
 		\centering
-		\begin{tabular}{l r r l r r l r r l l l l}
+		\begin{tabular}{l r r l r r l r r l }
+%		\begin{tabular}{l {p{2cm} r  p{2cm} r p{2cm} l p{2cm} r p{2cm} r p{2cm} l p{2cm} r p{2cm} r p{2cm} l }
 			\toprule
-			& \multicolumn{3}{c}{condition} & \multicolumn{3}{c}{generation} & \multicolumn{3}{c}{condition*generation} & \multicolumn{3}{c}{simple effects}\\
-			& \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{weak} & \multicolumn{1}{c}{str*gen} & \multicolumn{1}{c}{we*gen}\\
+			& \multicolumn{3}{c}{condition} & \multicolumn{3}{c}{generation} & \multicolumn{3}{c}{condition*generation} \\
+			& \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p}\\
 			\midrule
-			evidence                  & -23.25 & 4.09 & $<$0.0001*** & -3.42 & 0.89 & $<$0.001*** & 2.59  & 1.26 & $<$0.05*  & *** & *** & \\
-			suspect guilt          & -17.28  & 3.40 & $<$0.0001*** & -1.34 & 0.74 & $<$0.08           & 1.90  & 1.05 & $<$0.08 & *** & . & \\
-			conviction               & -27.01 & 4.15  & $<$0.0001*** & -2.79 & 0.90 & $<$0.01**     & 2.74  & 1.28 & $<$0.05*  & *** & ** & \\
-			convicJustified       & -19.02 & 4.35 & $<$0.0001***  & -1.69 & 0.95 & $<$0.08           & 1.43 & 1.34 & $<$0.29   & *** & . &  \\
-			author belief            & -27.53 & 3.72 & $<$0.0001***  & -2.14 & 0.81 & $<$0.01**      & 3.42  & 1.15 & $<$0.01** & *** & ** & \\
-			author trust            & -0.82   & 2.25 & $<$0.72           & -1.94 & 0.49 & $<$0.001*** & -0.54 & 0.70 & $<$0.44   & & *** & *** \\
-			story subjectivity     & -6.12   & 2.21 & $<$0.01**          & -0.86 & 0.49 & $<$0.08         & 1.40   & 0.69 & $<$0.05* & ** & . & \\
-			reader emotion        & 0.85   & 2.99 & $<$0.78            & -1.49 & 0.65 & $<$0.05*     & -1.11  & 0.92 & $<$0.24  & * & *** & \\
+			strength of evidence    & -23.25 & 4.09 & $<$0.0001***        & -3.42 & 0.89 & $<$0.001*** & 2.59  & 1.26 & $<$0.05*\\
+			suspect guilt          & -17.28  & 3.40 & $<$0.0001***              & -1.34 & 0.74 & $<$0.08           & 1.90  & 1.05 & $<$0.08\\
+			suspect conviction   & -27.01 & 4.15  & $<$0.0001***            & -2.79 & 0.90 & $<$0.01**     & 2.74  & 1.28 & $<$0.05*\\
+			suspect conviction justified    & -19.02 & 4.35 & $<$0.0001***  & -1.69 & 0.95 & $<$0.08      & 1.43 & 1.34 & $<$0.29\\
+			author's belief in guilt     & -27.53 & 3.72 & $<$0.0001***     & -2.14 & 0.81 & $<$0.01**      & 3.42  & 1.15 & $<$0.01**\\
+			trust in author           & -0.82   & 2.25 & $<$0.72                  & -1.94 & 0.49 & $<$0.001*** & -0.54 & 0.70 & $<$0.44 \\
+			subjectivity of story  & -6.12   & 2.21 & $<$0.01**                 & -0.86 & 0.49 & $<$0.08         & 1.40   & 0.69 & $<$0.05*\\
+			reader's emotional engagement  & 0.85   & 2.99 & $<$0.78   & -1.49 & 0.65 & $<$0.05*     & -1.11  & 0.92 & $<$0.24\\
 					\bottomrule
 		\end{tabular}
-		\caption{Model output for each fixed effect (condition, generation, and their interaction) for each rated question (rows). \jd{simple effects results should not be reported in this table -- this is just here for us, right?}\ek{yes}}
 		%\caption{lmer(suspectconvictionJustified ~ generation * condition + (1|storyreproduction), data=dfmodel); high correlation of fixed effects}
 		\label{tab:exp2results}
 	\end{table*}
@@ -287,6 +290,28 @@ In a second study, we obtained subjective ratings for each story regarding the q
 \setlength{\bibindent}{-\bibleftmargin}
 
 \bibliography{cogsci_IN_bib}
+
+%\begin{table*}
+%	\centering
+%	\begin{tabular}{l r r l r r l r r l l l l}
+%		\toprule
+%		& \multicolumn{3}{c}{condition} & \multicolumn{3}{c}{generation} & \multicolumn{3}{c}{condition*generation} & \multicolumn{3}{c}{simple effects}\\
+%		& \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{weak} & \multicolumn{1}{c}{str*gen} & \multicolumn{1}{c}{we*gen}\\
+%		\midrule
+%		strength of evidence    & -23.25 & 4.09 & $<$0.0001*** & -3.42 & 0.89 & $<$0.001*** & 2.59  & 1.26 & $<$0.05*  & *** & *** & \\
+%		suspect guilt          & -17.28  & 3.40 & $<$0.0001*** & -1.34 & 0.74 & $<$0.08           & 1.90  & 1.05 & $<$0.08 & *** & . & \\
+%		suspect conviction   & -27.01 & 4.15  & $<$0.0001*** & -2.79 & 0.90 & $<$0.01**     & 2.74  & 1.28 & $<$0.05*  & *** & ** & \\
+%		suspect conviction justified    & -19.02 & 4.35 & $<$0.0001***  & -1.69 & 0.95 & $<$0.08           & 1.43 & 1.34 & $<$0.29   & *** & . &  \\
+%		author's belief in guilt     & -27.53 & 3.72 & $<$0.0001***  & -2.14 & 0.81 & $<$0.01**      & 3.42  & 1.15 & $<$0.01** & *** & ** & \\
+%		trust in author           & -0.82   & 2.25 & $<$0.72           & -1.94 & 0.49 & $<$0.001*** & -0.54 & 0.70 & $<$0.44   & & *** & *** \\
+%		subjectivity of story  & -6.12   & 2.21 & $<$0.01**          & -0.86 & 0.49 & $<$0.08         & 1.40   & 0.69 & $<$0.05* & ** & . & \\
+%		reader's emotional engagement  & 0.85   & 2.99 & $<$0.78            & -1.49 & 0.65 & $<$0.05*     & -1.11  & 0.92 & $<$0.24  & * & *** & \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Model output for each fixed effect (condition, generation, and their interaction) for each rated question (rows). \jd{simple effects results should not be reported in this table -- this is just here for us, right?}\ek{yes}}
+%	%\caption{lmer(suspectconvictionJustified ~ generation * condition + (1|storyreproduction), data=dfmodel); high correlation of fixed effects}
+%	\label{tab:exp2results}
+%\end{table*}
 
 %\cleardoublepage
 %\ek{TODO: condition title == facet labels}

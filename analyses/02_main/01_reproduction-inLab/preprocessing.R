@@ -85,7 +85,8 @@ d_subj_ratings = df %>%
 
 df_clean = d_subj_ratings %>%
   mutate(NumOfChars=str_length(reproduction)) %>% 
-  mutate(NumOfWords=str_count(reproduction, boundary("word")))
+  mutate(NumOfWords=str_count(reproduction, boundary("word"))) %>% 
+  mutate(condition=ifelse(str_detect(story_title,"free"),"weak evidence","strong evidence"))
 
 # 0.9950305
 cor(df_clean$NumOfChars,df_clean$NumOfWords)
@@ -108,9 +109,12 @@ plot_corpus_length = ggplot(data = df_clean, mapping = aes(x = generation, y = N
                color = "black",
                size = 4) +
   ylab("Number of words") +
-  xlab("Generation")
+  xlab("Generation") +
+  facet_wrap(vars(condition)) +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
 
-ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","graphs"),width = 6,height = 4)
+ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","pics"),width = 5,height = 3)
 
 library(lme4)
 library(lmerTest)
@@ -118,6 +122,8 @@ library(lmerTest)
 # linear model reported in paper
 m0 = lm(NumOfWords ~ generation, data=df_clean)
 summary(m0)
+m0con = lm(NumOfWords ~ generation + condition, data=df_clean)
+summary(m0con)
 
 # average number of words in generation 0 and 5
 avg_gen0_length = df_clean %>% 
