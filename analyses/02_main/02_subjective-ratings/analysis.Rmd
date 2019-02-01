@@ -791,18 +791,29 @@ df_hedges_corpus = df_cond %>%
 
 ggplot(df_hedges_corpus,aes(x=factor(generation),
                      y=hedges_prop)) +
-  geom_violin() +
-  # facet_wrap(vars(condition)) +
+  # geom_violin() +
   # geom_point(alpha=0.2, position = position_jitter()) +
-  # geom_point(alpha=0.2) +
+  geom_point(alpha=0.2) +
   stat_summary(fun.data = "mean_cl_boot",
                geom = "linerange",
                color = "black",
                size = 1) + 
   stat_summary(fun.y = "mean",
                geom = "point",
-               color = "red",
-               size = 4)
+               shape = 21,
+               fill = "#E6AB02",
+               color = "black",
+               size = 4) +
+  facet_wrap(vars(condition)) +
+  xlab("Generation") +
+  ylab("Proportion of hedges by number of words") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
+
+ggsave(filename="hedges_points.pdf",path = here("writing","2019_cogsci","graphs"),width = 5,height = 3)
+
+mhedge = lm(hedges_prop ~ as.numeric(generation), data=df_hedges_corpus)
+summary(mhedge)
 
 df_hedges_ratings = df_cond %>%
   rowwise() %>% 

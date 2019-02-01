@@ -107,10 +107,26 @@ plot_corpus_length = ggplot(data = df_clean, mapping = aes(x = generation, y = N
                fill = "#E6AB02",
                color = "black",
                size = 4) +
-  ylab("Number of Words") +
+  ylab("Number of words") +
   xlab("Generation")
 
-ggsave(filename="corpus_length.png",plot=plot_corpus_length,path = here("writing","2019_cogsci","graphs"),width = 6,height = 4)
+ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","graphs"),width = 6,height = 4)
+
+library(lme4)
+library(lmerTest)
+
+# linear model reported in paper
+m0 = lm(NumOfWords ~ generation, data=df_clean)
+summary(m0)
+
+# average number of words in generation 0 and 5
+avg_gen0_length = df_clean %>% 
+  filter(generation==0)
+mean(avg_gen0_length$NumOfWords)
+
+avg_gen5_length = df_clean %>% 
+  filter(generation==5)
+mean(avg_gen5_length$NumOfWords)
 
 ################################
 # Subjective Rating Pilot Data #
