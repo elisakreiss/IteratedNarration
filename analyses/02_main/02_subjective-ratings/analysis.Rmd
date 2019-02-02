@@ -936,6 +936,7 @@ m.j = lmer(sim ~ cgeneration*condition + (1|story_reproduction), data=df_mj, REM
 summary(m.j)
 
 library(lmerTest)
+library(effsize)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -955,11 +956,12 @@ summary(m1.simple)
 # mh = lmer(author_belief ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 # summary(mh)
 # 
+
 m = lm(hedges_prop ~ as.numeric(generation), data=df_model)
 df_model$ResidualHedgProp = resid(m)
 
-mh_all = lmer(author_belief ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
-summary(mh_all)
+mh_all_a = lmer(author_belief ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all_a)
 
 mh_gen = lmer(author_belief ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
 summary(mh_gen)
@@ -968,9 +970,37 @@ mh_h = lmer(author_belief ~ hedges_prop*condition  + (1|story_reproduction), dat
 summary(mh_h)
 
 # mh_all **
-anova(mh_gen,mh_all)
+anova(mh_gen,mh_all_a)
 # mh_all *
-anova(mh_h,mh_all)
+anova(mh_h,mh_all_a)
+
+# Distance
+
+m = lm(sim ~ as.numeric(generation), data=df_model)
+df_model$ResidualDist = resid(m)
+
+md_all = lmer(author_belief ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(author_belief ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# md_all ***
+anova(md_gen,md_all)
+
+# Length
+
+m = lm(NumOfWords ~ as.numeric(generation), data=df_model)
+df_model$ResidualLen = resid(m)
+
+ml_all = lmer(author_belief ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(author_belief ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1005,6 +1035,28 @@ summary(mh_h)
 anova(mh_gen,mh_all)
 # mh_all ***
 anova(mh_h,mh_all)
+
+# Distance
+
+md_all = lmer(author_trust ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(author_trust ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# mh_all ***
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(author_trust ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(author_trust ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1039,6 +1091,28 @@ summary(mh_h)
 anova(mh_all,mh_gen)
 # mh_all ***
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(evidence ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(evidence ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# md_all
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(evidence ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(evidence ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1073,6 +1147,28 @@ summary(mh_h)
 anova(mh_all,mh_gen)
 # mh_all ***
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(reader_emotion ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(reader_emotion ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# md_all
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(reader_emotion ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(reader_emotion ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1107,6 +1203,28 @@ summary(mh_h)
 anova(mh_all,mh_gen)
 # mh_all
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(story_subjectivity ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(story_subjectivity ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# mh_all
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(story_subjectivity ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(story_subjectivity ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1128,8 +1246,8 @@ summary(mh)
 
 # Hedges 
 
-mh_all = lmer(suspect_committedCrime ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
-summary(mh_all)
+mh_all_b = lmer(suspect_committedCrime ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all_b)
 
 mh_gen = lmer(suspect_committedCrime ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
 summary(mh_gen)
@@ -1138,9 +1256,31 @@ mh_h = lmer(suspect_committedCrime ~ hedges_prop*condition  + (1|story_reproduct
 summary(mh_h)
 
 # mh_all
-anova(mh_all,mh_gen)
+anova(mh_all_b,mh_gen)
 # mh_all
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(suspect_committedCrime ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(suspect_committedCrime ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# mh_all ***
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(suspect_committedCrime ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(suspect_committedCrime ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1175,6 +1315,28 @@ summary(mh_h)
 anova(mh_all,mh_gen)
 # mh_all *
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(suspect_conviction ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(suspect_conviction ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# mh_all
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(suspect_conviction ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(suspect_conviction ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1209,5 +1371,118 @@ summary(mh_h)
 anova(mh_all,mh_gen)
 # mh_all
 anova(mh_all,mh_h)
+
+# Distance
+
+md_all = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
+summary(md_all)
+
+md_gen = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(md_gen)
+
+# mh_all
+anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model)
+summary(ml_all)
+
+ml_gen = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(ml_gen)
+
+# md_all ***
+anova(ml_gen,ml_all)
+```
+
+```{r}
+# p_hedg_s = ggplot(df_model,aes(x=hedges_prop, y=suspect_committedCrime, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# p_hedg_a = ggplot(df_model,aes(x=hedges_prop, y=author_belief, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# p_sim_s = ggplot(df_model,aes(x=sim, y=suspect_committedCrime, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# p_sim_a = ggplot(df_model,aes(x=sim, y=author_belief, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# p_len_s = ggplot(df_model,aes(x=NumOfWords, y=suspect_committedCrime, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# p_len_a = ggplot(df_model,aes(x=NumOfWords, y=author_belief, color=condition)) +
+#   # geom_point() +
+#   geom_smooth(method="lm") +
+#   ylim(0,100)
+# 
+# blub = plot_grid(p_hedg_s,p_hedg_a,p_sim_s,p_sim_a,p_len_s,p_len_a, labels = "AUTO", ncol = 2, align = 'v')
+
+df_modelplot = df_model %>%
+  select(hedges_prop,sim,NumOfWords,author_belief,suspect_committedCrime,condition) %>% 
+  gather(question,response,author_belief,suspect_committedCrime) %>% 
+  gather(lingmetric,lingvalue,hedges_prop,sim,NumOfWords)
+
+ggplot(df_modelplot,aes(x=lingvalue,y=response,color=condition,linetype=question)) +
+  # geom_point() +
+  geom_smooth(method="lm") +
+  facet_wrap(vars(lingmetric),ncol = 1,scales = "free_x")
+```
+
+```{r}
+m = lm(sim ~ as.numeric(generation), data=df_model)
+df_model$ResidualDist = resid(m)
+m = lm(NumOfWords ~ as.numeric(generation), data=df_model)
+df_model$ResidualLen = resid(m)
+m = lm(hedges_prop ~ as.numeric(generation), data=df_model)
+df_model$ResidualHedgProp = resid(m)
+
+df_modelplot = df_model %>%
+  select(ResidualHedgProp,ResidualDist,ResidualLen,author_belief,suspect_committedCrime,condition) %>% 
+  gather(Question,response,author_belief,suspect_committedCrime) %>% 
+  gather(lingmetric,lingvalue,ResidualHedgProp,ResidualDist,ResidualLen) %>% 
+  mutate_at(vars(lingmetric),funs(factor(.,levels = c("ResidualHedgProp","ResidualLen","ResidualDist")))) %>% 
+  mutate_at(vars(Question,condition),funs(factor(.)))
+
+levels(df_modelplot$lingmetric) = c("Proportion of hedges","Number of words","Jaccard distance")
+levels(df_modelplot$Question) = c("author's belief\nin guilt","suspect guilt")
+levels(df_modelplot$condition) = c("strong","weak")
+
+ggplot(df_modelplot,aes(x=lingvalue,y=response,color=condition,linetype=Question)) +
+  # geom_point() +
+  geom_smooth(method="lm",alpha=0.2,size=2) +
+  facet_wrap(vars(lingmetric),ncol = 3,scales = "free_x",strip.position = "bottom") +
+  theme(legend.position = "top") +
+  xlab("") +
+  ylab("Average slider rating") +
+  scale_color_manual(name = "Evidence",
+                    values=c("#E6AB02","#7CB637")) +
+  scale_linetype_manual(values=c("dotted", "solid")) +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12)) +
+  theme(strip.placement = "outside")
+
+ggsave(filename="lingmarkers_resid.pdf",path=here("writing","2019_cogsci","pics"), height = 3, width = 6)
+```
+
+```{r}
+m1.simple = lmer(author_belief ~ condition*ResidualHedgProp - ResidualHedgProp  + (1|story_reproduction), data=df_model)
+summary(m1.simple)
+
+m2.simple = lmer(author_belief ~ condition*ResidualLen - ResidualLen  + (1|story_reproduction), data=df_model)
+summary(m2.simple)
+
+m3.simple = lmer(author_belief ~ condition*ResidualDist - ResidualDist  + (1|story_reproduction), data=df_model)
+summary(m3.simple)
 ```
 

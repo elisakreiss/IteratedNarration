@@ -12,6 +12,7 @@ library(here)
 # write.csv(anonymous_df, file = here("data","02_main","01_reproduction-inLab","raw.csv"), row.names = FALSE)
 
 theme_set(theme_bw(18))
+theme_set(theme_cowplot(font_size=12))
 
 df = read_csv(here("data","02_main","01_reproduction-inLab","raw.csv"))
 
