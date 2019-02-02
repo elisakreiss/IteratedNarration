@@ -757,13 +757,13 @@ ggplot(df_best, aes(x=factor(generation),
                fill = "#E6AB02",
                color = "black",
                size = 4) +
-  facet_wrap(vars(condition)) +
+  # facet_wrap(vars(condition)) +
   xlab("Generation") +
   ylab("Jaccard distance") +
   theme(strip.background = element_rect(fill = NA, colour = NA)) +
   theme(strip.text = element_text(size=12))
 
-ggsave(filename="jaccdistance.pdf",path = here("writing","2019_cogsci","graphs"),width = 5,height = 3)
+ggsave(filename="jaccdistance.pdf",path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
 
 df_simmodel = df_sim %>% 
   mutate_at(vars(generation),funs(as.numeric(.)))
@@ -806,13 +806,13 @@ ggplot(df_hedges_corpus,aes(x=factor(generation),
                fill = "#E6AB02",
                color = "black",
                size = 4) +
-  facet_wrap(vars(condition)) +
+  # facet_wrap(vars(condition)) +
   xlab("Generation") +
   ylab("Proportion of hedges by number of words") +
   theme(strip.background = element_rect(fill = NA, colour = NA)) +
   theme(strip.text = element_text(size=12))
 
-ggsave(filename="hedges_points.pdf",path = here("writing","2019_cogsci","graphs"),width = 5,height = 3)
+ggsave(filename="hedges_points.pdf",path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
 
 mhedge = lm(hedges_prop ~ as.numeric(generation), data=df_hedges_corpus)
 summary(mhedge)
