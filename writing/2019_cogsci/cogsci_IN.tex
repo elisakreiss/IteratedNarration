@@ -186,28 +186,35 @@ In order to assess the extent to which, as a function of the originally provided
 5392 participants were recruited over Amazon Mechanical Turk. Each participant read one story from the 250 story corpus reported in the previous section, and answered twelve questions about the story (including four attention checks). They indicated their response by moving a slider on a continuous scale. Each question was shown in isolation in a randomized order. Participants spent on average two to three minutes on this experiment and were paid \$0.60 (\$12-\$18 per hour). The story was visible throughout the experiment.
 
 
-The list of questions asked is provided in (\ref{q1}) to (\ref{q8}). Questions (\ref{q1}) - (\ref{q5}) assessed the extent to which the reader believes the suspect(s) is/are guilty of the alleged crime. Questions (\ref{q6}) - (\ref{q8}) assessed the  reader's trust in the author, the extent to which they considered the story to be objectively written, and the extent to which they felt emotionally connected to the story. Overall, participants were asked eight questions of interest and four attention check questions designed to filter out participants who were just clicking through the experiment. The attention checks were counter balanced and asked about the likelihood that the passage is a Greek fairy tale, a Bible quote, contains more than five words, and that the story involves \textit{X}, where X was replaced by a topic which was likely to occur in the story (e.g., \textit{bees} for the story in Table \ref{tab:examplestory})
+The list of questions asked is provided in (\ref{q1}) to (\ref{q8}). Questions (\ref{q1}) - (\ref{q5}) assessed the extent to which the reader believes the suspect(s) is/are guilty of the alleged crime. Questions (\ref{q6}) - (\ref{q8}) assessed the  reader's trust in the author, the extent to which they considered the story to be objectively written, and the extent to which they felt emotionally connected to the story. Overall, participants were asked eight questions of interest and four attention check questions designed to filter out participants who were just clicking through the experiment. %The attention checks were counterbalanced and asked about the likelihood that the passage is a Greek fairy tale, a Bible quote, contains more than five words, and that the story involves \textit{X}, where X was replaced by a topic which was likely to occur in the story (e.g., \textit{bees} for the story in Table \ref{tab:examplestory})
 
-\enumsentence{How strong is the evidence for the suspect's / suspects' guilt? \label{q1}}
-\enumsentence{How likely is it that the suspect is / the suspects in the crime are guilty? \label{q2}}
-\enumsentence{How likely is a conviction of the suspect(s) in the crime? \label{q3}}
-\enumsentence{How justified would a conviction of the suspect(s) in the crime be? \label{q4}}
-\enumsentence{How much does the author believe that the suspect is guilty? \label{q5}}
-\enumsentence{How much do you trust the author? \label{q6}}
-\enumsentence{How objectively / subjectively written is the story? \label{q7}}
-\enumsentence{How affected do you feel by the story? \label{q8}}
+\enumsentence{How strong is the evidence for the suspect's / suspects' guilt?\label{q1}}
+\vspace{-.5cm}
+\enumsentence{How likely is it that the suspect is / the suspects in the crime are guilty?\label{q2}}
+\vspace{-.5cm}
+\enumsentence{How likely is a conviction of the suspect(s) in the crime?\label{q3}}
+\vspace{-.5cm}
+\enumsentence{How justified would a conviction of the suspect(s) in the crime be?\label{q4}}
+\vspace{-.5cm}
+\enumsentence{How much does the author believe that the suspect is guilty?\label{q5}}
+\vspace{-.5cm}
+\enumsentence{How much do you trust the author?\label{q6}}
+\vspace{-.5cm}
+\enumsentence{How objectively / subjectively written is the story?\label{q7}}
+\vspace{-.5cm}
+\enumsentence{How affected do you feel by the story?\label{q8}}
 
 
 \subsection{Results}
 
-We excluded 12 participants because they completed the study multiple times and another 535 because they failed at least two of the attention check questions. This leaves us with 4573 participants (84.8\% of the original set). After exclusions, each reproduction received on average 17 ratings, ranging from 9 to 22 and two outliers with 27 and 38 ratings\footnote{The outliers are due to a mistake in the recruitment process.}. The original seed stories received between 25 and 31 ratings.
+\jd{past tense throughout}
+\textbf{Exclusions.} We excluded 12 participants because they completed the study multiple times and another 535 because they failed at least two of the attention check questions. This left us with 4573 participants (84.8\% of the original set). After exclusions, each reproduction received on average 17 ratings, ranging from 9 to 22 and two outliers with 27 and 38 ratings. %\footnote{The outliers are due to a mistake in the recruitment process.}. 
+The original seed stories received between 25 and 31 ratings.
 
-Mean slider ratings are shown in Figure \ref{fig:exp2results}. 
-Qualitatively, there is a strong effect of condition in the guilt related measures, i.e., \textit{strength of evidence}, \textit{suspect guilt}, \textit{suspect conviction}, \textit{suspect conviction justified} and \textit{author's belief in guilt}. In the responses to these measures, the ratings for the strong evidence condition are declining over generations, but consistently higher than for the weak evidence condition. In other words, the different guilt measures retain higher guilt judgments than the weak condition over all generations. However, the judgments of the weak conditions pattern differently. In contrast to a decline in the ratings over generations, the judgments in the weak condition stay constant or increase. This narrows the distance between the judgments in the strong and weak conditions. \ek{In sum,} the stories for the two different conditions become more similar over generations with respect to the guilt measures.
+\jd{remind people of main question and how it will be addressed}
 
-The difference between the conditions is far smaller (if existent at all) in the responses to the reader's \textit{trust in the author}, the \textit{subjectivity of the story} and the \textit{reader's emotional engagement}. \textit{Trust in the author} and the \textit{reader's emotional engagement} decline over generations of reproductions, independent of the condition. Interestingly, the measure on how subjectively the story is written does not change over generations and remains on the "objective" side of the scale.
+\textbf{Analysis procedure.} Of main interest was whether participants give judgments of suspect guilt in line with the originally provided evidence, whether those judgments change over generations, and whether those judgments pattern with related measures of evidence for guilt, probability of conviction, justification of conviction, and estimate of the author's belief in the suspect's guilt (\emph{guilt related measures}). Additionally, we analyzed trust in the author, story subjectivity, and emotional engagement as measures of secondary interest. Mean slider ratings corresponding to the analyses are shown in Figure \ref{fig:exp2results}.  Judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation (reference level: 0), condition (reference level: strong), and their interaction. The models also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. Each row presents the model results for one of the questions and the columns show the model outcomes for fixed effects. 
 
-\ek{maybe make a note that there is no sign of convergence to .5}
 
 \begin{figure*}[]
 	\includegraphics[width=\textwidth]{pics/subj_results_byquestion.pdf}
@@ -215,7 +222,14 @@ The difference between the conditions is far smaller (if existent at all) in the
 	\label{fig:exp2results}
 \end{figure*}
 
-The judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation (reference level: 0), condition (reference level: strong), and their interaction. The model also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. Each row presents the model results for one of the questions and the columns show the model outcomes for fixed effects.
+\textbf{Generation and evidence strength effects on guilt related measures.} We observed  strong main effects of condition on all guilt related measures (see first 5 panels of Figure \ref{fig:exp2results}). In the responses to these measures, the ratings for the strong evidence condition are declining over generations, but consistently higher than for the weak evidence condition. In other words, the different guilt measures retain higher guilt judgments than the weak condition over all generations. However, the judgments of the weak conditions pattern differently. In contrast to a decline in the ratings over generations, the judgments in the weak condition stay constant or increase. This narrows the distance between the judgments in the strong and weak conditions. \ek{In sum,} the stories for the two different conditions become more similar over generations with respect to the guilt measures.
+
+The difference between the conditions is far smaller (if existent at all) in the responses to the reader's \textit{trust in the author}, the \textit{subjectivity of the story} and the \textit{reader's emotional engagement}. \textit{Trust in the author} and the \textit{reader's emotional engagement} decline over generations of reproductions, independent of the condition. Interestingly, the measure on how subjectively the story is written does not change over generations and remains on the "objective" side of the scale.
+
+\ek{maybe make a note that there is no sign of convergence to .5}
+
+
+
 
 In the qualitative analysis, we have observed a strong condition effect in the guilt measures. This is reflected in the model results. In the non-guilt measures, story subjectivity shows a significant effect on condition. The trust in the author and the reader's emotional engagement appear to be independent of the condition and therefore cannot explain the difference that we see in the guilt related measures. Even though the subjectivity shows an effect of condition, it is too small \ek{rephrase this...} to explain these effects in the guilt measures either. \ek{We also know that the length and Jaccard distance (and maybe hedges?) doesn't differ in the two conditions, so...} This suggests that the strong effects of condition in the guilt measures \ek{are about some more subtle changes in the actual language and content of the stories}.
 
