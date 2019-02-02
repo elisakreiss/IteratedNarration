@@ -111,11 +111,11 @@ plot_corpus_length = ggplot(data = df_clean, mapping = aes(x = generation, y = N
                size = 4) +
   ylab("Number of words") +
   xlab("Generation") +
-  facet_wrap(vars(condition)) +
+  # facet_wrap(vars(condition)) +
   theme(strip.background = element_rect(fill = NA, colour = NA)) +
   theme(strip.text = element_text(size=12))
 
-ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","pics"),width = 5,height = 3)
+ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
 
 library(lme4)
 library(lmerTest)
