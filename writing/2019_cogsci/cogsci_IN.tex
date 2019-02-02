@@ -55,7 +55,7 @@
 \newcommand{\mf}[1]{\textcolor{PinkyPurple}{[mf: #1]}}
 
 
-\setlength\titlebox{6cm}
+\setlength\titlebox{4.5cm}
 % You can expand the titlebox if you need extra space
 % to show all the authors. Please do not make the titlebox
 % smaller than 4.5cm (the original size).
@@ -63,7 +63,11 @@
 %%the camera-ready version, which could interfere with the timely
 %%appearance of your paper in the Proceedings.
 
-
+\usepackage{caption} % use corresponding myfiguresize!
+\setlength{\captionmargin}{0pt}
+\renewcommand{\captionfont}{\footnotesize}
+\setlength{\belowcaptionskip}{-10pt} % standard is 0pt
+\setlength{\abovecaptionskip}{-3pt} % standard is 0pt
 
 \title{I heard he might be guilty, so he probably is: Uncertain evidence statements in
   iterative reproductions of crime stories}
