@@ -770,6 +770,8 @@ df_simmodel = df_sim %>%
 
 msim = lm(sim ~ generation,data=df_simmodel)
 summary(msim)
+msimcon = lm(sim ~ generation + condition,data=df_simmodel)
+summary(msimcon)
 ```
 
 - Jaccard distance increases the higher the generation, but all means are very high
@@ -814,6 +816,8 @@ ggsave(filename="hedges_points.pdf",path = here("writing","2019_cogsci","graphs"
 
 mhedge = lm(hedges_prop ~ as.numeric(generation), data=df_hedges_corpus)
 summary(mhedge)
+mhedgecon = lm(hedges_prop ~ as.numeric(generation)+condition, data=df_hedges_corpus)
+summary(mhedgecon)
 
 df_hedges_ratings = df_cond %>%
   rowwise() %>% 
@@ -948,8 +952,25 @@ summary(m1)
 m1.simple = lmer(author_belief ~ condition*sim - sim  + (1|story_reproduction), data=df_model)
 summary(m1.simple)
 
-mh = lmer(author_belief ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
-summary(mh)
+# mh = lmer(author_belief ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
+# summary(mh)
+# 
+m = lm(hedges_prop ~ as.numeric(generation), data=df_model)
+df_model$ResidualHedgProp = resid(m)
+
+mh_all = lmer(author_belief ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(author_belief ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(author_belief ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all **
+anova(mh_gen,mh_all)
+# mh_all *
+anova(mh_h,mh_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -968,6 +989,22 @@ summary(m1.simple)
 
 mh = lmer(author_trust ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(author_trust ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(author_trust ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(author_trust ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_gen,mh_all)
+# mh_all ***
+anova(mh_h,mh_all)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -986,6 +1023,22 @@ summary(m1.simple)
 
 mh = lmer(evidence ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(evidence ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(evidence ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(evidence ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_all,mh_gen)
+# mh_all ***
+anova(mh_all,mh_h)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1004,6 +1057,22 @@ summary(m1.simple)
 
 mh = lmer(reader_emotion ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(reader_emotion ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(reader_emotion ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(reader_emotion ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_all,mh_gen)
+# mh_all ***
+anova(mh_all,mh_h)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1022,6 +1091,22 @@ summary(m1.simple)
 
 mh = lmer(story_subjectivity ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(story_subjectivity ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(story_subjectivity ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(story_subjectivity ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_all,mh_gen)
+# mh_all
+anova(mh_all,mh_h)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1040,6 +1125,22 @@ summary(m1.simple)
 
 mh = lmer(suspect_committedCrime ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(suspect_committedCrime ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(suspect_committedCrime ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(suspect_committedCrime ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_all,mh_gen)
+# mh_all
+anova(mh_all,mh_h)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1058,6 +1159,22 @@ summary(m1.simple)
 
 mh = lmer(suspect_conviction ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(suspect_conviction ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(suspect_conviction ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(suspect_conviction ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all .
+anova(mh_all,mh_gen)
+# mh_all *
+anova(mh_all,mh_h)
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1076,5 +1193,21 @@ summary(m1.simple)
 
 mh = lmer(suspect_convictionJustified ~ chedges_prop * condition + (1|story_reproduction), data=df_model)
 summary(mh)
+
+# Hedges 
+
+mh_all = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model)
+summary(mh_all)
+
+mh_gen = lmer(suspect_convictionJustified ~ as.numeric(generation)*condition  + (1|story_reproduction), data=df_model)
+summary(mh_gen)
+
+mh_h = lmer(suspect_convictionJustified ~ hedges_prop*condition  + (1|story_reproduction), data=df_model)
+summary(mh_h)
+
+# mh_all
+anova(mh_all,mh_gen)
+# mh_all
+anova(mh_all,mh_h)
 ```
 

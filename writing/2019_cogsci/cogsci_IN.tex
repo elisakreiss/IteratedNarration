@@ -266,6 +266,11 @@ We want to emphasize here that even though we intuitively expect the strength of
 
 Overall, we find a strong effect of condition on the guilt measures that is not reflected in this extent by the trust in the author, subjectivity of the story or the reader's emotional engagement.
 
+\textbf{But what explains the effects on generations for the different measures?} To evaluate this question, we compared the model predictions of the reported model (see Table \ref{tab:exp2results}) which only considered the interaction of condition and generation with a model that additionally considers the proportion of hedges, the Jaccard distance or the length of the story. For each question, we investigate whether adding one of the mentioned metrics results in a significant and therefore justified increase in model complexity, using a Chi-squared ANOVA test.\\
+\textbf{Hedges} Adding the proportion of hedges to the mixed effects model shows a marginal effect for the conviction of the suspect (\ek{...}) and a main effect for the judgments on whether the author believes that the suspect is guilty (\ek{...}). An increase in hedges results in higher ratings that the suspect will be convicted and in higher judgments on whether the author seems to believe that the suspect is guilty \ek{right?}.\\
+\textbf{Distance} significant in author belief in guilt, trust in author, reader's emotional engagement\\
+\textbf{Length} significant in evidence, suspect guilt, author belief in guilt, trust in author and marginal for suspect conviction
+
 \section{Conclusion}
 
 \ek{insert intro sentence}
@@ -311,7 +316,7 @@ In a second study, we obtained subjective ratings for each story regarding the q
 	\end{tabular}
 	\caption{Model output for each fixed effect (condition, generation, and their interaction) for each rated question (rows). \jd{simple effects results should not be reported in this table -- this is just here for us, right?}\ek{yes}}
 	%\caption{lmer(suspectconvictionJustified ~ generation * condition + (1|storyreproduction), data=dfmodel); high correlation of fixed effects}
-	\label{tab:exp2results}
+	\label{tab:exp2resultsb}
 \end{table*}
 
 %\cleardoublepage
