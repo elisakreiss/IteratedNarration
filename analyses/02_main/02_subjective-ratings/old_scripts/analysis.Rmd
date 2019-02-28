@@ -38,7 +38,7 @@ seeds = tibble(
 
 
 ```{r import data, include=FALSE}
-df_1 = read_csv(here("data","02_main","02_subjective-ratings","raw_confidential.csv"))
+df_1 = read_csv(here("data","02_main","02_subjective-ratings","raw_confidential1.csv"))
 df_2 = read_csv(here("data","02_main","02_subjective-ratings","raw_confidential2.csv"))
 df_3 = read_csv(here("data","02_main","02_subjective-ratings","raw_confidential3.csv"))
 
@@ -931,6 +931,8 @@ df_model = df_cond %>%
   mutate(hedges_prop=hedges_nr/NumOfWords) %>% 
   ungroup() %>% 
   mutate(chedges_prop=hedges_prop-mean(hedges_prop))
+  # arrange(generation) %>% 
+  # arrange(sim)
 
 m = lm(sim ~ NumOfWords, data=df_model)
 df_model$ResidualJSim = resid(m)
@@ -984,8 +986,11 @@ anova(mh_h,mh_all_a)
 
 # Distance
 
-m = lm(sim ~ as.numeric(generation), data=df_model)
+m_noratings = lm(sim ~ as.numeric(generation), data=df_model)
 df_model$ResidualDist = resid(m)
+
+ggplot(df_model,aes(x=fitted(m_noratings),y=(resid(m_noratings))))+
+  geom_point(alpha=0.2)
 
 md_all = lmer(author_belief ~ as.numeric(generation)*condition + ResidualDist*condition  + (1|story_reproduction), data=df_model)
 summary(md_all)
