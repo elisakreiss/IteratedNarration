@@ -84,11 +84,6 @@ seed_lookup = seeds %>%
   select(story_title,reproduction) %>% 
   rename(seed="reproduction")
 
-calc_token_number = function(string){
-  # print("here")
-  str_count(paste(unique(strsplit(str_to_lower(string), " ")[[1]]), collapse = ' '), boundary("word"))
-}
-
 df_cond = df_filtered %>% 
   select(story_title,chain,generation,slider_val,trial_type,anon_worker_id,story_reproduction) %>% 
   # add condition column
@@ -102,11 +97,6 @@ df_cond = df_filtered %>%
   # add story_topic (condition independent) column
   mutate(story_topic = str_replace_all(story_title,"_free|_jail","")) %>% 
   mutate(NumOfWords=str_count(story_reproduction, boundary("word"))) %>% 
-  # count all unique words (keeping punctuation but accounting for capitalization, just like in Jaccard distance calculation)
-  # mutate(NumOfTokens=str_count(paste(unique(strsplit(str_to_lower(story_reproduction), " ")[[1]]), collapse = ' '), boundary("word"))) %>% 
-  rowwise() %>% 
-  mutate(NumOfTokens=calc_token_number(story_reproduction)) %>%
-  ungroup() %>% 
   merge(seed_lookup, by = "story_title") %>% 
   ungroup() %>% 
   # create reproduction id
@@ -164,11 +154,10 @@ ggplot(df_reformatted,
 ```{r language analysis df}
 
 df_lang = df_cond %>% 
-  distinct(story_reproduction,generation,condition,story_title,NumOfWords,NumOfTokens,seed,repro_id) %>% 
+  distinct(story_reproduction,generation,condition,story_title,NumOfWords,seed,repro_id) %>% 
   # group_by(generation,condition) %>%
   group_by(generation) %>% 
   mutate(meanNumOfWords=mean(NumOfWords)) %>% 
-  mutate(meanNumOfTokens=mean(NumOfTokens)) %>% 
   ungroup()
 
 ```
@@ -203,6 +192,64 @@ plot_corpus_length = ggplot(data = df_lang, mapping = aes(x = generation, y = Nu
 ```
 
 
+
+### Jaccard distance for Submission
+
+```{r jaccard distance, echo=FALSE}
+library(hashr)
+library(stringdist)
+
+# create similarity df with one row per reproduction (no subjective ratings)
+df_addedsim = df_lang %>%
+  rowwise() %>%
+  mutate(sim=stringdistmatrix(story_reproduction,seed,method = "jaccard")) %>%
+  ungroup()
+
+# add baseline with best achievable similarity given the mean number of words in 
+# reproductions for each condition & generation
+df_optimal = df_addedsim %>%
+  mutate(firstMeanWords = ifelse(generation==0,
+                                 seed,
+                                 word(seed,start = 1, end = meanNumOfWords))) %>% 
+  rowwise() %>% 
+  mutate(optimalJacc = stringdistmatrix(seed,firstMeanWords,method = "jaccard")) %>% 
+  ungroup() %>% 
+  group_by(generation) %>% 
+  mutate(meanOptJacc = mean(optimalJacc))
+
+p_jaccdistance = ggplot(df_optimal, aes(x=factor(generation),
+                   y=sim)) +
+  # geom_violin() +
+  geom_point(alpha = 0.2,
+             position = position_jitter(width = 0.1, height = 0),
+             size = 2) +
+  geom_point(aes(y=meanOptJacc),
+             fill="#F56B69",
+             color="#F56B69",
+             size=3) +
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "black",
+               size = 1) + 
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               shape = 21,
+               fill = "#E6AB02",
+               color = "black",
+               size = 4) +
+  # facet_wrap(vars(condition)) +
+  xlab("Generation") +
+  ylab("Jaccard distance") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
+
+p_jaccdistance
+
+# ggsave(filename="jaccdistance.pdf",path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
+```
+
 ### Jaccard distance NEW
 
 ```{r jaccard distance, echo=FALSE}
@@ -234,11 +281,11 @@ df_addedsim = df_lang %>%
 # add baseline with best achievable similarity given the mean number of words in 
 # reproductions for each condition & generation
 df_optimal = df_addedsim %>%
-  mutate(firstMeanTokenWords = ifelse(generation==0,
+  mutate(firstMeanWords = ifelse(generation==0,
                                  seed,
-                                 word(seed,start = 1, end = meanNumOfTokens))) %>% 
+                                 word(seed,start = 1, end = meanNumOfWords))) %>% 
   rowwise() %>% 
-  mutate(optimalJacc = calc_jacc_dist(seed,firstMeanTokenWords)) %>% 
+  mutate(optimalJacc = calc_jacc_dist(seed,firstMeanWords)) %>% 
   ungroup() %>% 
   group_by(generation) %>% 
   mutate(meanOptJacc = mean(optimalJacc))
@@ -410,14 +457,6 @@ summary(ml_all)
 # ml_gen = lmer(author_belief ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
 # summary(ml_gen)
 # anova(ml_gen,ml_all)
-
-# Reviewer comment: Does hedge proportion add anything to length?
-# <0.05*, but there is a warning for the first model: "Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling"
-ml_all = lmer(author_belief ~ generation*condition + ResidualLen*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
-summary(ml_all)
-ml_gen = lmer(author_belief ~ generation*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model_ratings)
-summary(ml_gen)
-anova(ml_gen,ml_all)
 ```
 
 ```{r lm suspect guilt, eval=FALSE, include=FALSE}
