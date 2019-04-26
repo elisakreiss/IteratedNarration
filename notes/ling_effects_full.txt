@@ -1,0 +1,270 @@
+########
+########
+PROPORTION OF HEDGES
+########
+########
+
+###
+###
+suspect_guilt ~ generation*condition + resid_hedgeprop*condition
+###
+###
+
+Formula: suspect_committedCrime ~ as.numeric(generation) * condition +  
+    ResidualHedgProp * condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41767.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6196 -0.6168  0.0909  0.7257  2.5695 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 132.0    11.49   
+ Residual                       494.8    22.25   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                              Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)                                     76.837      2.387  247.773  32.187  < 2e-16 ***
+as.numeric(generation)                          -1.365      0.735  252.243  -1.858   0.0644 .  
+conditionweak evidence                         -17.323      3.381  247.145  -5.124 6.04e-07 ***
+ResidualHedgProp                                41.098     37.242  251.719   1.104   0.2708    
+as.numeric(generation):conditionweak evidence    1.901      1.042  251.266   1.824   0.0694 .  
+conditionweak evidence:ResidualHedgProp       -111.537     54.501  253.567  -2.047   0.0417 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlHP a.():e
+as.nmrc(gn) -0.884                            
+cndtnwkevdn -0.706  0.624                     
+ResdlHdgPrp  0.020 -0.028 -0.014              
+as.nmrc():e  0.623 -0.705 -0.885  0.019       
+cevdnc:RsHP -0.014  0.019  0.008 -0.683 -0.005
+
+###
+###
+author_belief ~ generation*condition + resid_hedgeprop*condition
+###
+###
+
+Formula: author_belief ~ as.numeric(generation) * condition + ResidualHedgProp *      condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41974.1
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6699 -0.6389  0.0689  0.7380  3.3479 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 158.4    12.59   
+ Residual                       514.4    22.68   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                               Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)                                     78.9851     2.5848  249.7602  30.558  < 2e-16 ***
+as.numeric(generation)                          -2.1635     0.7954  253.9934  -2.720  0.00698 ** 
+conditionweak evidence                         -27.5645     3.6612  248.7640  -7.529 9.41e-13 ***
+ResidualHedgProp                                27.7889    40.3083  252.4189   0.689  0.49120    
+as.numeric(generation):conditionweak evidence    3.3989     1.1282  252.5611   3.013  0.00285 ** 
+conditionweak evidence:ResidualHedgProp       -162.9337    58.9768  254.0279  -2.763  0.00615 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlHP a.():e
+as.nmrc(gn) -0.884                            
+cndtnwkevdn -0.706  0.624                     
+ResdlHdgPrp  0.020 -0.028 -0.014              
+as.nmrc():e  0.623 -0.705 -0.885  0.019       
+cevdnc:RsHP -0.014  0.019  0.008 -0.683 -0.005
+
+
+########
+########
+LENGTH
+########
+########
+
+###
+###
+suspect_guilt ~ generation*condition + resid_length*condition
+###
+###
+
+Formula: suspect_committedCrime ~ as.numeric(generation) * condition +  
+    ResidualLen * condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41789.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6769 -0.6150  0.0963  0.7303  2.5679 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 129.3    11.37   
+ Residual                       494.8    22.24   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                               Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)                                    77.49689    2.40653 243.16510  32.203  < 2e-16 ***
+as.numeric(generation)                         -1.52667    0.73716 248.36293  -2.071  0.03939 *  
+conditionweak evidence                        -18.02976    3.37999 244.75028  -5.334 2.18e-07 ***
+ResidualLen                                     0.07160    0.04446 246.29836   1.611  0.10854    
+as.numeric(generation):conditionweak evidence   2.11859    1.03939 249.18490   2.038  0.04257 *  
+conditionweak evidence:ResidualLen             -0.18495    0.06314 245.13133  -2.929  0.00372 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlLn a.():e
+as.nmrc(gn) -0.887                            
+cndtnwkevdn -0.712  0.632                     
+ResidualLen  0.183 -0.154 -0.130              
+as.nmrc():e  0.629 -0.709 -0.886  0.109       
+cevdnc:RsdL -0.129  0.108  0.094 -0.704 -0.086
+
+
+###
+###
+author_belief ~ generation*condition + resid_length*condition
+###
+###
+
+Formula: author_belief ~ as.numeric(generation) * condition + ResidualLen *      condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41991.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6684 -0.6410  0.0680  0.7356  3.3633 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 151.6    12.31   
+ Residual                       514.3    22.68   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                               Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)                                    80.01558    2.58128 244.61206  30.998  < 2e-16 ***
+as.numeric(generation)                         -2.42502    0.79028 249.53764  -3.069 0.002388 ** 
+conditionweak evidence                        -28.69290    3.62490 245.84850  -7.916 8.44e-14 ***
+ResidualLen                                     0.10471    0.04767 247.90876   2.197 0.028976 *  
+as.numeric(generation):conditionweak evidence   3.76438    1.11421 249.97966   3.379 0.000845 ***
+conditionweak evidence:ResidualLen             -0.29640    0.06771 246.39944  -4.377 1.78e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlLn a.():e
+as.nmrc(gn) -0.887                            
+cndtnwkevdn -0.712  0.632                     
+ResidualLen  0.185 -0.156 -0.132              
+as.nmrc():e  0.629 -0.709 -0.886  0.111       
+cevdnc:RsdL -0.130  0.110  0.096 -0.704 -0.088
+
+
+########
+########
+DISTANCE
+########
+########
+
+
+###
+###
+suspect_guilt ~ generation*condition + resid_dist*condition
+###
+###
+
+Formula: suspect_committedCrime ~ as.numeric(generation) * condition +  
+    ResidualDist * condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41774.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6266 -0.6162  0.0928  0.7271  2.5590 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 133.8    11.57   
+ Residual                       494.8    22.25   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                              Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)                                    77.0305     2.4291 245.0195  31.711  < 2e-16 ***
+as.numeric(generation)                         -1.4041     0.7447 249.8623  -1.885   0.0605 .  
+conditionweak evidence                        -17.4872     3.4205 245.8515  -5.112  6.4e-07 ***
+ResidualDist                                   -7.6786    11.5847 249.7393  -0.663   0.5081    
+as.numeric(generation):conditionweak evidence   1.9683     1.0521 249.9660   1.871   0.0625 .  
+conditionweak evidence:ResidualDist            20.7103    17.2753 251.1995   1.199   0.2317    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlDs a.():e
+as.nmrc(gn) -0.886                            
+cndtnwkevdn -0.710  0.629                     
+ResidualDst -0.154  0.125  0.109              
+as.nmrc():e  0.627 -0.708 -0.886 -0.089       
+cevdnc:RsdD  0.103 -0.084 -0.064 -0.671  0.065
+
+
+###
+###
+author_belief ~ generation*condition + resid_dist*condition
+###
+###
+
+Formula: author_belief ~ as.numeric(generation) * condition + ResidualDist *  
+    condition + (1 | story_reproduction)
+   Data: df_model
+
+REML criterion at convergence: 41980.3
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6877 -0.6463  0.0639  0.7377  3.3521 
+
+Random effects:
+ Groups             Name        Variance Std.Dev.
+ story_reproduction (Intercept) 159.1    12.61   
+ Residual                       514.4    22.68   
+Number of obs: 4573, groups:  story_reproduction, 259
+
+Fixed effects:
+                                              Estimate Std. Error      df t value Pr(>|t|)    
+(Intercept)                                     78.547      2.621 246.338  29.972  < 2e-16 ***
+as.numeric(generation)                          -2.048      0.803 250.923  -2.550  0.01136 *  
+conditionweak evidence                         -27.037      3.690 246.798  -7.327 3.34e-12 ***
+ResidualDist                                    12.252     12.492 250.643   0.981  0.32766    
+as.numeric(generation):conditionweak evidence    3.348      1.135 250.608   2.951  0.00346 ** 
+conditionweak evidence:ResidualDist             26.368     18.626 251.590   1.416  0.15810    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) as.n() cndtne RsdlDs a.():e
+as.nmrc(gn) -0.886                            
+cndtnwkevdn -0.710  0.629                     
+ResidualDst -0.156  0.127  0.111              
+as.nmrc():e  0.627 -0.708 -0.886 -0.090       
+cevdnc:RsdD  0.105 -0.085 -0.066 -0.671  0.066
+
+
+
+
