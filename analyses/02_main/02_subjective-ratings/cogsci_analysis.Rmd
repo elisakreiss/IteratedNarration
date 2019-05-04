@@ -157,6 +157,51 @@ ggplot(df_reformatted,
   theme(legend.position = "top") +
   theme(strip.background = element_rect(fill = NA, colour = NA))
 
+
+# data distribution as violin plot
+
+ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
+       aes(x=generation,
+           y=slider_val)) +
+  geom_violin() +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               position = position_dodge(width = 0.9)) +
+  # stat_summary(fun.data = "mean_cl_boot",
+  #              geom = "linerange",
+  #              color = "darkgrey", 
+  #              position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+ggsave(filename="slider_distr_weak.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+
+ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
+       aes(x=generation,
+           y=slider_val)) +
+  geom_violin() +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               position = position_dodge(width = 0.9)) +
+  # stat_summary(fun.data = "mean_cl_boot",
+  #              geom = "linerange",
+  #              color = "darkgrey", 
+  #              position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+ggsave(filename="slider_distr_strong.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+
 # ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
 ```
 
@@ -203,7 +248,7 @@ plot_corpus_length = ggplot(data = df_lang, mapping = aes(x = generation, y = Nu
 ```
 
 
-### Jaccard distance NEW
+### Jaccard distance
 
 ```{r jaccard distance, echo=FALSE}
 library(hashr)
@@ -353,20 +398,30 @@ df_model_ratings$ResidualLen = resid(m_residlen)
 
 ```{r lm ling measures, echo=FALSE}
 # Proportion of hedges as predicted by generation
+# 1
 mhedge = lm(hedges_prop ~ generation, data=df_model_corpus)
 summary(mhedge)
+# 2
+mhedge_cond = lm(hedges_prop ~ condition, data=df_model_corpus)
+summary(mhedge_cond)
 
 # Story length as predicted by generation
+# 3
 mlength = lm(NumOfWords ~ generation, data=df_model_corpus)
 summary(mlength)
 
 # Similarity/distance as predicted by generation
+# 4
 msim = lm(sim ~ generation, data=df_model_corpus)
 summary(msim)
+# 4a
+msim_cond = lm(sim ~ condition, data=df_model_corpus)
+summary(msim_cond)
 ```
 
 ```{r summary table,echo=FALSE,include=FALSE}
 # Table 2 (model output for each fixed effect for each rated question)
+# 5
 m_evidence = lmer(evidence ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
 summary(m_evidence)
 m_suspect_guilt = lmer(suspect_committedCrime ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
@@ -387,6 +442,7 @@ summary(m_reader_emotion)
 
 
 ```{r lm author belief, eval=FALSE, include=FALSE}
+# 6
 # Hedges
 
 mh_all = lmer(author_belief ~ generation * condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
@@ -420,7 +476,28 @@ summary(ml_gen)
 anova(ml_gen,ml_all)
 ```
 
+```{r simple author belief}
+# 8 
+# Simple effects for author belief
+# Hedges
+
+mh.simple = lmer(author_belief ~ condition*ResidualHedgProp - ResidualHedgProp + (1|story_reproduction), data=df_model_ratings)
+summary(mh.simple)
+
+# Distance
+
+md.simple = lmer(author_belief ~ condition*ResidualDist - ResidualDist + (1|story_reproduction), data=df_model_ratings)
+summary(md.simple)
+
+# Length
+
+ml.simple = lmer(author_belief ~ condition*ResidualLen - ResidualLen + (1|story_reproduction), data=df_model_ratings)
+summary(ml.simple)
+```
+
+
 ```{r lm suspect guilt, eval=FALSE, include=FALSE}
+# 7
 # Hedges
 
 mh_all = lmer(suspect_committedCrime ~ generation * condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
@@ -444,6 +521,25 @@ summary(ml_all)
 # ml_gen = lmer(suspect_committedCrime ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
 # summary(ml_gen)
 # anova(ml_gen,ml_all)
+```
+
+```{r simple suspect guilt}
+# 9 
+# Simple effects for suspect guilt
+# Hedges
+
+mh.simple = lmer(suspect_committedCrime ~ condition*ResidualHedgProp - ResidualHedgProp + (1|story_reproduction), data=df_model_ratings)
+summary(mh.simple)
+
+# Distance
+
+md.simple = lmer(suspect_committedCrime ~ condition*ResidualDist - ResidualDist + (1|story_reproduction), data=df_model_ratings)
+summary(md.simple)
+
+# Length
+
+ml.simple = lmer(suspect_committedCrime ~ condition*ResidualLen - ResidualLen + (1|story_reproduction), data=df_model_ratings)
+summary(ml.simple)
 ```
 
 ## Figure 4
