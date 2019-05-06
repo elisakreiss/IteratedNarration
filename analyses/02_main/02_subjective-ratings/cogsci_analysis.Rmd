@@ -132,7 +132,7 @@ color_baseline = "#905892"
 
 ## Judgments over generations and conditions
 
-```{r echo=FALSE}
+```{r judgments echo=FALSE}
 df_reformatted = df_cond %>%
   mutate(trial_type = fct_relevel(trial_type, "evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion")) %>% 
   mutate(trial_type = mapvalues(trial_type, from = c("evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion"), to = c("strength of\nevidence", "suspect guilt", "suspect conviction", "suspect conviction\njustified","author's belief\nin guilt","trust in author","subjectivity\nof story", "reader's emotional\nengagement")))
@@ -157,8 +157,11 @@ ggplot(df_reformatted,
   theme(legend.position = "top") +
   theme(strip.background = element_rect(fill = NA, colour = NA))
 
+# ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+```
 
-# data distribution as violin plot
+```{r judgments data distribution, include=FALSE}
+# data distribution as violin plot to show data distribution
 
 ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
        aes(x=generation,
@@ -167,10 +170,6 @@ ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
   stat_summary(fun.y = "mean",
                geom = "point",
                position = position_dodge(width = 0.9)) +
-  # stat_summary(fun.data = "mean_cl_boot",
-  #              geom = "linerange",
-  #              color = "darkgrey", 
-  #              position = position_dodge(width = 0.9)) +
   facet_wrap(vars(trial_type),nrow=2) +
   xlab("Generation") +
   ylab("Average slider rating") +
@@ -179,7 +178,7 @@ ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
   theme(legend.position = "top") +
   theme(strip.background = element_rect(fill = NA, colour = NA))
 
-ggsave(filename="slider_distr_weak.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+# ggsave(filename="slider_distr_weak.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
 
 ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
        aes(x=generation,
@@ -188,10 +187,6 @@ ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
   stat_summary(fun.y = "mean",
                geom = "point",
                position = position_dodge(width = 0.9)) +
-  # stat_summary(fun.data = "mean_cl_boot",
-  #              geom = "linerange",
-  #              color = "darkgrey", 
-  #              position = position_dodge(width = 0.9)) +
   facet_wrap(vars(trial_type),nrow=2) +
   xlab("Generation") +
   ylab("Average slider rating") +
@@ -200,12 +195,11 @@ ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
   theme(legend.position = "top") +
   theme(strip.background = element_rect(fill = NA, colour = NA))
 
-ggsave(filename="slider_distr_strong.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
-
-# ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+# ggsave(filename="slider_distr_strong.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
 ```
 
 ## Language analysis data frame (no subjective ratings) for language measures
+
 ```{r language analysis df}
 
 df_lang = df_cond %>% 
@@ -574,8 +568,113 @@ ggplot(df_modelplot,aes(x=lingvalue,y=response,color=condition,linetype=Question
 # ggsave(filename="lingmarkers_resid.pdf",path=here("writing","2019_cogsci","pics"), height = 3, width = 6)
 ```
 
+## Correlation of the questions
+
+####Pairwise correlations between questions
+
+```{r pairwise correlations}
+df_corr = df_reformatted %>% 
+  select(trial_type,slider_val,anon_worker_id) %>%
+  spread(trial_type,slider_val) %>% 
+  as.data.frame()
+
+rownames(df_corr) = df_corr$anon_worker_id
+
+df_corr = select(df_corr,-anon_worker_id)
+
+chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# res = cor(df_corr, method="pearson", use="complete.obs")
+# corrplot(res, method = "number", type = "upper", order = "alphabet",
+#          tl.col = "black", tl.srt = 45)
+
+########
+
+# df_corr = df_reformatted %>%
+#   filter(condition=="strong evidence") %>%
+#   select(trial_type,slider_val,anon_worker_id) %>%
+#   spread(trial_type,slider_val) %>%
+#   as.data.frame()
+# 
+# rownames(df_corr) = df_corr$anon_worker_id
+# 
+# df_corr = select(df_corr,-anon_worker_id)
+# 
+# chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# # res = cor(df_corr, method="pearson", use="complete.obs")
+# # corrplot(res, method = "number", type = "upper", order = "alphabet",
+# #          tl.col = "black", tl.srt = 45)
+# 
+# #######
+# 
+# df_corr = df_reformatted %>%
+#   filter(condition=="weak evidence") %>%
+#   select(trial_type,slider_val,anon_worker_id) %>%
+#   spread(trial_type,slider_val) %>%
+#   as.data.frame()
+# 
+# rownames(df_corr) = df_corr$anon_worker_id
+# 
+# df_corr = select(df_corr,-anon_worker_id)
+# 
+# chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# # res = cor(df_corr, method="pearson", use="complete.obs")
+# # corrplot(res, method = "number", type = "upper", order = "alphabet",
+# #          tl.col = "black", tl.srt = 45)
+```
 
 
+####
+
+```{r model predictions}
+library(lme4)
+library(lmerTest)
+
+# ***
+m_evidence = lmer(evidence ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# *
+m_evidence = lmer(evidence ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# ***
+m_evidence = lmer(evidence ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# ***
+m_suspect_guilt = lmer(suspect_committedCrime ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# 
+m_suspect_guilt = lmer(suspect_committedCrime ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# ***
+m_suspect_guilt = lmer(suspect_committedCrime  ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# ***
+m_suspect_conviction = lmer(suspect_conviction ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# 
+m_suspect_conviction = lmer(suspect_conviction ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# ***
+m_suspect_conviction = lmer(suspect_conviction ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# ***
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# *
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# ***
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# ***
+m_author_belief = lmer(author_belief ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+# ***
+m_author_belief = lmer(author_belief ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+# ***
+m_author_belief = lmer(author_belief ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+```
 
 
 
