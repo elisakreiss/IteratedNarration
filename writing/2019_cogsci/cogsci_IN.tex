@@ -165,9 +165,9 @@ Participants produced 370 stories. For each seed, we defined a complete chain as
 	\label{fig:corpusLingMetrics}
 \end{figure*}
 
-\textbf{Story length.} As shown in Figure \ref{fig:corpusLingMetrics}, the number of words in a story decreased across generations ($\beta = -17.12$, $SE = 1.02$, $t = -16.79$, $p < 0.0001$)
+\textbf{Story length.} As shown in Figure \ref{fig:corpusLingMetrics}, the number of words in a story decreased across generations ($\beta = -17.12$, $SE = 1.02$, $t = -16.79$, $p < 0.0001$),
 %\ek{statistical analysis \#3 in R script}
-, replicating a well-known phenomenon in reproduction studies \cite{Bartlett:1932}. While the original generation 0 seeds consisted on average of 159 words, that number dropped to 25 by generation 5. Examples of reproductions of the seed in Table \ref{tab:examplestory} (strong condition) from generation 1 and 5 are shown in (\ref{gen1}) and (\ref{gen5}) below. There was no significant effect of evidence condition on story length.
+replicating a well-known phenomenon in reproduction studies \cite{Bartlett:1932}. While the original seeds (generation 0) consisted on average of 159 words, that number dropped to 25 by generation 5. Examples of reproductions of the seed in Table \ref{tab:examplestory} (strong condition) from generation 1 and 5 are shown in (\ref{gen1}) and (\ref{gen5}) below. There was no significant effect of evidence condition on story length.
 
 \enumsentence{In late December 2017, a couple in Iowa went to check on their beehives.  They found a tragic scene:  their hives had been overturned and their equipment and facilities had been ransacked.  A few weeks later, the police arrested a 12-y.o. and 13-y.o. for the crime.  They are charged with multiple offenses, with fines up to \$100,000 and up to 10 years in prison, yet will be tried as minors.  The trial hasn't happened yet, but they seem guilty.\label{gen1}}
 \enumsentence{A 12 and 13 year old were arrested for destroying a beehive, and face up to 10 years of jail time.\label{gen5}}
@@ -205,26 +205,26 @@ In order to assess the extent to which, as a function of the originally provided
 
 \subsection{Methods}
 
-5392 participants were recruited over Amazon Mechanical Turk. Each participant read one story from the 250 story corpus reported in the previous section, and answered twelve questions about the story (including four attention checks). They indicated their response by moving a slider on a continuous scale (slider endpoints were underlyingly coded as 0 - 100). Each question was shown in isolation in a randomized order. Participants spent on average two to three minutes on this experiment and were paid \$0.60 (\$12-\$18 per hour). The story was visible throughout the experiment.
+5392 participants were recruited over Amazon Mechanical Turk. Each participant read one story from the 250 story corpus reported in the previous section, and answered twelve questions about the story (including four attention checks). They indicated their response by moving a slider on a continuous scale (slider endpoints were coded as 0 - 100). Each question was shown in isolation in a randomized order. Participants spent on average two to three minutes on this experiment and were paid \$0.60 (\$12-\$18 per hour). The story was visible throughout the experiment.
 
 
-The list of questions asked is provided in (\ref{q1}) to (\ref{q8}). Questions (\ref{q1}) - (\ref{q5}) assessed the extent to which the reader believes the suspect(s) is/are guilty of the alleged crime. Questions (\ref{q6}) - (\ref{q8}) assessed the  reader's trust in the author, the extent to which they considered the story to be objectively written, and the extent to which they felt emotionally connected to the story. Overall, participants were asked eight questions of interest and four attention check questions designed to filter out participants who were just clicking through the experiment. %The attention checks were counterbalanced and asked about the likelihood that the passage is a Greek fairy tale, a Bible quote, contains more than five words, and that the story involves \textit{X}, where X was replaced by a topic which was likely to occur in the story (e.g., \textit{bees} for the story in Table \ref{tab:examplestory})
+The list of questions asked is provided in (\ref{q1}) to (\ref{q8}). Questions (\ref{q1})--(\ref{q5}) assessed the extent to which the reader believes the suspect(s) is/are guilty of the alleged crime. Questions (\ref{q6})--(\ref{q8}) assessed the  reader's trust in the author, the extent to which they considered the story to be objectively written, and the extent to which they felt emotionally connected to the story. Overall, participants were asked eight questions of interest and four attention check questions designed to filter out participants who were just clicking through the experiment. %The attention checks were counterbalanced and asked about the likelihood that the passage is a Greek fairy tale, a Bible quote, contains more than five words, and that the story involves \textit{X}, where X was replaced by a topic which was likely to occur in the story (e.g., \textit{bees} for the story in Table \ref{tab:examplestory})
 
-\enumsentence{How strong is the evidence for the suspect's / suspects' guilt?\label{q1}}
+\enumsentence{\textbf{Strength of evidence:} How strong is the evidence for the suspect's / suspects' guilt?\label{q1}}
 \vspace{-.5cm}
-\enumsentence{How likely is it that the suspect is / the suspects in the crime are guilty?\label{q2}}
+\enumsentence{\textbf{Suspect guilt:} How likely is it that the suspect is / the suspects in the crime are guilty?\label{q2}}
 \vspace{-.5cm}
-\enumsentence{How likely is a conviction of the suspect(s) in the crime?\label{q3}}
+\enumsentence{\textbf{Suspect conviction:} How likely is a conviction of the suspect(s) in the crime?\label{q3}}
 \vspace{-.5cm}
-\enumsentence{How justified would a conviction of the suspect(s) in the crime be?\label{q4}}
+\enumsentence{\textbf{Suspect conviction justified:} How justified would a conviction of the suspect(s) in the crime be?\label{q4}}
 \vspace{-.5cm}
-\enumsentence{How much does the author believe that the suspect is guilty?\label{q5}}
+\enumsentence{\textbf{Author's belief in guilt:} How much does the author believe that the suspect is guilty?\label{q5}}
 \vspace{-.5cm}
-\enumsentence{How much do you trust the author?\label{q6}}
+\enumsentence{\textbf{Trust in author:} How much do you trust the author?\label{q6}}
 \vspace{-.5cm}
-\enumsentence{How objectively / subjectively written is the story?\label{q7}}
+\enumsentence{\textbf{Subjectivity of story:} How objectively / subjectively written is the story?\label{q7}}
 \vspace{-.5cm}
-\enumsentence{How affected do you feel by the story?\label{q8}}
+\enumsentence{\textbf{Reader's emotional engagement:} How affected do you feel by the story?\label{q8}}
 
 
 \subsection{Results}
@@ -234,7 +234,7 @@ The original seed stories received between 25 and 31 ratings.
 
 
 
-\textbf{Analysis procedure.} Of main interest was whether participants give judgments of suspect guilt in line with the originally provided evidence, whether those judgments change over generations, and whether those judgments pattern with related measures of evidence for guilt, probability of conviction, justification of conviction, and attributed suspect guilt (i.e., an estimate of the author's belief in the suspect's guilt). We refer to these measures as \emph{guilt related measures}. Additionally, we analyzed trust in the author, story subjectivity, and emotional engagement as measures of secondary interest. Mean slider ratings corresponding to the analyses are shown in Figure \ref{fig:exp2results}. Judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation, condition (reference level: strong), and their interaction. The models also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. Each row presents the model results for one of the questions and the columns show the model outcomes for fixed effects. 
+\textbf{Analysis procedure.} Of main interest was whether participants give judgments of suspect guilt in line with the originally provided evidence, whether those judgments change over generations, and whether those judgments pattern with related measures of evidence for guilt, probability of conviction, justification of conviction, and attributed suspect guilt (i.e., an estimate of the author's belief in the suspect's guilt). We refer to these measures as \emph{guilt related measures} (questions \ref{q1}--\ref{q5}). Additionally, we analyzed trust in the author, story subjectivity, and emotional engagement as measures of secondary interest (questions \ref{q6}--\ref{q8}). Mean slider ratings corresponding to the analyses are shown in Figure \ref{fig:exp2results}. Judgments were analyzed using linear mixed effects models. For each question, slider rating was predicted from fixed effects of generation, condition (reference level: strong), and their interaction. The models also included random by-story intercepts. An overview of the results is shown in Table \ref{tab:exp2results}. Each row presents the model results for one of the questions and the columns show the model outcomes for fixed effects. 
 
 
 \textbf{Generation and evidence strength effects on guilt related measures.} We observed  main effects of condition on all guilt related measures (see first 5 panels of Figure \ref{fig:exp2results})
@@ -250,8 +250,8 @@ We also observed significant or marginally significant interactions between cond
 		\begin{tabular}{l r r l r r l r r l }
 %		\begin{tabular}{l {p{2cm} r  p{2cm} r p{2cm} l p{2cm} r p{2cm} r p{2cm} l p{2cm} r p{2cm} r p{2cm} l }
 			\toprule
-			& \multicolumn{3}{c}{condition} & \multicolumn{3}{c}{generation} & \multicolumn{3}{c}{condition*generation} \\
-			& \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p}\\
+			& \multicolumn{3}{c}{condition} & \multicolumn{3}{c}{generation} & \multicolumn{3}{c}{condition*generation} \\ \cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10}
+			& \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p} & \multicolumn{1}{c}{$\beta$} & \multicolumn{1}{c}{SE} & \multicolumn{1}{c}{p}\\ 
 			\midrule
 			strength of evidence    & -23.25 & 4.09 & $<$0.0001***        & -3.42 & 0.89 & $<$0.001*** & 2.59  & 1.26 & $<$0.05*\\
 			suspect guilt          & -17.28  & 3.40 & $<$0.0001***              & -1.34 & 0.74 & $<$0.08           & 1.90  & 1.05 & $<$0.08\\
@@ -297,7 +297,7 @@ We observed significant interactions between evidence strength condition and gen
 To further understand these interactions, we conducted a simple effects analysis. The analysis revealed that there was no evidence of an effect of the linguistic metrics in the strong evidence condition for either of the two guilt related measures. 
 However, in the weak evidence condition, as can be seen in Figure \ref{fig:lingmarkers},  increased number of words in a story was associated with a decrease in both suspect guilt and attributed suspect guilt. An increased proportion of hedges was also associated with a decrease in attributed suspect guilt ratings. Conversely, increased Jaccard distance was associated with an increase in both guilt related measures. Inspecting the beta coefficients suggests that these effects were always stronger for attributed suspect guilt than for suspect guilt. 
 
-These results suggests that when evidence for suspects' guilt was initially strong, that evidence was carried through the stories despite changes in hedge proportion, story length and increased dissimilarity between the retelling and respective seed story, and therefore did not change ratings of suspect guilt and attributed suspect guilt. In contrast, when evidence was weak, participants were more likely to believe that suspects were guilty, even while recognizing that the author was less likely to believe so. This discrepancy increased with increased proportion of hedges, increased number of words, and increased similarity to the original story\footnote{These three linguistic features are highly correlated and future research needs to investigate to what extend each of them contributes to these differences in guilt ratings.}.
+These results suggests that when evidence for suspects' guilt was initially strong, that evidence was carried through the stories despite changes in hedge proportion, story length and increased dissimilarity between the retelling and respective seed story, and therefore did not change ratings of suspect guilt and attributed suspect guilt. In contrast, when evidence was weak, participants were more likely to believe that suspects were guilty, even while recognizing that the author was less likely to believe so. This discrepancy increased with increased proportion of hedges, increased number of words, and increased similarity to the original story\footnote{These three linguistic features are highly correlated and future research needs to investigate to what extent each of them contributes to these differences in guilt ratings.}.
 
 
 
