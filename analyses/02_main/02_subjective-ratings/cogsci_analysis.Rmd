@@ -75,6 +75,8 @@ nrow(df)/12
 length(unique(df$anon_worker_id))
 # after data exclusion
 length(unique(df_filtered$anon_worker_id))
+
+# write_csv(df_filtered,here("data","02_main","02_subjective-ratings","filtered_data.csv"))
 ```
 
 ```{r per_condition, include=FALSE}
@@ -159,6 +161,31 @@ ggplot(df_reformatted,
 
 # ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
 ```
+
+```{r judgments talk graph, include=FALSE}
+ggplot(df_reformatted,
+       aes(x=generation,
+           y=slider_val,
+           group=condition,
+           fill=condition)) +
+  stat_summary(fun.y = "mean",
+               geom = "bar",
+               position = position_dodge(width = 0.9)) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "darkgrey", 
+               position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+ggsave(filename="subj_results_2rows.pdf",path=here("writing","2019_cogsci","pics"), height = 5, width = 7)
+```
+
 
 ```{r judgments data distribution, include=FALSE}
 # data distribution as violin plot to show data distribution
