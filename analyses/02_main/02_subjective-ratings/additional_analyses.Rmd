@@ -134,7 +134,7 @@ color_baseline = "#905892"
 
 ## Judgments over generations and conditions
 
-```{r judgments, echo=FALSE}
+```{r judgments echo=FALSE}
 df_reformatted = df_cond %>%
   mutate(trial_type = fct_relevel(trial_type, "evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion")) %>% 
   mutate(trial_type = mapvalues(trial_type, from = c("evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion"), to = c("strength of\nevidence", "suspect guilt", "suspect conviction", "suspect conviction\njustified","author's belief\nin guilt","trust in author","subjectivity\nof story", "reader's emotional\nengagement")))
@@ -151,22 +151,139 @@ ggplot(df_reformatted,
                geom = "linerange",
                color = "darkgrey", 
                position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(trial_type),nrow=2) +
+  facet_wrap(vars(trial_type),nrow=1) +
   xlab("Generation") +
   ylab("Average slider rating") +
   scale_fill_manual(name = "Condition",
                     values=c(color_strongc,color_weakc)) +
   theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA)) +
-  theme(
-        panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "transparent",colour = NA),
-        plot.background = element_rect(fill = "transparent",colour = NA)
-        )
+  theme(strip.background = element_rect(fill = NA, colour = NA))
 
 # ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
-ggsave(filename="subj_results_byquestion.png",path=here("presentation","2019_cogsci","graphs"), height = 6, width = 8, bg = "transparent")
+```
+
+```{r judgments suspect guilt only, echo=FALSE}
+df_suspguilt = df_reformatted %>% 
+  filter(trial_type == "suspect guilt") 
+  
+ggplot(df_suspguilt,
+       aes(x=generation,
+           y=slider_val,
+           # group=condition,
+           color=condition
+           # fill=condition
+           )) +
+  geom_point(alpha=0.2,
+             color="grey",
+             # position = position_dodge(width = 0.9),
+             position = position_jitter()) +
+  # geom_violin() +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 6
+               # position = position_dodge(width = 0.9)
+               ) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "darkgrey"
+               # position = position_dodge(width = 0.9)
+               ) +
+  facet_wrap(vars(condition),nrow=1) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_color_manual(values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "none") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+ggsave(filename="subjguilt_byquestion.pdf",path=here(), height = 4, width = 7)
+```
+
+```{r judgments suspect guilt only in paper, echo=FALSE}
+df_suspguilt = df_reformatted %>% 
+  filter(trial_type == "suspect guilt") %>% 
+  mutate_at(vars(slider_val),funs(./100)) %>% 
+  group_by(chain,generation,story_title,condition) %>%
+  summarize(story_mean=mean(slider_val)) %>%
+  ungroup() %>%
+  mutate(x = row_number())
+  # mutate(story_mean=mean(slider_val)) %>% 
+  # ungroup()
+  
+ggplot(df_suspguilt,
+       aes(x=x,
+           y=story_mean,
+           # group=condition,
+           color=condition
+           # fill=condition
+           )) +
+  geom_point(alpha=0.6,
+             size = 4
+             # position = position_dodge(width = 0.9),
+             # position = position_jitter()
+             ) +
+  # stat_summary(fun.y = "mean",
+  #              geom = "point",
+  #              size = 6
+  #              # position = position_dodge(width = 0.9)
+  #              ) +
+  # stat_summary(fun.data = "mean_cl_boot",
+  #              geom = "linerange",
+  #              color = "darkgrey"
+  #              # position = position_dodge(width = 0.9)
+  #              ) +
+  # facet_wrap(vars(condition),nrow=1) +
+  xlab("Crime stories") +
+  ylab("Mean slider rating") +
+  scale_color_manual(values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(axis.text.x = element_blank()) +
+  theme(axis.ticks.x = element_blank()) +
+  ylim(0,1)
+
+ggsave(filename="subjguilt.pdf",path=here(), height = 3, width = 4.5)
+```
+
+```{r judgments suspect guilt only, echo=FALSE}
+df_suspguilt = df_reformatted %>% 
+  filter(trial_type == "suspect guilt") %>% 
+  mutate_at(vars(slider_val),funs(./100)) %>% 
+  mutate(data = "x")
+  # group_by(chain,generation,story_title,condition) %>% 
+  # summarize(story_mean=mean(slider_val)) 
+  # mutate(story_mean=mean(slider_val)) %>% 
+  # ungroup()
+  
+ggplot(df_suspguilt,
+       aes(x=data,
+           y=slider_val,
+           # group=condition,
+           color=condition
+           # fill=condition
+           )) +
+  # geom_point(alpha=0.4,
+  #            # position = position_dodge(width = 0.9),
+  #            position = position_jitter()
+  #            ) +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 2
+               # position = position_dodge(width = 0.9)
+               ) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "darkgrey"
+               # position = position_dodge(width = 0.9)
+               ) +
+  # facet_wrap(vars(condition),nrow=1) +
+  # xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_color_manual(values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "none") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  ylim(0,1)
+
+ggsave(filename="subjguilt_byquestion.pdf",path=here(), height = 4, width = 5)
 ```
 
 ```{r judgments talk graph, include=FALSE}
@@ -190,7 +307,7 @@ ggplot(df_reformatted,
   theme(legend.position = "top") +
   theme(strip.background = element_rect(fill = NA, colour = NA))
 
-ggsave(filename="subj_results_2rows.pdf",path=here("writing","2019_cogsci","pics"), height = 5, width = 7, bg = "transparent")
+ggsave(filename="subj_results_2rows.pdf",path=here("writing","2019_cogsci","pics"), height = 5, width = 7)
 ```
 
 
@@ -389,8 +506,6 @@ p_hedges = ggplot(df_addedhedges,aes(x=factor(generation),
 linmeasure_grid = plot_grid(p_hedges, plot_corpus_length, p_jaccdistance,ncol=3)
 
 # ggsave(filename="linmeasure_grid.pdf", path = here("writing","2019_cogsci","pics"), plot=linmeasure_grid, width=10.5, height=2.5)
-
-ggsave(filename="linmeasure_grid.png", path = here("presentation","2019_cogsci","graphs"), plot=linmeasure_grid, width=10.5, height=2.5, bg="transparent")
 ```
 
 ### Mixed Effects Linear Regression
@@ -602,8 +717,6 @@ ggplot(df_modelplot,aes(x=lingvalue,y=response,color=condition,linetype=Question
   theme(strip.placement = "outside")
 
 # ggsave(filename="lingmarkers_resid.pdf",path=here("writing","2019_cogsci","pics"), height = 3, width = 6)
-
-ggsave(filename="lingmarkers_resid.png",path=here("presentation","2019_cogsci","graphs"), height = 3, width = 6, bg="transparent")
 ```
 
 ## Correlation of the questions
