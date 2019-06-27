@@ -1,0 +1,459 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+
+theme_set(theme_bw())
+```
+
+```{r}
+df0 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv0.csv")) %>% 
+  mutate(CV = 0)
+df1 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv1.csv")) %>% 
+  mutate(CV = 1)
+df2 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv2.csv")) %>% 
+  mutate(CV = 2)
+df3 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv3.csv")) %>% 
+  mutate(CV = 3)
+df4 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv4.csv")) %>% 
+  mutate(CV = 4)
+df5 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv5.csv")) %>% 
+  mutate(CV = 5)
+df6 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv6.csv")) %>% 
+  mutate(CV = 6)
+df7 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv7.csv")) %>% 
+  mutate(CV = 7)
+df8 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv8.csv")) %>% 
+  mutate(CV = 8)
+df9 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv9.csv")) %>% 
+  mutate(CV = 9)
+
+df = bind_rows(df0,df1,df2,df3,df4,df5,df6,df7,df8,df9)
+
+df_test = read_csv(here("models/01_nlu_project/losses_suspect_guilt_testing.csv"))
+```
+
+```{r}
+loss_plot = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  # geom_point(alpha=0.2, position="jitter") +
+  # geom_smooth(method = "loess")  
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "crossbar",
+               # geom = "linerange",
+               # size = 1,
+               alpha = 0.1,
+               color = NA
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 2) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "line",
+               size = 1,
+               alpha=0.5) +
+  scale_x_continuous(expand = c(0, 0)) +
+  facet_wrap(~CV,nrow=2) +
+  theme(legend.position="top")
+   # ylim(0,0.05)
+
+loss_plot_cropped = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  # geom_point(alpha=0.2, position="jitter") +
+  # geom_smooth(method = "loess")  
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "crossbar",
+               # geom = "linerange",
+               # size = 1,
+               alpha = 0.1,
+               color = NA
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 1) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "line",
+               size = 1,
+               alpha=0.25) +
+  # scale_x_continuous(expand = c(0, 0)) +
+  coord_cartesian(ylim = c(0,0.05)) +
+  facet_wrap(~CV,nrow=2) +
+  theme(legend.position="top")
+  # coord_cartesian(ylim = c(0,0.5))
+   # ylim(0,0.05) +
+
+loss_plot
+loss_plot_cropped
+
+ggsave(here("models/01_nlu_project/graphs/loss_plot_cropped.pdf"),loss_plot_cropped,height=4,width=9)
+ggsave(here("models/01_nlu_project/graphs/loss_plot.pdf"),loss_plot,height=7,width=12)
+```
+
+```{r}
+facet_plot = ggplot(df9,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  facet_wrap(~Epoch,ncol=6) +
+  ylim(0,1) +
+  xlim(0,1)
+
+facet_plot
+
+ggsave(here("models/01_nlu_project/graphs/pred_target_cv9.pdf"),facet_plot,height=8,width=10)
+```
+
+```{r}
+df_facet = df %>% 
+  filter(Epoch==29 | Epoch==0) %>% 
+  filter(CV==0) %>% 
+  mutate(dist = (Target-Prediction)^2)
+
+min(df_facet[df_facet$Epoch==29,]$Prediction)
+
+mean(df_facet[df_facet$Epoch==0 & df_facet$Data_type=="testing",]$dist)
+mean(df_facet[df_facet$Epoch==29 & df_facet$Data_type=="testing",]$dist)
+
+df_text = df_facet %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(Epoch,Data_type) %>% 
+  mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
+         label = str_c("r = ",correlation)) %>% 
+  ungroup() %>% 
+  select(Epoch,Data_type,label) %>% 
+  distinct() %>% 
+  mutate(y = ifelse(Data_type=="training",0.25,0.1))
+
+facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  geom_text(data=df_text,aes(x=0.7,y=y,label=label),hjust = 0) +
+  facet_wrap(~Epoch,nrow=1) +
+  ylim(0,1) +
+  xlim(0,1) +
+  theme(legend.position="top")
+  
+
+facet_plot_all
+
+ggsave(here("models/01_nlu_project/graphs/cv0-pred-target-epoch0-29.pdf"),facet_plot_all,height=3,width=5)
+```
+
+```{r}
+df_facet = df %>% 
+  filter(Epoch==29)
+
+df_text = df_facet %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(CV,Data_type) %>% 
+  mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
+         label = str_c("r = ",correlation)) %>% 
+  ungroup() %>% 
+  select(CV,Data_type,label) %>% 
+  distinct() %>% 
+  mutate(y = ifelse(Data_type=="training",0.25,0.1))
+
+facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  geom_text(data=df_text,aes(x=0.5,y=y,label=label),hjust = 0) +
+  facet_wrap(~CV,nrow=2) +
+  ylim(0,1) +
+  xlim(0,1) +
+  theme(legend.position="top") +
+  theme(axis.text.x = element_text(angle=30, hjust=1))
+  
+
+facet_plot_all
+
+ggsave(here("models/01_nlu_project/graphs/all_pred_target_epoch29.pdf"),facet_plot_all,height=5,width=10)
+```
+
+```{r}
+df_facet = df %>% 
+  filter(Epoch==0)
+
+df_text = df_facet %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(CV,Data_type) %>% 
+  mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
+         label = str_c("r = ",correlation)) %>% 
+  ungroup() %>% 
+  select(CV,Data_type,label) %>% 
+  distinct() %>% 
+  mutate(y = ifelse(Data_type=="training",0.25,0.1))
+
+facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
+  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  geom_text(data=df_text,aes(x=0.5,y=y,label=label),hjust = 0) +
+  facet_wrap(~CV,nrow=2) +
+  ylim(0,1) +
+  xlim(0,1) +
+  theme(legend.position="top") +
+  theme(axis.text.x = element_text(angle=30, hjust=1))
+
+facet_plot_all
+
+ggsave(here("models/01_nlu_project/graphs/all_pred_target_epoch0.pdf"),facet_plot_all,height=5,width=10)
+```
+
+```{r}
+df_corr = df %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(Epoch, Data_type,CV) %>% 
+  summarize(Correlation = cor(Target, Prediction, method = "pearson"))
+
+corr_plot = ggplot(df_corr, aes(x=Epoch, y=Correlation, color=Data_type)) +
+  geom_point() +
+  geom_line(alpha=0.5) +
+  scale_color_manual(values = c("#F28A30","#6975A6")) +
+  facet_wrap(~CV,nrow = 2) +
+  theme(legend.position="top")
+
+corr_plot
+
+plot(df[df$CV==4 & df$Epoch ==29 & df$Data_type == "testing",]$Prediction,df[df$CV==4 & df$Epoch ==29 & df$Data_type == "testing",]$Target)
+
+ggsave(here("models/01_nlu_project/graphs/corr.pdf"),corr_plot,height=7,width=12)
+```
+
+
+
+
+FINAL TESTING RESULTS
+
+
+
+
+```{r}
+correlation = round(cor(df_test$Target,df_test$Prediction,method="pearson"),digits=2)
+label = str_c("r = ",correlation)
+
+facet_plot = ggplot(df_test,aes(x=Target,y=Prediction)) +
+  # scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  # scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point(color="#1bc587",size=3) +
+  annotate("text", label = label, x = 0.15, y = 0.85, size = 6, colour = "black") +
+  ylim(0,1) +
+  xlim(0,1)
+
+facet_plot
+
+ggsave(here("models/01_nlu_project/graphs/test_corr.pdf"),facet_plot,height=3,width=6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+df = read_csv(here("models/01_nlu_project/losses_author_belief_3.csv"))
+
+ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+  # geom_point(alpha=0.2, position="jitter") +
+  # geom_smooth(method = "loess")  
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "crossbar",
+               # geom = "linerange",
+               # size = 1,
+               alpha = 0.1,
+               color = NA
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 2) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "line",
+               size = 1,
+               alpha=0.5) +
+  scale_x_continuous(expand = c(0, 0))
+   # ylim(0,0.05)
+```
+
+```{r}
+facet_plot = ggplot(df,aes(x=Prediction,y=Target,color=Data_type,fill=Data_type)) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  facet_wrap(~Epoch) +
+  ylim(0,1) +
+  xlim(0,1)
+
+facet_plot
+```
+
+```{r}
+df_corr = df %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(Epoch, Data_type) %>% 
+  summarize(Correlation = cor(Prediction, Target, method = "pearson"))
+
+ggplot(df_corr, aes(x=Epoch, y=Correlation, color=Data_type)) +
+  geom_point()
+```
+
+
+
+
+
+
+
+
+
+
+
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
+
+```{r}
+df = read_csv(here("models/01_nlu_project/losses_suspect_guilt_1.csv"))
+
+ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+  # geom_point(alpha=0.2, position="jitter") +
+  # geom_smooth(method = "loess")  
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "crossbar",
+               # geom = "linerange",
+               # size = 1,
+               alpha = 0.1,
+               color = NA
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 2) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "line",
+               size = 1,
+               alpha=0.5) +
+  scale_x_continuous(expand = c(0, 0))
+   # ylim(0,0.05)
+```
+
+```{r}
+facet_plot = ggplot(df,aes(x=Prediction,y=Target,color=Data_type,fill=Data_type)) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  facet_wrap(~Epoch) +
+  ylim(0,1) +
+  xlim(0,1)
+
+facet_plot
+```
+
+```{r}
+df_corr = df %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(Epoch, Data_type) %>% 
+  summarize(Correlation = cor(Prediction, Target, method = "pearson"))
+
+ggplot(df_corr, aes(x=Epoch, y=Correlation, color=Data_type)) +
+  geom_point()
+```
+
+
+
+
+
+###
+# DF 2
+###
+
+
+
+
+
+```{r}
+df = read_csv(here("models/01_nlu_project/losses_suspect_guilt_2.csv"))
+
+ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+  # geom_point(alpha=0.2, position="jitter") +
+  # geom_smooth(method = "loess")  
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "crossbar",
+               # geom = "linerange",
+               # size = 1,
+               alpha = 0.1,
+               color = NA
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               size = 2) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "line",
+               size = 1,
+               alpha=0.5) +
+  scale_x_continuous(expand = c(0, 0))
+   # ylim(0,0.05)
+```
+
+```{r}
+facet_plot = ggplot(df,aes(x=Prediction,y=Target,color=Data_type,fill=Data_type)) +
+  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+  geom_point() +
+  facet_wrap(~Epoch) +
+  ylim(0,1) +
+  xlim(0,1)
+
+facet_plot
+```
+```{r}
+df_corr = df %>% 
+  filter(!Data_type=="baseline") %>% 
+  group_by(Epoch, Data_type) %>% 
+  summarize(Correlation = cor(Prediction, Target, method = "pearson"))
+
+ggplot(df_corr, aes(x=Epoch, y=Correlation, color=Data_type)) +
+  geom_point()
+```
