@@ -1,0 +1,727 @@
+---
+title: "cogsci_analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(cowplot)
+library(plyr)
+library(tidyverse)
+library(summarytools)
+library(gridExtra)
+library(corrplot)
+library(PerformanceAnalytics)
+library(here)
+
+theme_set(theme_bw(18))
+theme_set(theme_cowplot(font_size=12))
+
+source(here("analyses","02_main","02_subjective-ratings","seeds.R"))
+```
+
+```{r import data, include=FALSE}
+df = read_csv(here("data","02_main","02_subjective-ratings","data.csv"))
+
+# 6 test submissions
+length(unique(df$anon_worker_id))
+# there were 12 trials per participant
+nrow(df)/12
+nrow(df)/12-length(unique(df$anon_worker_id))
+nrow(df[is.na(df$anon_worker_id),])/12
+
+```
+
+```{r exclude_participants, include=FALSE}
+# what to do with anon_worker_id==NA
+#
+subdf_non_na = df %>% 
+  filter(!is.na(anon_worker_id))
+
+nrow(subdf_non_na)/12
+
+# filter out all participants that participated more than once
+#
+non_unique = subdf_non_na %>% 
+  count(anon_worker_id) %>% 
+  mutate_at(vars(n),funs(n/12)) %>% 
+  filter(n>1)
+
+non_unique
+
+subdf_non_unique = subdf_non_na %>% 
+  filter(!(anon_worker_id %in% non_unique$anon_worker_id))
+
+nrow(subdf_non_unique)/12
+
+# filter out participants who failed in attention checks (have two or more wrong)
+#
+subdf_filtered_att = subdf_non_unique %>% 
+  select(anon_worker_id,trial_type,slider_val,story_title,generation) %>% 
+  group_by(anon_worker_id,story_title,generation) %>% 
+  spread(trial_type,slider_val) %>% 
+  ungroup() %>% 
+  mutate(pay_attention=ifelse(((control1_false>50) + (control2_false>50) + (control3_true<50) + (control4_storydependent>50)) >= 2,FALSE,TRUE)) %>% 
+  filter(pay_attention==TRUE) %>%  
+  gather(question,slider_val,-anon_worker_id,-pay_attention,-story_title,-generation)
+
+df_filtered = df %>% 
+  filter(anon_worker_id %in% subdf_filtered_att$anon_worker_id)
+
+nrow(df_filtered)/12
+
+# before data exclusion
+nrow(df)/12
+length(unique(df$anon_worker_id))
+# after data exclusion
+length(unique(df_filtered$anon_worker_id))
+
+# write_csv(df_filtered,here("data","02_main","02_subjective-ratings","filtered_data.csv"))
+```
+
+```{r per_condition, include=FALSE}
+library(stringdist)
+
+seed_lookup = seeds %>% 
+  select(story_title,reproduction) %>% 
+  rename(seed="reproduction")
+
+calc_token_number = function(string){
+  # print("here")
+  str_count(paste(unique(strsplit(str_to_lower(string), " ")[[1]]), collapse = ' '), boundary("word"))
+}
+
+df_cond = df_filtered %>% 
+  select(story_title,chain,generation,slider_val,trial_type,anon_worker_id,story_reproduction) %>% 
+  # add condition column
+  mutate(condition=ifelse(str_detect(story_title,"free"),"weak evidence","strong evidence")) %>% 
+  mutate_at(vars(generation),funs(as.character(generation))) %>% 
+  # exclude controls
+  filter(!str_detect(trial_type,"control")) %>% 
+  # exclude suspect marking from stories
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"<u>",""))) %>% 
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"</u>",""))) %>% 
+  # add story_topic (condition independent) column
+  mutate(story_topic = str_replace_all(story_title,"_free|_jail","")) %>% 
+  mutate(NumOfWords=str_count(story_reproduction, boundary("word"))) %>% 
+  # count all unique words (keeping punctuation but accounting for capitalization, just like in Jaccard distance calculation)
+  # mutate(NumOfTokens=str_count(paste(unique(strsplit(str_to_lower(story_reproduction), " ")[[1]]), collapse = ' '), boundary("word"))) %>% 
+  rowwise() %>% 
+  mutate(NumOfTokens=calc_token_number(story_reproduction)) %>%
+  ungroup() %>% 
+  merge(seed_lookup, by = "story_title") %>% 
+  ungroup() %>% 
+  # create reproduction id
+  group_by(story_reproduction,chain,generation) %>% 
+  mutate(repro_id=paste(sample(0:9,10,replace=TRUE),collapse = "")) %>% 
+  ungroup()
+
+df_overview = df_cond %>%
+  group_by(story_reproduction,generation) %>% 
+  summarize(participants=n()/8) %>% 
+  arrange(-participants) %>% 
+  filter(generation==0)
+
+# plot colors
+## poster colors
+color_weakc = "#7CB637"
+color_strongc = "#E6AB02"
+## paper colors
+# color_weakc = "#63912c"
+# color_strongc = "#edc44d"
+
+color_meandots = "#f4b4f7"
+color_baseline = "#905892"
+```
+
+## Judgments over generations and conditions
+
+```{r judgments, echo=FALSE}
+df_reformatted = df_cond %>%
+  mutate(trial_type = fct_relevel(trial_type, "evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion")) %>% 
+  mutate(trial_type = mapvalues(trial_type, from = c("evidence", "suspect_committedCrime", "suspect_conviction", "suspect_convictionJustified", "author_belief", "author_trust", "story_subjectivity", "reader_emotion"), to = c("strength of\nevidence", "suspect guilt", "suspect conviction", "suspect conviction\njustified","author's belief\nin guilt","trust in author","subjectivity\nof story", "reader's emotional\nengagement")))
+
+ggplot(df_reformatted,
+       aes(x=generation,
+           y=slider_val,
+           group=condition,
+           fill=condition)) +
+  stat_summary(fun.y = "mean",
+               geom = "bar",
+               position = position_dodge(width = 0.9)) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "darkgrey", 
+               position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "transparent",colour = NA),
+        plot.background = element_rect(fill = "transparent",colour = NA)
+        )
+
+ggsave(filename="subj_results_byquestion.png",path=here("presentation","2019_cogsci","graphs"), height = 6, width = 8, bg = "transparent")
+```
+
+```{r judgments talk graph, include=FALSE}
+ggplot(df_reformatted,
+       aes(x=generation,
+           y=slider_val,
+           group=condition,
+           fill=condition)) +
+  stat_summary(fun.y = "mean",
+               geom = "bar",
+               position = position_dodge(width = 0.9)) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "darkgrey", 
+               position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+ggsave(filename="subj_results_2rows.pdf",path=here("writing","2019_cogsci","pics"), height = 5, width = 7, bg = "transparent")
+```
+
+
+```{r judgments data distribution, include=FALSE}
+# data distribution as violin plot to show data distribution
+
+ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
+       aes(x=generation,
+           y=slider_val)) +
+  geom_violin() +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+# ggsave(filename="slider_distr_weak.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+
+ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
+       aes(x=generation,
+           y=slider_val)) +
+  geom_violin() +
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               position = position_dodge(width = 0.9)) +
+  facet_wrap(vars(trial_type),nrow=2) +
+  xlab("Generation") +
+  ylab("Average slider rating") +
+  scale_fill_manual(name = "Condition",
+                    values=c(color_strongc,color_weakc)) +
+  theme(legend.position = "top") +
+  theme(strip.background = element_rect(fill = NA, colour = NA))
+
+# ggsave(filename="slider_distr_strong.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
+```
+
+## Language analysis data frame (no subjective ratings) for language measures
+
+```{r language analysis df}
+
+df_lang = df_cond %>% 
+  distinct(story_reproduction,generation,condition,story_title,NumOfWords,NumOfTokens,seed,repro_id) %>% 
+  # group_by(generation,condition) %>%
+  group_by(generation) %>% 
+  mutate(meanNumOfWords=mean(NumOfWords)) %>% 
+  mutate(meanNumOfTokens=mean(NumOfTokens)) %>% 
+  ungroup()
+
+```
+
+### Corpus length
+```{r corpus length}
+
+plot_corpus_length = ggplot(data = df_lang, mapping = aes(x = generation, y = NumOfWords)) +
+  # individual data points (jittered horizontally)
+  geom_point(alpha = 0.2,
+             position = position_jitter(width = 0.1, height = 0),
+             size = 2) + 
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "black",
+               size = 1) + 
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               shape = 21,
+               fill = color_meandots,
+               color = "black",
+               size = 4) +
+  ylab("Number of words") +
+  xlab("Generation") +
+  # facet_wrap(vars(condition)) +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
+
+# ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
+```
+
+
+### Jaccard distance
+
+```{r jaccard distance, echo=FALSE}
+library(hashr)
+# library(stringdist)
+
+calc_jacc_dist = function(string_1,string_2){
+  # convert strings to list of unique words 
+  # what to do with capital and smaller case letters? what to do with punctuation?
+  # list_1 = strsplit(string_1,split = " ")[[1]]
+  # list_2 = strsplit(string_2,split = " ")[[1]]
+  # case doesn't matter:
+  list_1 = strsplit(str_to_lower(string_1),split = " ")[[1]]
+  list_2 = strsplit(str_to_lower(string_2),split = " ")[[1]]
+  # compare lists according to cardinality of intersection / cardinality of union
+  inters_cardinality = length(intersect(list_1,list_2))
+  union_cardinality = length(union(list_1,list_2))
+  dist = 1 - (inters_cardinality/union_cardinality)
+  dist
+  # print(intersection)
+}
+
+# create similarity df with one row per reproduction (no subjective ratings)
+df_addedsim = df_lang %>%
+  rowwise() %>%
+  mutate(sim=calc_jacc_dist(story_reproduction,seed)) %>%
+  ungroup()
+
+# add baseline with best achievable similarity given the mean number of words in 
+# reproductions for each condition & generation
+df_optimal = df_addedsim %>%
+  mutate(firstMeanTokenWords = ifelse(generation==0,
+                                 seed,
+                                 word(seed,start = 1, end = meanNumOfTokens))) %>% 
+  rowwise() %>% 
+  mutate(optimalJacc = calc_jacc_dist(seed,firstMeanTokenWords)) %>% 
+  ungroup() %>% 
+  group_by(generation) %>% 
+  mutate(meanOptJacc = mean(optimalJacc))
+
+p_jaccdistance = ggplot(df_optimal, aes(x=factor(generation),
+                   y=sim)) +
+  # geom_violin() +
+  geom_point(alpha = 0.2,
+             position = position_jitter(width = 0.1, height = 0),
+             size = 2) +
+  geom_point(aes(y = meanOptJacc),
+             geom = "point",
+             shape = 23,
+             fill = color_baseline,
+             color = color_baseline,
+             size = 3) +
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "black",
+               size = 1) + 
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               shape = 21,
+               fill = color_meandots,
+               color = "black",
+               size = 4) +
+  # facet_wrap(vars(condition)) +
+  xlab("Generation") +
+  ylab("Jaccard distance") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
+
+p_jaccdistance
+
+# ggsave(filename="jaccdistance.pdf",path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
+```
+
+### Hedges
+
+```{r hedges, echo=FALSE}
+
+hedges = c("about", "actually", "allege", "almost", "appear to be", "apparently", "approximately", "around", "assume", "at least", "believe", "could", "doubt", "estimate", "few", "frequently", "generally", "if", "indicate", "kind of", "kinda", "largely", "little", "like", "look like", "mainly", "may", "might", "mostly", "nearly", "occasionally", "over", "partially", "perhaps", "possibility", "possibly", "probably", "quite", "rather", "roughly", "seem", "should", "somehow", "sometimes", "somewhat", "sort of", "sorta", "speculate", "suggest", "supposedly", "sure", "tend", "think", "up to", "vaguely", "virtually", "would")
+
+df_addedhedges = df_addedsim %>%
+  rowwise() %>% 
+  mutate_at(vars(story_reproduction),funs(str_to_lower(.))) %>% 
+  mutate(hedges_nr=sum(str_count(story_reproduction,hedges))) %>% 
+  mutate(hedges_prop=hedges_nr/NumOfWords)
+
+p_hedges = ggplot(df_addedhedges,aes(x=factor(generation),
+                     y=hedges_prop)) +
+  geom_point(alpha = 0.2,
+             position = position_jitter(width = 0.1, height = 0),
+             size = 2) +
+  stat_summary(fun.data = "mean_cl_boot",
+               geom = "linerange",
+               color = "black",
+               size = 1) + 
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               shape = 21,
+               fill = color_meandots,
+               color = "black",
+               size = 4) +
+  # facet_wrap(vars(condition)) +
+  xlab("Generation") +
+  ylab("Proportion of hedges\nby number of words") +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12))
+
+# ggsave(filename="hedges_points.pdf",path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
+
+linmeasure_grid = plot_grid(p_hedges, plot_corpus_length, p_jaccdistance,ncol=3)
+
+# ggsave(filename="linmeasure_grid.pdf", path = here("writing","2019_cogsci","pics"), plot=linmeasure_grid, width=10.5, height=2.5)
+
+ggsave(filename="linmeasure_grid.png", path = here("presentation","2019_cogsci","graphs"), plot=linmeasure_grid, width=10.5, height=2.5, bg="transparent")
+```
+
+### Mixed Effects Linear Regression
+
+```{r df lmer prep, echo=FALSE, include=FALSE}
+library(lme4)
+library(lmerTest)
+library(effsize)
+library(broom)
+library(janitor)
+
+df_model_corpus = df_addedhedges %>% 
+  mutate_at(vars(generation),funs(as.numeric(.)))
+
+df_model_ratings = df_cond %>% 
+  select(-generation) %>%
+  # mutate(story_repro_smallercase = str_to_lower(story_reproduction)) %>% 
+  merge(df_model_corpus[,c("repro_id","sim","hedges_prop","generation")], by = "repro_id") %>% 
+  as_tibble() %>%
+  ungroup() %>% 
+  spread(trial_type,slider_val)
+
+# Residual hedge proportion
+m_residhedg = lm(hedges_prop ~ generation, data=df_model_ratings)
+df_model_ratings$ResidualHedgProp = resid(m_residhedg)
+
+# Residual distance
+m_residdist = lm(sim ~ generation, data=df_model_ratings)
+df_model_ratings$ResidualDist = resid(m_residdist)
+
+# Residual length
+m_residlen = lm(NumOfWords ~ generation, data=df_model_ratings)
+df_model_ratings$ResidualLen = resid(m_residlen)
+```
+
+```{r lm ling measures, echo=FALSE}
+# Proportion of hedges as predicted by generation
+# 1
+mhedge = lm(hedges_prop ~ generation, data=df_model_corpus)
+summary(mhedge)
+# 2
+mhedge_cond = lm(hedges_prop ~ condition, data=df_model_corpus)
+summary(mhedge_cond)
+
+# Story length as predicted by generation
+# 3
+mlength = lm(NumOfWords ~ generation, data=df_model_corpus)
+summary(mlength)
+
+# Similarity/distance as predicted by generation
+# 4
+msim = lm(sim ~ generation, data=df_model_corpus)
+summary(msim)
+# 4a
+msim_cond = lm(sim ~ condition, data=df_model_corpus)
+summary(msim_cond)
+```
+
+```{r summary table,echo=FALSE,include=FALSE}
+# Table 2 (model output for each fixed effect for each rated question)
+# 5
+m_evidence = lmer(evidence ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+m_suspect_guilt = lmer(suspect_committedCrime ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+m_suspect_conviction = lmer(suspect_conviction ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+m_author_belief = lmer(author_belief ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+m_author_trust = lmer(author_trust ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_trust)
+m_story_subjectivity = lmer(story_subjectivity ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_story_subjectivity)
+m_reader_emotion = lmer(reader_emotion ~ condition * generation + (1|story_reproduction), data=df_model_ratings)
+summary(m_reader_emotion)
+```
+
+
+```{r lm author belief, eval=FALSE, include=FALSE}
+# 6
+# Hedges
+
+mh_all = lmer(author_belief ~ generation * condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(mh_all)
+# mh_gen = lmer(author_belief ~ generation * condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(mh_gen)
+# anova(mh_gen,mh_all)
+
+# Distance
+
+md_all = lmer(author_belief ~ generation * condition + ResidualDist * condition  + (1|story_reproduction), data=df_model_ratings)
+summary(md_all)
+# md_gen = lmer(author_belief ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(md_gen)
+# anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(author_belief ~ generation*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(ml_all)
+# ml_gen = lmer(author_belief ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(ml_gen)
+# anova(ml_gen,ml_all)
+
+# Reviewer comment: Does hedge proportion add anything to length?
+# <0.05*, but there is a warning for the first model: "Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling"
+ml_all = lmer(author_belief ~ generation*condition + ResidualLen*condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(ml_all)
+ml_gen = lmer(author_belief ~ generation*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(ml_gen)
+anova(ml_gen,ml_all)
+```
+
+```{r simple author belief}
+# 8 
+# Simple effects for author belief
+# Hedges
+
+mh.simple = lmer(author_belief ~ condition*ResidualHedgProp - ResidualHedgProp + (1|story_reproduction), data=df_model_ratings)
+summary(mh.simple)
+
+# Distance
+
+md.simple = lmer(author_belief ~ condition*ResidualDist - ResidualDist + (1|story_reproduction), data=df_model_ratings)
+summary(md.simple)
+
+# Length
+
+ml.simple = lmer(author_belief ~ condition*ResidualLen - ResidualLen + (1|story_reproduction), data=df_model_ratings)
+summary(ml.simple)
+```
+
+
+```{r lm suspect guilt, eval=FALSE, include=FALSE}
+# 7
+# Hedges
+
+mh_all = lmer(suspect_committedCrime ~ generation * condition + ResidualHedgProp*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(mh_all)
+# mh_gen = lmer(suspect_committedCrime ~ generation * condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(mh_gen)
+# anova(mh_gen,mh_all)
+
+# Distance
+
+md_all = lmer(suspect_committedCrime ~ generation * condition + ResidualDist * condition  + (1|story_reproduction), data=df_model_ratings)
+summary(md_all)
+# md_gen = lmer(suspect_committedCrime ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(md_gen)
+# anova(md_gen,md_all)
+
+# Length
+
+ml_all = lmer(suspect_committedCrime ~ generation*condition + ResidualLen*condition  + (1|story_reproduction), data=df_model_ratings)
+summary(ml_all)
+# ml_gen = lmer(suspect_committedCrime ~ generation*condition  + (1|story_reproduction), data=df_model_ratings)
+# summary(ml_gen)
+# anova(ml_gen,ml_all)
+```
+
+```{r simple suspect guilt}
+# 9 
+# Simple effects for suspect guilt
+# Hedges
+
+mh.simple = lmer(suspect_committedCrime ~ condition*ResidualHedgProp - ResidualHedgProp + (1|story_reproduction), data=df_model_ratings)
+summary(mh.simple)
+
+# Distance
+
+md.simple = lmer(suspect_committedCrime ~ condition*ResidualDist - ResidualDist + (1|story_reproduction), data=df_model_ratings)
+summary(md.simple)
+
+# Length
+
+ml.simple = lmer(suspect_committedCrime ~ condition*ResidualLen - ResidualLen + (1|story_reproduction), data=df_model_ratings)
+summary(ml.simple)
+```
+
+## Figure 4
+Linearly smoothed mean slider ratings as a func- tion of generation-residualized proportion of hedges in story (left), number of words (middle), and Jaccard distance (right). Suspect guilt ratings shown in solid lines, author belief in sus- pect guilt ratings shown in dashed lines. Gray ribbons indi- cate 95% confidence intervals.
+
+```{r figure4, echo=FALSE}
+df_modelplot = df_model_ratings %>%
+  select(ResidualHedgProp,ResidualDist,ResidualLen,author_belief,suspect_committedCrime,condition) %>% 
+  gather(Question,response,author_belief,suspect_committedCrime) %>% 
+  gather(lingmetric,lingvalue,ResidualHedgProp,ResidualDist,ResidualLen) %>% 
+  mutate_at(vars(lingmetric),funs(factor(.,levels = c("ResidualHedgProp","ResidualLen","ResidualDist")))) %>% 
+  mutate_at(vars(Question,condition),funs(factor(.)))
+
+levels(df_modelplot$lingmetric) = c("Proportion of hedges","Number of words","Jaccard distance")
+levels(df_modelplot$Question) = c("author's belief\nin guilt","suspect guilt")
+levels(df_modelplot$condition) = c("strong","weak")
+
+ggplot(df_modelplot,aes(x=lingvalue,y=response,color=condition,linetype=Question)) +
+  # geom_point() +
+  geom_smooth(method="lm",alpha=0.2,size=2) +
+  facet_wrap(vars(lingmetric),ncol = 3,scales = "free_x",strip.position = "bottom") +
+  theme(legend.position = "top") +
+  xlab("") +
+  ylab("Average slider rating") +
+  scale_color_manual(name = "Evidence",
+                    values=c(color_strongc,color_weakc)) +
+  scale_linetype_manual(values=c("dotted", "solid")) +
+  theme(strip.background = element_rect(fill = NA, colour = NA)) +
+  theme(strip.text = element_text(size=12)) +
+  theme(strip.placement = "outside")
+
+# ggsave(filename="lingmarkers_resid.pdf",path=here("writing","2019_cogsci","pics"), height = 3, width = 6)
+
+ggsave(filename="lingmarkers_resid.png",path=here("presentation","2019_cogsci","graphs"), height = 3, width = 6, bg="transparent")
+```
+
+## Correlation of the questions
+
+####Pairwise correlations between questions
+
+```{r pairwise correlations}
+df_corr = df_reformatted %>% 
+  select(trial_type,slider_val,anon_worker_id) %>%
+  spread(trial_type,slider_val) %>% 
+  as.data.frame()
+
+rownames(df_corr) = df_corr$anon_worker_id
+
+df_corr = select(df_corr,-anon_worker_id)
+
+chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# res = cor(df_corr, method="pearson", use="complete.obs")
+# corrplot(res, method = "number", type = "upper", order = "alphabet",
+#          tl.col = "black", tl.srt = 45)
+
+########
+
+# df_corr = df_reformatted %>%
+#   filter(condition=="strong evidence") %>%
+#   select(trial_type,slider_val,anon_worker_id) %>%
+#   spread(trial_type,slider_val) %>%
+#   as.data.frame()
+# 
+# rownames(df_corr) = df_corr$anon_worker_id
+# 
+# df_corr = select(df_corr,-anon_worker_id)
+# 
+# chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# # res = cor(df_corr, method="pearson", use="complete.obs")
+# # corrplot(res, method = "number", type = "upper", order = "alphabet",
+# #          tl.col = "black", tl.srt = 45)
+# 
+# #######
+# 
+# df_corr = df_reformatted %>%
+#   filter(condition=="weak evidence") %>%
+#   select(trial_type,slider_val,anon_worker_id) %>%
+#   spread(trial_type,slider_val) %>%
+#   as.data.frame()
+# 
+# rownames(df_corr) = df_corr$anon_worker_id
+# 
+# df_corr = select(df_corr,-anon_worker_id)
+# 
+# chart.Correlation(df_corr, histogram=TRUE, pch=19)
+# # res = cor(df_corr, method="pearson", use="complete.obs")
+# # corrplot(res, method = "number", type = "upper", order = "alphabet",
+# #          tl.col = "black", tl.srt = 45)
+
+# 0.121
+mean_r = (0.3+0.28+0.25+0.28+0.12+(-0.03)+(-0.02)+(0.01)+(-0.03)+0.13+(-0.17)+0.21+0.18+0.16+0.19+0.08+0.2+0.04)/18
+
+```
+
+
+####
+
+```{r model predictions}
+library(lme4)
+library(lmerTest)
+
+# ***
+m_evidence = lmer(evidence ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# *
+m_evidence = lmer(evidence ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# ***
+m_evidence = lmer(evidence ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_evidence)
+# ***
+m_suspect_guilt = lmer(suspect_committedCrime ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# 
+m_suspect_guilt = lmer(suspect_committedCrime ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# ***
+m_suspect_guilt = lmer(suspect_committedCrime  ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_guilt)
+# ***
+m_suspect_conviction = lmer(suspect_conviction ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# 
+m_suspect_conviction = lmer(suspect_conviction ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# ***
+m_suspect_conviction = lmer(suspect_conviction ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_conviction)
+# ***
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# *
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# ***
+m_suspect_convictionJustified = lmer(suspect_convictionJustified ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_suspect_convictionJustified)
+# ***
+m_author_belief = lmer(author_belief ~ author_trust + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+# ***
+m_author_belief = lmer(author_belief ~ story_subjectivity + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+# ***
+m_author_belief = lmer(author_belief ~ reader_emotion + (1|story_reproduction), data=df_model_ratings)
+summary(m_author_belief)
+```
+
+
+
+
+
+
+

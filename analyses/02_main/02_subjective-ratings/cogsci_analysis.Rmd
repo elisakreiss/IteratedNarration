@@ -40,7 +40,7 @@ subdf_non_na = df %>%
 
 nrow(subdf_non_na)/12
 
-# filter out all participants that participated more than once (TODO: keep their first submission)
+# filter out all participants that participated more than once
 #
 non_unique = subdf_non_na %>% 
   count(anon_worker_id) %>% 
@@ -87,7 +87,6 @@ seed_lookup = seeds %>%
   rename(seed="reproduction")
 
 calc_token_number = function(string){
-  # print("here")
   str_count(paste(unique(strsplit(str_to_lower(string), " ")[[1]]), collapse = ' '), boundary("word"))
 }
 
@@ -105,7 +104,6 @@ df_cond = df_filtered %>%
   mutate(story_topic = str_replace_all(story_title,"_free|_jail","")) %>% 
   mutate(NumOfWords=str_count(story_reproduction, boundary("word"))) %>% 
   # count all unique words (keeping punctuation but accounting for capitalization, just like in Jaccard distance calculation)
-  # mutate(NumOfTokens=str_count(paste(unique(strsplit(str_to_lower(story_reproduction), " ")[[1]]), collapse = ' '), boundary("word"))) %>% 
   rowwise() %>% 
   mutate(NumOfTokens=calc_token_number(story_reproduction)) %>%
   ungroup() %>% 
@@ -127,7 +125,6 @@ df_overview = df_cond %>%
 # color_strongc = "#E6AB02"
 color_weakc = "#63912c"
 color_strongc = "#edc44d"
-# color_meandots = "#ED744D"
 color_meandots = "#f4b4f7"
 color_baseline = "#905892"
 ```
@@ -151,7 +148,7 @@ ggplot(df_reformatted,
                geom = "linerange",
                color = "darkgrey", 
                position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(trial_type),nrow=2) +
+  facet_wrap(vars(trial_type),nrow=1) +
   xlab("Generation") +
   ylab("Average slider rating") +
   scale_fill_manual(name = "Condition",
@@ -166,70 +163,6 @@ ggplot(df_reformatted,
         )
 
 # ggsave(filename="subj_results_byquestion.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
-ggsave(filename="subj_results_byquestion.png",path=here("presentation","2019_cogsci","graphs"), height = 6, width = 8, bg = "transparent")
-```
-
-```{r judgments talk graph, include=FALSE}
-ggplot(df_reformatted,
-       aes(x=generation,
-           y=slider_val,
-           group=condition,
-           fill=condition)) +
-  stat_summary(fun.y = "mean",
-               geom = "bar",
-               position = position_dodge(width = 0.9)) +
-  stat_summary(fun.data = "mean_cl_boot",
-               geom = "linerange",
-               color = "darkgrey", 
-               position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(trial_type),nrow=2) +
-  xlab("Generation") +
-  ylab("Average slider rating") +
-  scale_fill_manual(name = "Condition",
-                    values=c(color_strongc,color_weakc)) +
-  theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA))
-
-ggsave(filename="subj_results_2rows.pdf",path=here("writing","2019_cogsci","pics"), height = 5, width = 7, bg = "transparent")
-```
-
-
-```{r judgments data distribution, include=FALSE}
-# data distribution as violin plot to show data distribution
-
-ggplot(df_reformatted[df_reformatted$condition=="weak evidence",],
-       aes(x=generation,
-           y=slider_val)) +
-  geom_violin() +
-  stat_summary(fun.y = "mean",
-               geom = "point",
-               position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(trial_type),nrow=2) +
-  xlab("Generation") +
-  ylab("Average slider rating") +
-  scale_fill_manual(name = "Condition",
-                    values=c(color_strongc,color_weakc)) +
-  theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA))
-
-# ggsave(filename="slider_distr_weak.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
-
-ggplot(df_reformatted[df_reformatted$condition=="strong evidence",],
-       aes(x=generation,
-           y=slider_val)) +
-  geom_violin() +
-  stat_summary(fun.y = "mean",
-               geom = "point",
-               position = position_dodge(width = 0.9)) +
-  facet_wrap(vars(trial_type),nrow=2) +
-  xlab("Generation") +
-  ylab("Average slider rating") +
-  scale_fill_manual(name = "Condition",
-                    values=c(color_strongc,color_weakc)) +
-  theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA))
-
-# ggsave(filename="slider_distr_strong.pdf",path=here("writing","2019_cogsci","pics"), height = 4.5, width = 11)
 ```
 
 ## Language analysis data frame (no subjective ratings) for language measures
@@ -247,6 +180,7 @@ df_lang = df_cond %>%
 ```
 
 ### Corpus length
+
 ```{r corpus length}
 
 plot_corpus_length = ggplot(data = df_lang, mapping = aes(x = generation, y = NumOfWords)) +
@@ -275,7 +209,6 @@ plot_corpus_length = ggplot(data = df_lang, mapping = aes(x = generation, y = Nu
 # ggsave(filename="corpus_length.pdf",plot=plot_corpus_length,path = here("writing","2019_cogsci","pics"),width = 4,height = 3)
 ```
 
-
 ### Jaccard distance
 
 ```{r jaccard distance, echo=FALSE}
@@ -284,9 +217,6 @@ library(hashr)
 
 calc_jacc_dist = function(string_1,string_2){
   # convert strings to list of unique words 
-  # what to do with capital and smaller case letters? what to do with punctuation?
-  # list_1 = strsplit(string_1,split = " ")[[1]]
-  # list_2 = strsplit(string_2,split = " ")[[1]]
   # case doesn't matter:
   list_1 = strsplit(str_to_lower(string_1),split = " ")[[1]]
   list_2 = strsplit(str_to_lower(string_2),split = " ")[[1]]
@@ -295,7 +225,6 @@ calc_jacc_dist = function(string_1,string_2){
   union_cardinality = length(union(list_1,list_2))
   dist = 1 - (inters_cardinality/union_cardinality)
   dist
-  # print(intersection)
 }
 
 # create similarity df with one row per reproduction (no subjective ratings)
@@ -318,7 +247,6 @@ df_optimal = df_addedsim %>%
 
 p_jaccdistance = ggplot(df_optimal, aes(x=factor(generation),
                    y=sim)) +
-  # geom_violin() +
   geom_point(alpha = 0.2,
              position = position_jitter(width = 0.1, height = 0),
              size = 2) +
@@ -340,7 +268,6 @@ p_jaccdistance = ggplot(df_optimal, aes(x=factor(generation),
                fill = color_meandots,
                color = "black",
                size = 4) +
-  # facet_wrap(vars(condition)) +
   xlab("Generation") +
   ylab("Jaccard distance") +
   theme(strip.background = element_rect(fill = NA, colour = NA)) +
@@ -390,7 +317,6 @@ linmeasure_grid = plot_grid(p_hedges, plot_corpus_length, p_jaccdistance,ncol=3)
 
 # ggsave(filename="linmeasure_grid.pdf", path = here("writing","2019_cogsci","pics"), plot=linmeasure_grid, width=10.5, height=2.5)
 
-ggsave(filename="linmeasure_grid.png", path = here("presentation","2019_cogsci","graphs"), plot=linmeasure_grid, width=10.5, height=2.5, bg="transparent")
 ```
 
 ### Mixed Effects Linear Regression
@@ -407,7 +333,6 @@ df_model_corpus = df_addedhedges %>%
 
 df_model_ratings = df_cond %>% 
   select(-generation) %>%
-  # mutate(story_repro_smallercase = str_to_lower(story_reproduction)) %>% 
   merge(df_model_corpus[,c("repro_id","sim","hedges_prop","generation")], by = "repro_id") %>% 
   as_tibble() %>%
   ungroup() %>% 
