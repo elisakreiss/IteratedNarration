@@ -1,0 +1,56 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+df_stories = read_csv(here("models/01_nlu_project/tokenized_stories.csv"))
+  
+df_attention = read_csv(here("models/01_nlu_project/attention.csv"))
+
+df_loss = read_csv(here("models/01_nlu_project/loss.csv")) %>% 
+  arrange(loss) %>% 
+  mutate(reordered_story_id = row_number())
+
+df = left_join(df_stories, df_attention, by=c("tensor","story_id", "token_id")) %>% 
+  select(-tensor) %>% 
+  left_join(., df_loss, by=c("story_id")) %>% 
+  arrange(loss) %>% 
+  select(-story_id)
+```
+
+```{r}
+df_plot = df %>% 
+  filter(reordered_story_id < 10)
+
+df_plot$xaxis = paste(df_plot$story_tokenized,df_plot$token_id,sep="_")
+df_plot$xaxis = reorder(df_plot$xaxis, df_plot$token_id)
+
+df_text = df_plot %>% 
+  select(target,prediction,reordered_story_id) %>% 
+  gather(measure,value,target,prediction) %>% 
+  distinct() %>% 
+  mutate(y = ifelse(measure=="target",-Inf,Inf),
+         hjust = ifelse(measure=="target",-1,1)) %>% 
+  mutate_at(vars(value), funs(round(.,3))) %>% 
+  mutate(label = paste(measure,value,sep=": "))
+
+plot= ggplot(df_plot, aes(x=xaxis,y=attention, group = 1)) +
+  geom_line() +
+  facet_wrap(~reordered_story_id, scales = "free") +
+  geom_text(data=df_text,aes(x=-Inf,y=y,vjust=hjust,label=label),hjust=0) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+df_avg = df %>% 
+  group_by(story_tokenized) %>% 
+  summarize(avgAttention = mean(attention))
+```
+

@@ -1,9 +1,3 @@
-# Done: implement backward LSTM
-# Done: Logistic regression layer in the end
-# Done: implement attention layer
-# Done: use BERT embeddings
-# Done: crossvalidation
-
 import csv
 import random
 import pandas
@@ -27,18 +21,28 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=Tru
 df_testing = pandas.read_csv("./data/data_prep/"+ling_measure+"_testing.csv")
 
 data = df_testing.values.tolist()
-print(type(data[0:3]))
-print(data[0:3])
+# print(type(data[0:3]))
+# print(data[0:3])
 random.shuffle(data)
 # dev_data = data[0:15]
 
 run_id="testing"
 
 testing_data = []
+csvDataStory = [['story_tokenized', 'tensor', 'story_id', 'story', 'token_id']]
 for data_id in range(len(data)):
     tokenized_text = tokenizer.tokenize(data[data_id][0])
     indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-    testing_data.append([torch.tensor([indexed_tokens]),data[data_id][1]])
+    testing_data.append([torch.tensor([indexed_tokens]), data[data_id][1]])
+
+    # csvFileCreation
+    for token_id in range(len(tokenized_text)):
+        csvDataStory.append([tokenized_text[token_id], indexed_tokens[token_id], data_id, data[data_id][0], token_id])
+
+with open('tokenized_stories.csv', 'w') as csvFile:
+    writer = csv.writer(csvFile)
+    writer.writerows(csvDataStory)
+    csvFile.close()
 
 
 # testing_data = [
@@ -72,7 +76,7 @@ class LSTM_Forward(nn.Module):
         # The linear layer that maps from hidden state space to tag space
         self.linear = nn.Linear(hidden_dim*2, 1)
 
-    def forward(self, sentence):
+    def forward(self, sentence, sen_id):
         # embeds = self.word_embeddings(sentence)
         encoded_layers, _ = self.Bert(sentence,output_all_encoded_layers=False)
 
@@ -84,9 +88,10 @@ class LSTM_Forward(nn.Module):
         # print("attention1.size(): {}".format(attention1.size()))
 
         attention2 = torch.softmax(self.attention2(attention1),dim=0)
-        # attention2 = self.attention2(attention1)
-        # print("attention2.size(): {}".format(attention2.size()))
-        # print("attention2: {}".format(attention2))
+        # CSVFILECREATION
+        for token_id in range(len(attention2.squeeze().tolist())):
+            csvDataTensor.append([sentence.squeeze().tolist()[token_id], attention2.squeeze().tolist()[token_id], sen_id, token_id])
+        # csvDataTensor.append([sentence.squeeze().tolist(), attention2.squeeze().tolist()])
 
         dot_product = torch.mm(torch.transpose(attention2.view(len(sentence[0]), -1),0,1),lstm_out.view(len(sentence[0]), -1))
         # dot_product = torch.mm(torch.transpose(attention2.view(len(sentence), -1),0,1),lstm_out.view(len(sentence), -1))
@@ -98,10 +103,9 @@ class LSTM_Forward(nn.Module):
 
 model = LSTM_Forward(HIDDEN_DIM)
 loss_function = nn.MSELoss()
-# # loss_function = nn.SmoothL1Loss()
 optimizer = optim.SGD(model.parameters(), lr=0.1)
 
-model.load_state_dict(torch.load("model_weights/suspect_guilt_cv0.pt"))
+model.load_state_dict(torch.load("data/model_weights/suspect_guilt_cv0.pt"))
 model.eval()
 print("loaded weights")
 
@@ -109,7 +113,10 @@ print("loaded weights")
 
 with torch.no_grad():
     losses = []
-    csvData = [['Data_type', 'Prediction', 'Target', 'Loss']]
+    # csvData = [['Data_type', 'Prediction', 'Target', 'Loss']]
+    csvDataTensor = [['tensor', 'attention', 'story_id', 'token_id']]
+    csvDataLoss = [['story_id', 'target', 'prediction', 'loss']]
+    sen_id = 0 # for csv file creation
     for sentence, target in testing_data:
         # transform sentence into tensor of embeddings
         # sentence_in = prepare_sequence(sentence.split(), w_embed_dict)
@@ -117,21 +124,36 @@ with torch.no_grad():
         # look up target "embedding"
         # targets = prepare_sequence(target, tag_to_ix)
         targets = torch.tensor(target)
+        print("target: ", target)
 
         # Step 3. Run our forward pass.
-        prediction = model(sentence_in)
+        prediction = model(sentence_in, sen_id)
 
         # Step 4. Compute the loss, gradients, and update the parameters by
-        #  calling optimizer.step()
         loss = loss_function(prediction, targets)
-        losses.append(loss)
-        csvData.append(['final_testing', prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
+        # losses.append(loss)
+        # csvData.append(['final_testing', prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
+        csvDataLoss.append([sen_id, targets.detach().numpy(), prediction.detach().numpy()[0][0], loss.detach().numpy()])
 
-        with open('losses_'+ling_measure+'_'+run_id+'.csv', 'w') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerows(csvData)
+        # with open('losses_'+ling_measure+'_'+run_id+'.csv', 'w') as csvFile:
+        #     writer = csv.writer(csvFile)
+        #     writer.writerows(csvData)
 
-        csvFile.close()
+        # csvFile.close()
+
+        sen_id += 1
+    
+    with open('attention.csv', 'w') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(csvDataTensor)
+
+    csvFile.close()
+
+    with open('loss.csv', 'w') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(csvDataLoss)
+
+    csvFile.close()
 
 
 
