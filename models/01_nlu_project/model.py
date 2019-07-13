@@ -82,7 +82,6 @@ def create_cv_datasplit(data, cv_fold):
         tokenized_text = tokenizer.tokenize(story_target_val[0])
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
         split_data[bucket].append([torch.tensor([indexed_tokens]), story_target_val[1]])
-    
     return split_data
 
 def create_trainingbucket(split_data, cv_fold_id):
