@@ -2,12 +2,12 @@ import csv
 import copy
 import math
 import random
-import pandas
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from pytorch_pretrained_bert import BertModel, BertTokenizer
+import pandas
 
 class LSTM_Forward(nn.Module):
 
@@ -15,9 +15,7 @@ class LSTM_Forward(nn.Module):
         super(LSTM_Forward, self).__init__()
         self.hidden_dim = hidden_dim
 
-        # self.word_embeddings, num_embeddings, embedding_dim = create_emb_layer(wordembedding_matrix, True)
-        self.Bert = BertModel.from_pretrained('bert-base-uncased')
-
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
 
         # The LSTM takes word embeddings as inputs, and outputs hidden states
         # with dimensionality hidden_dim.
@@ -30,7 +28,7 @@ class LSTM_Forward(nn.Module):
         self.linear = nn.Linear(hidden_dim*2, 1)
 
     def forward(self, sentence):
-        encoded_layers, _ = self.Bert(sentence, output_all_encoded_layers=False)
+        encoded_layers, _ = self.bert(sentence, output_all_encoded_layers=False)
 
         # lstm_out contains all hidden layers
         lstm_out, _ = self.lstm(encoded_layers[0].view(len(sentence[0]), 1, -1))
@@ -106,7 +104,7 @@ def train_model(model, training_data, dev_data, baseline_data, num_epochs, ling_
     loss_function = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.1)
 
-    csvData = [['Data_type', 'Epoch', 'Prediction', 'Target', 'Loss']]
+    csv_data = [['Data_type', 'Epoch', 'Prediction', 'Target', 'Loss']]
 
     for epoch in range(num_epochs):
         count = 0
@@ -125,14 +123,14 @@ def train_model(model, training_data, dev_data, baseline_data, num_epochs, ling_
             # run forward pass
             prediction = model(sentence)
 
-            # compute loss, gradients, and update the parameters by 
+            # compute loss, gradients, and update the parameters by
             # calling optimizer.step()
             loss = loss_function(prediction, targets)
             loss.backward()
             optimizer.step()
 
             # save losses for visualization
-            csvData.append(['training', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
+            csv_data.append(['training', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
 
         # model evaluation on dev_data for current epoch
         with torch.no_grad():
@@ -147,16 +145,16 @@ def train_model(model, training_data, dev_data, baseline_data, num_epochs, ling_
 
                 # compute loss and write to csv
                 loss = loss_function(prediction, targets)
-                csvData.append(['testing', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
+                csv_data.append(['testing', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
 
                 baseline_loss = loss_function(baseline_data, targets)
-                csvData.append(['baseline', epoch, baseline_data.numpy(), targets.detach().numpy(), baseline_loss.detach().numpy()])
+                csv_data.append(['baseline', epoch, baseline_data.numpy(), targets.detach().numpy(), baseline_loss.detach().numpy()])
 
-            with open('losses_'+ling_measure+'_'+run_id+'.csv', 'w') as csvFile:
-                writer = csv.writer(csvFile)
-                writer.writerows(csvData)
+            with open('losses_'+ling_measure+'_'+run_id+'.csv', 'w') as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerows(csv_data)
 
-            csvFile.close()
+            csv_file.close()
 
     return model
 
