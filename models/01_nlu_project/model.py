@@ -1,3 +1,6 @@
+import json
+import os
+import argparse
 import csv
 import copy
 import math
@@ -9,10 +12,12 @@ import torch.optim as optim
 from pytorch_pretrained_bert import BertModel, BertTokenizer
 import pandas
 
-class LSTM_Forward(nn.Module):
+# TODO put model and data wrangling,... in separate files
+
+class LAModel(nn.Module):
 
     def __init__(self, hidden_dim):
-        super(LSTM_Forward, self).__init__()
+        super(LAModel, self).__init__()
         self.hidden_dim = hidden_dim
 
         self.bert = BertModel.from_pretrained('bert-base-uncased')
@@ -21,13 +26,14 @@ class LSTM_Forward(nn.Module):
         # with dimensionality hidden_dim.
         self.lstm = nn.LSTM(768, hidden_dim, bidirectional=True)
 
+        # TODO: write attention module
         self.attention1 = nn.Linear(hidden_dim*2, 50)
         self.attention2 = nn.Linear(50, 1)
 
         # The linear layer that maps from hidden state space to tag space
         self.linear = nn.Linear(hidden_dim*2, 1)
 
-    def forward(self, sentence):
+    def forward(self, sentence, post_computation_fct=None):
         encoded_layers, _ = self.bert(sentence, output_all_encoded_layers=False)
 
         # lstm_out contains all hidden layers
@@ -42,10 +48,16 @@ class LSTM_Forward(nn.Module):
         # linear layer on top of last hidden layer
         prediction = torch.sigmoid(self.linear(dot_product))
 
+        if post_computation_fct is not None:
+            post_computation_fct(lstm_out, attention1, attention2, prediction)
+
         return prediction
 
+def post_computation_fct(lstm_out, attention1, attention2, prediction):
+    print('some visualizations can be done here')
+
 # Print iterations progress
-def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+def print_progress_bar(iteration, total, prefix='Progress: ', suffix='Complete', decimals=1, length=100, fill='█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -66,20 +78,25 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
         print()
 
 def import_data(ling_measure, data_type):
+    # TODO: include data path in config file and as input variable
     df_training = pandas.read_csv("./data/data_prep/"+ling_measure+"_"+data_type+".csv")
     data = df_training.values.tolist()
-    return random.shuffle(data)
+    random.shuffle(data)
+    return data
 
-def create_cv_datasplit(data, cv_fold):
+def split_and_tokenize(data, cv_fold):
     # Load pre-trained model tokenizer (vocabulary)
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, do_basic_tokenize=True)
+    print("tokenizer is loaded")
 
     split_data = [[] for i in range(cv_fold)]
     for data_id, story_target_val in enumerate(data):
         bucket = math.floor(data_id/(len(data)/cv_fold))
         tokenized_text = tokenizer.tokenize(story_target_val[0])
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-        split_data[bucket].append([torch.tensor([indexed_tokens]), story_target_val[1]])
+        # TODO: make this into a t-level dictionary:
+        # 1) tokenized story 2) indeces 3) target label
+        split_data[bucket].append([torch.tensor([indexed_tokens]), torch.tensor(story_target_val[1])])
     return split_data
 
 def create_trainingbucket(split_data, cv_fold_id):
@@ -99,93 +116,117 @@ def target_mean(training_data):
         targets.append(target)
     return torch.tensor(np.mean(targets))
 
-def train_model(model, training_data, dev_data, baseline_data, num_epochs, ling_measure, run_id):
-    # model parameters
+def evaluate(model, data, loss_function, file_id, epoch=0, baseline_data=None):
+    csv_data = [['DataType', 'Epoch', 'Prediction', 'Target', 'Loss']]
+
+    with torch.no_grad():
+        for sentence, target in data:
+            # run forward pass
+            prediction = model(sentence)
+
+            # compute loss and write to csv
+            devdata_loss = loss_function(prediction, target)
+            csv_data.append(['testing', epoch, prediction.detach().numpy()[0][0], target.detach().numpy(), devdata_loss.detach().numpy()])
+
+            if baseline_data is not None:
+                baseline_loss = loss_function(baseline_data, target)
+                csv_data.append(['baseline', epoch, baseline_data.numpy(), target.detach().numpy(), baseline_loss.detach().numpy()])
+
+        # with open('losses_' + file_id + '.csv', 'w') as csv_file:
+        #     writer = csv.writer(csv_file)
+        #     writer.writerows(csv_data)
+
+        # csv_file.close()
+
+def train_model(model, data, config, cv_id, save_csv=True):
+
     loss_function = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.1)
 
-    csv_data = [['Data_type', 'Epoch', 'Prediction', 'Target', 'Loss']]
+    csv_trainingdata = [['DataType', 'Epoch', 'Prediction', 'Target', 'Loss']]
 
-    for epoch in range(num_epochs):
+    for epoch in range(config['num_epochs']):
+        print("epoch: " + str(epoch + 1))
         count = 0
-        for sentence, target in training_data:
+        for sentence, target in data['training_data']:
             count += 1
-            print_progress_bar(count, len(training_data), prefix='Progress:', suffix='Complete', length=50)
+            print_progress_bar(count, len(data['training_data']), length=50)
+
             # pytorch accumulates gradients
             # we need to clear them out before each instance
             model.zero_grad()
-
-            # transform sentence into tensor of embeddings
-            # TODO: this should happen here!
-            # sentence
-            targets = torch.tensor(target)
 
             # run forward pass
             prediction = model(sentence)
 
             # compute loss, gradients, and update the parameters by
             # calling optimizer.step()
-            loss = loss_function(prediction, targets)
+            loss = loss_function(prediction, target)
             loss.backward()
             optimizer.step()
 
             # save losses for visualization
-            csv_data.append(['training', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
+            csv_trainingdata.append(['training', epoch, prediction.detach().numpy()[0][0], target.detach().numpy(), loss.detach().numpy()])
+
+        if save_csv:
+            print("writing csv")
+            # with open('losses_' + cv_id + '.csv', 'w') as csv_file:
+            #     writer = csv.writer(csv_file)
+            #     writer.writerows(csv_trainingdata)
+
+            # csv_file.close()
 
         # model evaluation on dev_data for current epoch
-        with torch.no_grad():
-            for sentence, target in dev_data:
-                # transform sentence into tensor of embeddings
-                # sentence
-                # look up target "embedding"
-                targets = torch.tensor(target)
-
-                # run forward pass
-                prediction = model(sentence)
-
-                # compute loss and write to csv
-                loss = loss_function(prediction, targets)
-                csv_data.append(['testing', epoch, prediction.detach().numpy()[0][0], targets.detach().numpy(), loss.detach().numpy()])
-
-                baseline_loss = loss_function(baseline_data, targets)
-                csv_data.append(['baseline', epoch, baseline_data.numpy(), targets.detach().numpy(), baseline_loss.detach().numpy()])
-
-            with open('losses_'+ling_measure+'_'+run_id+'.csv', 'w') as csv_file:
-                writer = csv.writer(csv_file)
-                writer.writerows(csv_data)
-
-            csv_file.close()
+        evaluate(model, data['dev_data'], loss_function, cv_id, epoch, data['baseline_data'])
 
     return model
 
 def main():
     torch.manual_seed(1)
 
-    ling_measure = "suspect_guilt"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--out_dir", required=True)
+    # parser.add_argument("--run", required=True)
+    # parser.add_argument("--subject", required=False, default=None, type=int)
+
+    args = parser.parse_args()
+
+    out_dir = args.out_dir
+    config_file_path = os.path.join(out_dir, "config.json")
+    config = json.load(open(config_file_path, "r"))
 
     # MODEL
-    hidden_dim = 200
-    num_epochs = 30
-    model = LSTM_Forward(hidden_dim)
+    model = LAModel(config['hidden_dim'])
 
     # DATA
     # import (training) data
-    data = import_data(ling_measure, "training")
-    # define k for cross validation
-    cv_fold = 10
-    # split data according to cross validation parameter
-    # this also tokenizes -- TODO: make that cleaner
-    split_data = create_cv_datasplit(data=data, cv_fold=cv_fold)
+    raw_data = import_data(config['ling_measure'], 'training')
+    # split data according to cross validation parameter & tokenize
+    formatted_data = split_and_tokenize(data=raw_data, cv_fold=config['cv_fold'])
 
-    for cv_fold_id, dev_data in enumerate(split_data):
+    for cv_fold_id, dev_data in enumerate(formatted_data):
+        print("")
+        # define id for cross validation step
+        training_id = config['ling_measure'] + '_cv' + str(cv_fold_id)
+        print(training_id)
+
+        # DATA PREPARATION
         # prepare training data
-        training_data = create_trainingbucket(split_data, cv_fold_id)
+        training_data = create_trainingbucket(formatted_data, cv_fold_id)
         # compute mean target for training data for baseline
         baseline_data = target_mean(training_data)
+        data = {
+            'training_data': training_data,
+            'dev_data': dev_data,
+            'baseline_data': baseline_data
+        }
 
         # TRAINING
-        trained_model = train_model(model, training_data, dev_data, baseline_data, num_epochs, ling_measure, cv_fold_id)
+        trained_model = train_model(model, data, config, training_id)
 
-        torch.save(trained_model.state_dict(), "model_weights/"+ling_measure+'_'+cv_fold_id+".pt")
+        # save final model weights
+        # TODO: save model_weights in between as well
+        # TODO: also save which data was dev and test
+        # torch.save(trained_model.state_dict(), "model_weights/"+training_id+".pt")
 
 main()
