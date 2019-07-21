@@ -18,53 +18,63 @@ class LAModel(nn.Module):
 
     def __init__(self, hidden_dim):
         super(LAModel, self).__init__()
-        self.hidden_dim = hidden_dim
-
+        # initialize pretrained bert model
         self.bert = BertModel.from_pretrained('bert-base-uncased')
 
-        # The LSTM takes word embeddings as inputs, and outputs hidden states
-        # with dimensionality hidden_dim.
+        # input: word embeddings; output: hidden states (dim = hidden_dim)
         self.lstm = nn.LSTM(768, hidden_dim, bidirectional=True)
 
-        # TODO: write attention module
-        self.attention1 = nn.Linear(hidden_dim*2, 50)
-        self.attention2 = nn.Linear(50, 1)
+        # initialize attention module
+        self.attention = Attention(hidden_dim)
 
-        # The linear layer that maps from hidden state space to tag space
+        # initialize layer for linear mapping
         self.linear = nn.Linear(hidden_dim*2, 1)
 
     def forward(self, sentence, post_computation_fct=None):
+        # retrieve bert embeddings
         encoded_layers, _ = self.bert(sentence, output_all_encoded_layers=False)
 
         # lstm_out contains all hidden layers
         lstm_out, _ = self.lstm(encoded_layers[0].view(len(sentence[0]), 1, -1))
 
-        attention1 = torch.tanh(self.attention1(lstm_out))
+        attention_out = self.attention(sentence, lstm_out)
 
-        attention2 = torch.softmax(self.attention2(attention1), dim=0)
-
-        dot_product = torch.mm(torch.transpose(attention2.view(len(sentence[0]), -1), 0, 1), lstm_out.view(len(sentence[0]), -1))
-
-        # linear layer on top of last hidden layer
-        prediction = torch.sigmoid(self.linear(dot_product))
+        # linear layer on top of last hidden layer (ensures value between 0 and 1)
+        prediction = torch.sigmoid(self.linear(attention_out))
 
         if post_computation_fct is not None:
-            post_computation_fct(lstm_out, attention1, attention2, prediction)
+            post_computation_fct(lstm_out, prediction)
 
         return prediction
 
-def post_computation_fct(lstm_out, attention1, attention2, prediction):
-    print('some visualizations can be done here')
+class Attention(nn.Module):
+
+    def __init__(self, hidden_dim):
+        super(Attention, self).__init__()
+        self.attention1 = nn.Linear(hidden_dim*2, 50)
+        self.attention2 = nn.Linear(50, 1)
+
+    def forward(self, sentence, lstm_out):
+        attention1 = torch.tanh(self.attention1(lstm_out))
+        attention2 = torch.softmax(self.attention2(attention1), dim=0)
+        # transform attention2 dimensionality
+        transformed_att2 = torch.transpose(attention2.view(len(sentence[0]), -1), 0, 1)
+        # matrix multiplication of second attention layer and lstm_out
+        dot_product = torch.mm(transformed_att2, lstm_out.view(len(sentence[0]), -1))
+
+        return dot_product
+
+
+# def post_computation_fct(lstm_out, attention1, attention2, prediction):
+#     print('some visualizations can be done here')
 
 # Print iterations progress
-def print_progress_bar(iteration, total, prefix='Progress: ', suffix='Complete', decimals=1, length=100, fill='█'):
+def print_progress_bar(iteration, total, decimals=1, length=100, fill='█'):
     """
     Call in a loop to create terminal progress bar
     @params:
         iteration   - Required  : current iteration (Int)
         total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
         decimals    - Optional  : positive number of decimals in percent complete (Int)
         length      - Optional  : character length of bar (Int)
         fill        - Optional  : bar fill character (Str)
@@ -72,7 +82,7 @@ def print_progress_bar(iteration, total, prefix='Progress: ', suffix='Complete',
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = int(length * iteration // total)
     progress_bar = fill * filled_length + '-' * (length - filled_length)
-    print('\r%s |%s| %s%% %s' % (prefix, progress_bar, percent, suffix), end='\r')
+    print('\r%s |%s| %s%% %s' % ('Progress: ', progress_bar, percent, 'Complete'), end='\r')
     # Print New Line on Complete
     if iteration == total:
         print()
@@ -87,14 +97,13 @@ def import_data(ling_measure, data_type):
 def split_and_tokenize(data, cv_fold):
     # Load pre-trained model tokenizer (vocabulary)
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, do_basic_tokenize=True)
-    print("tokenizer is loaded")
 
     split_data = [[] for i in range(cv_fold)]
     for data_id, story_target_val in enumerate(data):
         bucket = math.floor(data_id/(len(data)/cv_fold))
         tokenized_text = tokenizer.tokenize(story_target_val[0])
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-        # TODO: make this into a t-level dictionary:
+        # TODO: make this into a 3-level dictionary:
         # 1) tokenized story 2) indeces 3) target label
         split_data[bucket].append([torch.tensor([indexed_tokens]), torch.tensor(story_target_val[1])])
     return split_data
