@@ -12,7 +12,10 @@ import torch.optim as optim
 from pytorch_pretrained_bert import BertModel, BertTokenizer
 import pandas
 
-# TODO put model and data wrangling,... in separate files
+# TODO: put model and data wrangling,... in separate files
+# TODO: save csv files un runs folder too
+# TODO: fix visualizations
+# TODO: also save which data was dev and test
 
 class LAModel(nn.Module):
 
@@ -70,15 +73,6 @@ class Attention(nn.Module):
 
 # Print iterations progress
 def print_progress_bar(iteration, total, decimals=1, length=100, fill='█'):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-    """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filled_length = int(length * iteration // total)
     progress_bar = fill * filled_length + '-' * (length - filled_length)
@@ -88,7 +82,6 @@ def print_progress_bar(iteration, total, decimals=1, length=100, fill='█'):
         print()
 
 def import_data(ling_measure, data_type):
-    # TODO: include data path in config file and as input variable
     df_training = pandas.read_csv("./data/data_prep/"+ling_measure+"_"+data_type+".csv")
     data = df_training.values.tolist()
     random.shuffle(data)
@@ -103,9 +96,15 @@ def split_and_tokenize(data, cv_fold):
         bucket = math.floor(data_id/(len(data)/cv_fold))
         tokenized_text = tokenizer.tokenize(story_target_val[0])
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-        # TODO: make this into a 3-level dictionary:
-        # 1) tokenized story 2) indeces 3) target label
-        split_data[bucket].append([torch.tensor([indexed_tokens]), torch.tensor(story_target_val[1])])
+        # each data point is a 4-level dictionary:
+        # 1) story 2) tokenized story 3) story with BERT indeces 4) target label
+        data_dict = {
+            "story": story_target_val[0],
+            "story_tokenized": tokenized_text,
+            "story_indexed": torch.tensor([indexed_tokens]),
+            "target_label": torch.tensor(story_target_val[1])
+        }
+        split_data[bucket].append(data_dict)
     return split_data
 
 def create_trainingbucket(split_data, cv_fold_id):
@@ -121,25 +120,30 @@ def create_trainingbucket(split_data, cv_fold_id):
 
 def target_mean(training_data):
     targets = []
-    for _, target in training_data:
-        targets.append(target)
+    for training_sample in training_data:
+        targets.append(training_sample['target_label'])
     return torch.tensor(np.mean(targets))
 
-def evaluate(model, data, loss_function, file_id, epoch=0, baseline_data=None):
+def save_weights(model, out_dir, cv_id, epoch):
+    filename = "epoch_" + str(epoch)
+    path = os.path.join(out_dir, "model_weights", cv_id, filename)
+    torch.save(model.state_dict(), path + ".pt")
+
+def evaluate(model, data, loss_function, file_id, out_dir, epoch=0, baseline_data=None):
     csv_data = [['DataType', 'Epoch', 'Prediction', 'Target', 'Loss']]
 
     with torch.no_grad():
-        for sentence, target in data:
+        for training_sample in data:
             # run forward pass
-            prediction = model(sentence)
+            prediction = model(training_sample['story_indexed'])
 
             # compute loss and write to csv
-            devdata_loss = loss_function(prediction, target)
-            csv_data.append(['testing', epoch, prediction.detach().numpy()[0][0], target.detach().numpy(), devdata_loss.detach().numpy()])
+            devdata_loss = loss_function(prediction, training_sample['target_label'])
+            csv_data.append(['testing', epoch, prediction.detach().numpy()[0][0], training_sample['target_label'].detach().numpy(), devdata_loss.detach().numpy()])
 
             if baseline_data is not None:
-                baseline_loss = loss_function(baseline_data, target)
-                csv_data.append(['baseline', epoch, baseline_data.numpy(), target.detach().numpy(), baseline_loss.detach().numpy()])
+                baseline_loss = loss_function(baseline_data, training_sample['target_label'])
+                csv_data.append(['baseline', epoch, baseline_data.numpy(), training_sample['target_label'].detach().numpy(), baseline_loss.detach().numpy()])
 
         # with open('losses_' + file_id + '.csv', 'w') as csv_file:
         #     writer = csv.writer(csv_file)
@@ -147,7 +151,7 @@ def evaluate(model, data, loss_function, file_id, epoch=0, baseline_data=None):
 
         # csv_file.close()
 
-def train_model(model, data, config, cv_id, save_csv=True):
+def train_model(model, data, config, out_dir, cv_id, save_csv=True):
 
     loss_function = nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.1)
@@ -157,7 +161,7 @@ def train_model(model, data, config, cv_id, save_csv=True):
     for epoch in range(config['num_epochs']):
         print("epoch: " + str(epoch + 1))
         count = 0
-        for sentence, target in data['training_data']:
+        for training_sample in data['training_data']:
             count += 1
             print_progress_bar(count, len(data['training_data']), length=50)
 
@@ -166,17 +170,18 @@ def train_model(model, data, config, cv_id, save_csv=True):
             model.zero_grad()
 
             # run forward pass
-            prediction = model(sentence)
+            prediction = model(training_sample['story_indexed'])
 
             # compute loss, gradients, and update the parameters by
             # calling optimizer.step()
-            loss = loss_function(prediction, target)
+            loss = loss_function(prediction, training_sample['target_label'])
             loss.backward()
             optimizer.step()
 
             # save losses for visualization
-            csv_trainingdata.append(['training', epoch, prediction.detach().numpy()[0][0], target.detach().numpy(), loss.detach().numpy()])
+            csv_trainingdata.append(['training', epoch, prediction.detach().numpy()[0][0], training_sample['target_label'].detach().numpy(), loss.detach().numpy()])
 
+        # save training loss in csv
         if save_csv:
             print("writing csv")
             # with open('losses_' + cv_id + '.csv', 'w') as csv_file:
@@ -185,8 +190,11 @@ def train_model(model, data, config, cv_id, save_csv=True):
 
             # csv_file.close()
 
+        # save model weights
+        save_weights(model, out_dir, cv_id, epoch)
+
         # model evaluation on dev_data for current epoch
-        evaluate(model, data['dev_data'], loss_function, cv_id, epoch, data['baseline_data'])
+        evaluate(model, data['dev_data'], loss_function, cv_id, epoch, data['baseline_data'], out_dir)
 
     return model
 
@@ -195,8 +203,6 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--out_dir", required=True)
-    # parser.add_argument("--run", required=True)
-    # parser.add_argument("--subject", required=False, default=None, type=int)
 
     args = parser.parse_args()
 
@@ -206,6 +212,7 @@ def main():
 
     # MODEL
     model = LAModel(config['hidden_dim'])
+    os.mkdir(os.path.join(out_dir, "model_weights"))
 
     # DATA
     # import (training) data
@@ -231,11 +238,7 @@ def main():
         }
 
         # TRAINING
-        trained_model = train_model(model, data, config, training_id)
-
-        # save final model weights
-        # TODO: save model_weights in between as well
-        # TODO: also save which data was dev and test
-        # torch.save(trained_model.state_dict(), "model_weights/"+training_id+".pt")
+        os.mkdir(os.path.join(out_dir, "model_weights", training_id))
+        train_model(model, data, config, out_dir, training_id)
 
 main()
