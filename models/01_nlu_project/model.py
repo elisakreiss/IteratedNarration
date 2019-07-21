@@ -1,3 +1,4 @@
+# run: python model.py --out_dir runs/01_run
 import json
 import os
 import argparse
@@ -12,10 +13,11 @@ import torch.optim as optim
 from pytorch_pretrained_bert import BertModel, BertTokenizer
 import pandas
 
-# TODO: put model and data wrangling,... in separate files
-# TODO: save csv files un runs folder too
-# TODO: fix visualizations
 # TODO: also save which data was dev and test
+# TODO: save csv files in runs folder too
+# TODO: fix visualizations
+# TODO: put model and data wrangling,... in separate files
+# TODO: maybe already have story id in the read in data file
 
 class LAModel(nn.Module):
 
@@ -96,9 +98,10 @@ def split_and_tokenize(data, cv_fold):
         bucket = math.floor(data_id/(len(data)/cv_fold))
         tokenized_text = tokenizer.tokenize(story_target_val[0])
         indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
-        # each data point is a 4-level dictionary:
-        # 1) story 2) tokenized story 3) story with BERT indeces 4) target label
+        # each data point is a 5-level dictionary:
+        # 1) story id 2) story 3) tokenized story 4) story with BERT indeces 5) target label
         data_dict = {
+            "story_id": data_id,
             "story": story_target_val[0],
             "story_tokenized": tokenized_text,
             "story_indexed": torch.tensor([indexed_tokens]),
@@ -123,6 +126,23 @@ def target_mean(training_data):
     for training_sample in training_data:
         targets.append(training_sample['target_label'])
     return torch.tensor(np.mean(targets))
+
+def save_datasplit(data, path, filename):
+    csv_data = [['DataType', 'story_id', 'story', 'target_label']]
+
+    for t_dat in data['training_data']:
+        t_target = t_dat['target_label'].numpy()
+        csv_data.append(['training', t_dat['story_id'], t_dat['story'], t_target])
+    for d_dat in data['dev_data']:
+        d_target = d_dat['target_label'].numpy()
+        csv_data.append(['dev', d_dat['story_id'], d_dat['story'], d_target])
+
+    loc = os.path.join(path, filename)
+    with open(loc + '.csv', 'w') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerows(csv_data)
+
+    csv_file.close()
 
 def save_weights(model, out_dir, cv_id, epoch):
     filename = "epoch_" + str(epoch)
@@ -219,6 +239,7 @@ def main():
     raw_data = import_data(config['ling_measure'], 'training')
     # split data according to cross validation parameter & tokenize
     formatted_data = split_and_tokenize(data=raw_data, cv_fold=config['cv_fold'])
+    os.mkdir(os.path.join(out_dir, "data_split"))
 
     for cv_fold_id, dev_data in enumerate(formatted_data):
         print("")
@@ -236,6 +257,9 @@ def main():
             'dev_data': dev_data,
             'baseline_data': baseline_data
         }
+        # save data split
+        filename = training_id + '_datasplit'
+        save_datasplit(data, os.path.join(out_dir, "data_split"), filename)
 
         # TRAINING
         os.mkdir(os.path.join(out_dir, "model_weights", training_id))
