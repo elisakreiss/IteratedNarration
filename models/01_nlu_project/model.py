@@ -13,7 +13,6 @@ import torch.optim as optim
 from pytorch_pretrained_bert import BertModel, BertTokenizer
 import pandas
 
-# TODO: also save which data was dev and test
 # TODO: save csv files in runs folder too
 # TODO: fix visualizations
 # TODO: put model and data wrangling,... in separate files
