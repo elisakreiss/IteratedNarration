@@ -18,7 +18,7 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=Tru
 
 
 
-df_testing = pandas.read_csv("./data/data_prep/"+ling_measure+"_testing.csv")
+df_testing = pandas.read_csv("./data/data_prep/"+ling_measure+"_beesfree.csv")
 
 data = df_testing.values.tolist()
 # print(type(data[0:3]))
@@ -29,7 +29,7 @@ random.shuffle(data)
 run_id="testing"
 
 testing_data = []
-csvDataStory = [['story_tokenized', 'tensor', 'story_id', 'story', 'token_id']]
+csvDataStory = [['story_tokenized', 'tensor', 'story_id', 'story', 'token_id', 'chain', 'generation']]
 for data_id in range(len(data)):
     tokenized_text = tokenizer.tokenize(data[data_id][0])
     indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
@@ -37,12 +37,12 @@ for data_id in range(len(data)):
 
     # csvFileCreation
     for token_id in range(len(tokenized_text)):
-        csvDataStory.append([tokenized_text[token_id], indexed_tokens[token_id], data_id, data[data_id][0], token_id])
+        csvDataStory.append([tokenized_text[token_id], indexed_tokens[token_id], data_id, data[data_id][0], token_id, data[data_id][2], data[data_id][3]])
 
-with open('tokenized_stories.csv', 'w') as csvFile:
-    writer = csv.writer(csvFile)
-    writer.writerows(csvDataStory)
-    csvFile.close()
+# with open('model_visualization/bees_free_data/tokenized_stories.csv', 'w') as csvFile:
+#     writer = csv.writer(csvFile)
+#     writer.writerows(csvDataStory)
+#     csvFile.close()
 
 
 # testing_data = [
@@ -79,25 +79,34 @@ class LSTM_Forward(nn.Module):
     def forward(self, sentence, sen_id):
         # embeds = self.word_embeddings(sentence)
         encoded_layers, _ = self.Bert(sentence,output_all_encoded_layers=False)
+        # print('bert input: ', sentence.shape)
+        # print('bert output: ', encoded_layers.shape)
 
         # lstm_out contains all hidden layers
         # lstm_out, _ = self.lstm(embeds.view(len(sentence), 1, -1))
         lstm_out, _ = self.lstm(encoded_layers[0].view(len(sentence[0]), 1, -1))
+        # print('lstm input: ', encoded_layers[0].view(len(sentence[0]), 1, -1).shape)
+        # print('lstm output: ', lstm_out.shape)
 
         attention1 = torch.tanh(self.attention1(lstm_out))
-        # print("attention1.size(): {}".format(attention1.size()))
-
+        # print('attention1 input: ', lstm_out.shape)
+        # print('attention1 output: ', attention1.shape)
         attention2 = torch.softmax(self.attention2(attention1),dim=0)
+        # print('attention2 input: ', attention1.shape)
+        # print('attention2 output: ', attention2.shape)
         # CSVFILECREATION
         for token_id in range(len(attention2.squeeze().tolist())):
             csvDataTensor.append([sentence.squeeze().tolist()[token_id], attention2.squeeze().tolist()[token_id], sen_id, token_id])
         # csvDataTensor.append([sentence.squeeze().tolist(), attention2.squeeze().tolist()])
 
         dot_product = torch.mm(torch.transpose(attention2.view(len(sentence[0]), -1),0,1),lstm_out.view(len(sentence[0]), -1))
+        # print('full attention input: ', torch.transpose(attention2.view(len(sentence[0]), -1),0,1).shape, ' and ', lstm_out.view(len(sentence[0]), -1).shape)
+        # print('full attention output: ', dot_product.shape)
         # dot_product = torch.mm(torch.transpose(attention2.view(len(sentence), -1),0,1),lstm_out.view(len(sentence), -1))
 
         # linear layer on top of last hidden layer
         prediction = torch.sigmoid(self.linear(dot_product))
+        print('prediction: ', prediction.shape)
 
         return prediction
 
@@ -109,6 +118,14 @@ model.load_state_dict(torch.load("data/model_weights/suspect_guilt_cv0.pt"))
 model.eval()
 print("loaded weights")
 
+print("model parameters: ")
+for parameter in model.parameters():
+    print(parameter.shape)
+pytorch_total_params = sum(p.numel() for p in model.parameters())
+print("")
+print('total number of parameters: ', pytorch_total_params)
+pytorch_train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print('total number of trainable parameters: ', pytorch_train_params)
 
 
 with torch.no_grad():
@@ -143,17 +160,17 @@ with torch.no_grad():
 
         sen_id += 1
     
-    with open('attention.csv', 'w') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(csvDataTensor)
+    # with open('model_visualization/bees_free_data/attention.csv', 'w') as csvFile:
+    #     writer = csv.writer(csvFile)
+    #     writer.writerows(csvDataTensor)
 
-    csvFile.close()
+    # csvFile.close()
 
-    with open('loss.csv', 'w') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(csvDataLoss)
+    # with open('model_visualization/bees_free_data/loss.csv', 'w') as csvFile:
+    #     writer = csv.writer(csvFile)
+    #     writer.writerows(csvDataLoss)
 
-    csvFile.close()
+    # csvFile.close()
 
 
 

@@ -12,59 +12,69 @@ theme_set(theme_bw())
 ```
 
 ```{r}
-df0 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv0.csv")) %>% 
-  mutate(CV = 0)
-df1 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv1.csv")) %>% 
+df0 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv0.csv")) %>% 
   mutate(CV = 1)
-df2 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv2.csv")) %>% 
+df1 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv1.csv")) %>% 
   mutate(CV = 2)
-df3 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv3.csv")) %>% 
+df2 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv2.csv")) %>% 
   mutate(CV = 3)
-df4 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv4.csv")) %>% 
+df3 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv3.csv")) %>% 
   mutate(CV = 4)
-df5 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv5.csv")) %>% 
+df4 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv4.csv")) %>% 
   mutate(CV = 5)
-df6 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv6.csv")) %>% 
+df5 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv5.csv")) %>% 
   mutate(CV = 6)
-df7 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv7.csv")) %>% 
+df6 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv6.csv")) %>% 
   mutate(CV = 7)
-df8 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv8.csv")) %>% 
+df7 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv7.csv")) %>% 
   mutate(CV = 8)
-df9 = read_csv(here("models/01_nlu_project/losses_suspect_guilt_cv9.csv")) %>% 
+df8 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv8.csv")) %>% 
   mutate(CV = 9)
+df9 = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_cv9.csv")) %>% 
+  mutate(CV = 10)
 
-df = bind_rows(df0,df1,df2,df3,df4,df5,df6,df7,df8,df9)
+df = bind_rows(df0,df1,df2,df3,df4,df5,df6,df7,df8,df9) %>% 
+  mutate_at(vars(Epoch), funs(.+1)) %>% 
+  mutate(cv_facet_label = CV)
+  # mutate(cv_facet_label = paste("cv fold ", CV, sep="")) %>% 
+  # mutate_at(vars(cv_facet_label), funs(fct_relevel(., "cv fold 1", "cv fold 2", "cv fold 3", "cv fold 4", "cv fold 5", "cv fold 6", "cv fold 7", "cv fold 8", "cv fold 9", "cv fold 10")))
 
-df_test = read_csv(here("models/01_nlu_project/losses_suspect_guilt_testing.csv"))
+df_test = read_csv(here("models/01_nlu_project/data/results_csv/losses_suspect_guilt_testing.csv"))
 ```
 
 ```{r}
-loss_plot = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
-  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  # geom_point(alpha=0.2, position="jitter") +
-  # geom_smooth(method = "loess")  
-  # error bars 
-  stat_summary(fun.data = "mean_cl_boot",
-               geom = "crossbar",
-               # geom = "linerange",
-               # size = 1,
-               alpha = 0.1,
-               color = NA
-               ) +
-  # means
-  stat_summary(fun.y = "mean",
-               geom = "point",
-               size = 2) +
-  # means
-  stat_summary(fun.y = "mean",
-               geom = "line",
-               size = 1,
-               alpha=0.5) +
-  scale_x_continuous(expand = c(0, 0)) +
-  facet_wrap(~CV,nrow=2) +
-  theme(legend.position="top")
-   # ylim(0,0.05)
+
+# loss_plot = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
+#   scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+#   scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+#   # geom_point(alpha=0.2, position="jitter") +
+#   # geom_smooth(method = "loess")  
+#   # error bars 
+#   stat_summary(fun.data = "mean_cl_boot",
+#                geom = "crossbar",
+#                # geom = "linerange",
+#                # size = 1,
+#                alpha = 0.1,
+#                color = NA
+#                ) +
+#   # means
+#   stat_summary(fun.y = "mean",
+#                geom = "point",
+#                size = 2) +
+#   # means
+#   stat_summary(fun.y = "mean",
+#                geom = "line",
+#                size = 1,
+#                alpha=0.5) +
+#   scale_x_continuous(expand = c(0, 0)) +
+#   facet_wrap(~CV,nrow=2) +
+#   theme(legend.position="top")
+#    # ylim(0,0.05)
+
+cv_label = df %>% 
+  select(cv_facet_label,Data_type) %>% 
+  mutate(label=cv_facet_label) %>% 
+  distinct()
 
 loss_plot_cropped = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)) +
   scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
@@ -76,65 +86,66 @@ loss_plot_cropped = ggplot(df,aes(x=Epoch,y=Loss,color=Data_type,fill=Data_type)
                geom = "crossbar",
                # geom = "linerange",
                # size = 1,
-               alpha = 0.1,
+               alpha = 0.2,
                color = NA
                ) +
   # means
   stat_summary(fun.y = "mean",
                geom = "point",
-               size = 1) +
+               size = 1.5) +
   # means
   stat_summary(fun.y = "mean",
                geom = "line",
                size = 1,
-               alpha=0.25) +
+               alpha=0.3) +
   # scale_x_continuous(expand = c(0, 0)) +
   coord_cartesian(ylim = c(0,0.05)) +
-  facet_wrap(~CV,nrow=2) +
-  theme(legend.position="top")
+  facet_wrap(~cv_facet_label,nrow=2) +
+  theme(legend.position="top") +
+  theme(legend.title = element_blank()) +
+  theme(axis.title = element_text(size = 18, color="#3c3c3c")) +
+  theme(axis.text = element_text(size = 10)) +
+  theme(legend.text = element_text(size = 15, color="#3c3c3c")) +
+  # theme(strip.text = element_text(size = 10)) +
+  # theme(strip.background = element_blank()) +
+  theme(strip.background = element_blank(),
+  strip.text.x = element_blank()) +
+  geom_text(data=distinct(df, cv_facet_label, .keep_all = TRUE), 
+            aes(x=1,y=0.045,label=cv_facet_label), 
+            hjust = 0,
+            size = 6,
+            color = "darkgrey")
   # coord_cartesian(ylim = c(0,0.5))
    # ylim(0,0.05) +
 
-loss_plot
+# loss_plot
 loss_plot_cropped
 
-ggsave(here("models/01_nlu_project/graphs/loss_plot_cropped.pdf"),loss_plot_cropped,height=4,width=9)
-ggsave(here("models/01_nlu_project/graphs/loss_plot.pdf"),loss_plot,height=7,width=12)
+# ggsave(here("writing/2019_SCiL/graphs/lossPlotCropped.pdf"),loss_plot_cropped,height=4,width=9)
+# ggsave(here("models/01_nlu_project/graphs/loss_plot.pdf"),loss_plot,height=7,width=12)
 ```
 
-```{r}
-facet_plot = ggplot(df9,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
-  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
-  geom_point() +
-  facet_wrap(~Epoch,ncol=6) +
-  ylim(0,1) +
-  xlim(0,1)
-
-facet_plot
-
-ggsave(here("models/01_nlu_project/graphs/pred_target_cv9.pdf"),facet_plot,height=8,width=10)
-```
 
 ```{r}
 df_facet = df %>% 
-  filter(Epoch==29 | Epoch==0) %>% 
-  filter(CV==0) %>% 
-  mutate(dist = (Target-Prediction)^2)
+  filter(Epoch==30 | Epoch==1) %>% 
+  filter(CV==1) %>% 
+  mutate(dist = (Target-Prediction)^2) %>% 
+  mutate(Facet_label = ifelse(Epoch == 1, "before training", "after training")) %>% 
+  mutate_at(vars(Facet_label), funs(fct_relevel(., "before training", "after training")))
 
-min(df_facet[df_facet$Epoch==29,]$Prediction)
+min(df_facet[df_facet$Epoch==30,]$Prediction)
 
-mean(df_facet[df_facet$Epoch==0 & df_facet$Data_type=="testing",]$dist)
-mean(df_facet[df_facet$Epoch==29 & df_facet$Data_type=="testing",]$dist)
+mean(df_facet[df_facet$Epoch==1 & df_facet$Data_type=="testing",]$dist)
+mean(df_facet[df_facet$Epoch==30 & df_facet$Data_type=="testing",]$dist)
 
 df_text = df_facet %>% 
   filter(!Data_type=="baseline") %>% 
-  group_by(Epoch,Data_type) %>% 
+  group_by(Facet_label,Data_type) %>% 
   mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
          label = str_c("r = ",correlation)) %>% 
   ungroup() %>% 
-  select(Epoch,Data_type,label) %>% 
+  select(Facet_label,Data_type,label) %>% 
   distinct() %>% 
   mutate(y = ifelse(Data_type=="training",0.25,0.1))
 
@@ -142,30 +153,45 @@ facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=
   scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
   scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
   geom_abline(intercept = 0, slope = 1, alpha=0.2) +
-  geom_point() +
-  geom_text(data=df_text,aes(x=0.7,y=y,label=label),hjust = 0) +
-  facet_wrap(~Epoch,nrow=1) +
+  geom_point(size=3) +
+  geom_text(data=df_text,
+            aes(x=0.65,y=y,label=label),
+            hjust = 0,
+            size = 5,
+            show.legend = FALSE) +
+  facet_wrap(~Facet_label,nrow=1) +
   ylim(0,1) +
   xlim(0,1) +
-  theme(legend.position="top")
+  ylab("Model prediction") +
+  xlab("Target label (empirical mean rating)") +
+  theme(legend.position="top") +
+  theme(legend.title = element_blank()) +
+  theme(legend.text = element_text(size = 13, color="#3c3c3c")) +
+  theme(axis.title = element_text(size = 15, color="#3c3c3c")) +
+  theme(axis.title.x = element_text(margin = margin(t = 7, r = 0, b = 0, l = 0))) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 7, b = 0, l = 0))) +
+  theme(axis.text = element_text(size = 10)) +
+  theme(axis.text.y = element_text(size = 10)) +
+  theme(strip.background = element_rect(fill="white")) +
+  theme(strip.text = element_text(size = 13))
   
 
 facet_plot_all
 
-ggsave(here("models/01_nlu_project/graphs/cv0-pred-target-epoch0-29.pdf"),facet_plot_all,height=3,width=5)
+# ggsave(here("writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf"),facet_plot_all,height=3,width=6)
 ```
 
 ```{r}
 df_facet = df %>% 
-  filter(Epoch==29)
+  filter(Epoch==1)
 
 df_text = df_facet %>% 
   filter(!Data_type=="baseline") %>% 
-  group_by(CV,Data_type) %>% 
+  group_by(cv_facet_label,Data_type) %>% 
   mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
          label = str_c("r = ",correlation)) %>% 
   ungroup() %>% 
-  select(CV,Data_type,label) %>% 
+  select(cv_facet_label,Data_type,label) %>% 
   distinct() %>% 
   mutate(y = ifelse(Data_type=="training",0.25,0.1))
 
@@ -174,48 +200,117 @@ facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=
   scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
   geom_abline(intercept = 0, slope = 1, alpha=0.2) +
   geom_point() +
-  geom_text(data=df_text,aes(x=0.5,y=y,label=label),hjust = 0) +
-  facet_wrap(~CV,nrow=2) +
+  geom_text(data=df_text,
+            aes(x=0.5,y=y,label=label),
+            hjust = 0,
+            size = 5,
+            show.legend = FALSE) +
+  facet_wrap(~cv_facet_label,nrow=2) +
   ylim(0,1) +
   xlim(0,1) +
   theme(legend.position="top") +
-  theme(axis.text.x = element_text(angle=30, hjust=1))
+  theme(legend.title = element_blank()) +
+  theme(axis.title = element_text(size = 18, color="#3c3c3c")) +
+  theme(axis.text = element_text(size = 10)) +
+  theme(legend.text = element_text(size = 15, color="#3c3c3c")) +
+  # theme(strip.text = element_text(size = 10)) +
+  # theme(strip.background = element_blank()) +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  theme(axis.text.x = element_text(angle=30, hjust=1)) +
+  geom_text(data=distinct(df_facet, cv_facet_label, .keep_all = TRUE), 
+            aes(x=0,y=0.95,label=cv_facet_label), 
+            hjust = 0,
+            size = 6,
+            color = "darkgrey",
+            show.legend = FALSE)
   
 
 facet_plot_all
 
-ggsave(here("models/01_nlu_project/graphs/all_pred_target_epoch29.pdf"),facet_plot_all,height=5,width=10)
+# ggsave(here("writing/2019_SCiL/graphs/all-pred-target-epoch1.pdf"),facet_plot_all,height=5,width=10)
+
 ```
 
 ```{r}
-df_facet = df %>% 
-  filter(Epoch==0)
+df_corr = df %>% 
+  filter(Epoch==30) %>% 
+  filter(Data_type=="testing") %>% 
+  group_by(CV) %>% 
+  summarize(cv_corr = cor(Target, Prediction, method='pearson'))
 
-df_text = df_facet %>% 
-  filter(!Data_type=="baseline") %>% 
-  group_by(CV,Data_type) %>% 
-  mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
-         label = str_c("r = ",correlation)) %>% 
-  ungroup() %>% 
-  select(CV,Data_type,label) %>% 
-  distinct() %>% 
-  mutate(y = ifelse(Data_type=="training",0.25,0.1))
+df_corr
 
-facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
-  scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
-  geom_abline(intercept = 0, slope = 1, alpha=0.2) +
-  geom_point() +
-  geom_text(data=df_text,aes(x=0.5,y=y,label=label),hjust = 0) +
-  facet_wrap(~CV,nrow=2) +
-  ylim(0,1) +
-  xlim(0,1) +
-  theme(legend.position="top") +
-  theme(axis.text.x = element_text(angle=30, hjust=1))
+mean(df_corr$cv_corr)
 
-facet_plot_all
+df_mse = df_facet %>% 
+  filter(Data_type=="testing" | Data_type=="baseline") %>% 
+  group_by(Data_type) %>% 
+  summarize(cv_mse = mean(Loss))
 
-ggsave(here("models/01_nlu_project/graphs/all_pred_target_epoch0.pdf"),facet_plot_all,height=5,width=10)
+df_mse
+
+df_stats = df %>% 
+  filter(Data_type=="testing" | Data_type=="baseline") %>% 
+  filter(Epoch==30) %>%  
+  mutate(model = ifelse(Data_type == "baseline", 0, 1))
+
+ggplot(df_stats, aes(x=Data_type, y=Loss)) +
+  geom_point(position="jitter") +
+  # facet_wrap(~CV, scale="free") +
+  # error bars 
+  stat_summary(fun.data = "mean_cl_boot",
+               # geom = "crossbar",
+               geom = "errorbar",
+               size = 1,
+               color = "green"
+               ) +
+  # means
+  stat_summary(fun.y = "mean",
+               geom = "point",
+               color = "green",
+               size = 4)
+
+library(lme4)
+library(lmerTest)
+
+m = lm(formula = model ~ Loss, data = df_stats)
+summary(m)
+
+# when collapsing over all CVs, the difference between losses in baseline and model is significant
+
+```
+
+
+```{r}
+# df_facet = df %>% 
+#   filter(Epoch==0)
+# 
+# df_text = df_facet %>% 
+#   filter(!Data_type=="baseline") %>% 
+#   group_by(CV,Data_type) %>% 
+#   mutate(correlation = round(cor(Target,Prediction,method="pearson"),digits=2),
+#          label = str_c("r = ",correlation)) %>% 
+#   ungroup() %>% 
+#   select(CV,Data_type,label) %>% 
+#   distinct() %>% 
+#   mutate(y = ifelse(Data_type=="training",0.25,0.1))
+# 
+# facet_plot_all = ggplot(df_facet,aes(x=Target,y=Prediction,color=Data_type,fill=Data_type)) +
+#   scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+#   scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
+#   geom_abline(intercept = 0, slope = 1, alpha=0.2) +
+#   geom_point() +
+#   geom_text(data=df_text,aes(x=0.5,y=y,label=label),hjust = 0) +
+#   facet_wrap(~CV,nrow=2) +
+#   ylim(0,1) +
+#   xlim(0,1) +
+#   theme(legend.position="top") +
+#   theme(axis.text.x = element_text(angle=30, hjust=1))
+# 
+# facet_plot_all
+# 
+# ggsave(here("models/01_nlu_project/graphs/all_pred_target_epoch0.pdf"),facet_plot_all,height=5,width=10)
 ```
 
 ```{r}
@@ -254,14 +349,20 @@ facet_plot = ggplot(df_test,aes(x=Target,y=Prediction)) +
   # scale_color_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
   # scale_fill_manual(values = c("#F3E96B","#F28A30","#6975A6")) +
   geom_abline(intercept = 0, slope = 1, alpha=0.2) +
-  geom_point(color="#1bc587",size=3) +
-  annotate("text", label = label, x = 0.15, y = 0.85, size = 6, colour = "black") +
+  geom_point(color="#F28A30",fill="#F28A30",size=3,alpha=0.7,shape=23) +
+  annotate("text", label = label, x = 0.15, y = 0.85, size = 5, colour = "#3c3c3c") +
   ylim(0,1) +
-  xlim(0,1)
+  xlim(0,1) +
+  ylab("Model prediction") +
+  xlab("Target label (empirical mean rating)") +
+  theme(axis.title = element_text(size = 13, color="#3c3c3c")) +
+  theme(axis.text = element_text(size = 10)) +
+  theme(axis.title.x = element_text(margin = margin(t = 7, r = 0, b = 0, l = 0))) +
+  theme(axis.title.y = element_text(margin = margin(t = 0, r = 7, b = 0, l = 0)))
 
 facet_plot
 
-ggsave(here("models/01_nlu_project/graphs/test_corr.pdf"),facet_plot,height=3,width=6)
+ggsave(here("writing/2019_SCiL/graphs/test-corr.pdf"),facet_plot,height=2,width=4)
 ```
 
 
