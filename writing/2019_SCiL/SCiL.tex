@@ -43,7 +43,7 @@
   Department of Linguistics \\
   Stanford University \\
   \texttt{jdegen@stanford.edu} \\\And
-  Chris Potts \\
+  Christopher Potts \\
   Department of Linguistics \\
   Stanford University \\
   \texttt{cpotts@stanford.edu}\\}
@@ -53,32 +53,39 @@
 \begin{document}
 \maketitle
 \begin{abstract}
+  \ek{update abstract wrt new framing}
   News has become a central part of our lives and with it our assessments and reproductions of these stories. However, the way in which humans assess guilt on the basis of such crime stories is unclear. If neural networks can learn to predict guilt judgments from a news story, they can help us form hypotheses about relevant features for human guilt predictions. However, whether neural networks can even learn to predict guilt judgments from a given news story is still an open question. In this paper, we will present a bidirectional LSTM with self-attention that makes a promising first step to predict guilt judgments. On the basis of attention visualizations, we argue that the model learns meaningful patterns from the data that guides its prediction.
 \end{abstract}
 
 \section{Introduction}
 
-In the current world we are constantly confronted with news. We consume it by reading the newspaper, listening to news channels, but also through social interactions, for example conversations with friends. 
-A crucial aspect of news is the uncertainty that comes with different stories. For example news can report on advances in crime investigations that are still in progress, such as the arrest of a suspect. Most importantly, an arrest does not imply that the suspect is in fact guilty or even that the investigation is completed. Reporting is often not simply about guilty or not guilty, but a graded notion of guilt presenting a range of evidence from definite to only suggestive.
+\ek{update according to framing proposal in email}
 
-After observing the news, they are retold and passed on through social interactions. It is essential that the uncertainty which was previously communicated, will propagate to the next person we tell the story to. This person in turn can tell the story to someone and so on. If we had perfect memory, reproduced stories would be exact replica of their predecessors. However, reproduction is not only a lossy but also faulty process. \cite{Bartlett:1932} introduced this transmission chain paradigm as a scientific method and showed not only that information get lost, but also that they get distorted. Subsequent work found that the person's priors and beliefs shape their reproductions of stories \citep{Allport:1945,Kashima:2000,Griffiths:2007}. In other words, people's initial guilt assessments after hearing a story will affect how they will reproduce it. It is therefore relevant which guilt judgments people form and what these are influenced by.
+Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights about language.
 
-However, guilt judgments are very complex. Assessing the likelihood of someone's guilt could be dependent on how persuasive we find their alibi, how condemning their motive appears and even prejudices against race or culture of the suspect could play a role. Additionally, the presentation of the news seems relevant: How detailed is the report? Does the story serve the ideological purposes of the person reporting on it? 
+However, deriving scientific insights presupposes that the networks are learning sensible representations, which is often in question. Attention mechanisms have improved model performance and also made our networks more interpretable.
 
-There are many more of these potential aspects that we can reasonably assume to affect our guilt judgments. In other words, there are numerous potential features that could affect our guilt perception when assessing a crime story. This complexity provides a big challenge to our investigation of what guides these guilt judgments. Testing all of these potential factors randomly is highly inefficient. Ideally, we would like to form hypotheses about promising aspects with respect to the language used in the text. Those can then be tested in controlled human subject experiments to inform our theory about guilt perception.
+In this paper, we apply neural networks with attention to a task that has both linguistic and societal import: predicting whether the reader of a narrative text about a crime will conclude that its main subject is guilty or innocent.
 
-But which resources can we employ to inform us about promising hypotheses? One approach might be to ask participants directly about their reasons to find a suspect more or less guilty. However, these \ek{self reports} can be highly biased. For example, \ek{people have a tendency to rationalize their racial biases (cite "the limitations of implicit bias"); implicit biases (jennifer eberhardt, perdy 2004); basis for manipulation is unconscious and therefore non-reportable}
+Our models are good at this task, which is nice. However, we are, in particular, interested in seeing how our networks attend to markers of certainty and uncertainty in these texts. To what extent do these epistemic markers guide network decisions?
 
-Can neural networks be tools to inform hypotheses about human guilt judgments? Since neural networks try to approximate a complex function, their prediction is simply data driven and their evaluation will not be distorted by the biased human self reports. Furthermore, it has the potential to detect patterns that might influence us without our awareness. Therefore, neural networks are a promising method to inform hypotheses about relevant features that influence human guilt judgments.
 
-However, these considerations assume that a neural network can find meaningful patterns in the data which predict guilt judgments. But is that the case? Can neural network models learn to predict human guilt judgments? In this work, we investigate whether a bidirectional LSTM with attention can model empirically collected guilt ratings of propagated news stories. Crucially, these stories are very similar in content and still show remarkable variations in the guilt judgments people draw. Can a model pick up on these small differences and on their basis make meaningful inferences about guilt perceptions?
+% In the current world we are constantly confronted with news. We consume it by reading the newspaper, listening to news channels, but also through social interactions, for example conversations with friends. 
+% A crucial aspect of news is the uncertainty that comes with different stories. For example news can report on advances in crime investigations that are still in progress, such as the arrest of a suspect. Most importantly, an arrest does not imply that the suspect is in fact guilty or even that the investigation is completed. Reporting is often not simply about guilty or not guilty, but a graded notion of guilt presenting a range of evidence from definite to only suggestive.
 
-We argue that neural network models are capable to predict human guilt judgments on the basis of news articles. Furthermore we argue that they learn meaningful patterns in the data that we can nourish. We show that simple neural network visualizations as well as inspecting guilt predictions while making controlled and systematic changes to the stories are promising ways to probe the inner workings of the model.
+% After observing the news, they are retold and passed on through social interactions. It is essential that the uncertainty which was previously communicated, will propagate to the next person we tell the story to. This person in turn can tell the story to someone and so on. If we had perfect memory, reproduced stories would be exact replica of their predecessors. However, reproduction is not only a lossy but also faulty process. \cite{Bartlett:1932} introduced this transmission chain paradigm as a scientific method and showed not only that information get lost, but also that they get distorted. Subsequent work found that the person's priors and beliefs shape their reproductions of stories \citep{Allport:1945,Kashima:2000,Griffiths:2007}. In other words, people's initial guilt assessments after hearing a story will affect how they will reproduce it. It is therefore relevant which guilt judgments people form and what these are influenced by.
 
-% \ek{maybe put this in Discussion: }
-% Generally, neural network predictions can be used to assess the perception of news stories to ensure news stories in fact communicate the intended amount of uncertainty. Failing to do so increases the problem of unintentional false news propagation. In the long run, these systems can then also be used to reverse engineer which aspects of news stories might affect guilt judgments the most and which might do so less than expected. This can inform the way we write news that corresponds to the listeners' most likely interpretations.
+% However, guilt judgments are very complex. Assessing the likelihood of someone's guilt could be dependent on how persuasive we find their alibi, how condemning their motive appears and even prejudices against race or culture of the suspect could play a role. Additionally, the presentation of the news seems relevant: How detailed is the report? Does the story serve the ideological purposes of the person reporting on it? 
 
-% ####
+% There are many more of these potential aspects that we can reasonably assume to affect our guilt judgments. In other words, there are numerous potential features that could affect our guilt perception when assessing a crime story. This complexity provides a big challenge to our investigation of what guides these guilt judgments. Testing all of these potential factors randomly is highly inefficient. Ideally, we would like to form hypotheses about promising aspects with respect to the language used in the text. Those can then be tested in controlled human subject experiments to inform our theory about guilt perception.
+
+% But which resources can we employ to inform us about promising hypotheses? One approach might be to ask participants directly about their reasons to find a suspect more or less guilty. However, these \ek{self reports} can be highly biased. For example, \ek{people have a tendency to rationalize their racial biases (cite "the limitations of implicit bias"); implicit biases (jennifer eberhardt, perdy 2004); basis for manipulation is unconscious and therefore non-reportable}
+
+% Can neural networks be tools to inform hypotheses about human guilt judgments? Since neural networks try to approximate a complex function, their prediction is simply data driven and their evaluation will not be distorted by the biased human self reports. Furthermore, it has the potential to detect patterns that might influence us without our awareness. Therefore, neural networks are a promising method to inform hypotheses about relevant features that influence human guilt judgments.
+
+% However, these considerations assume that a neural network can find meaningful patterns in the data which predict guilt judgments. But is that the case? Can neural network models learn to predict human guilt judgments? In this work, we investigate whether a bidirectional LSTM with attention can model empirically collected guilt ratings of propagated news stories. Crucially, these stories are very similar in content and still show remarkable variations in the guilt judgments people draw. Can a model pick up on these small differences and on their basis make meaningful inferences about guilt perceptions?
+
+% We argue that neural network models are capable to predict human guilt judgments on the basis of news articles. Furthermore we argue that they learn meaningful patterns in the data that we can nourish. We show that simple neural network visualizations as well as inspecting guilt predictions while making controlled and systematic changes to the stories are promising ways to probe the inner workings of the model.
 
 \subsection{Related work}
 
@@ -97,7 +104,7 @@ For short phrases, bidirectional LSTMs \cite{Hochreiter:1997,Schuster:1997,Grave
 \cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
 
 \section{Dataset}
-For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \textit{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of "very poor quality" in the weak evidence condition and "very high quality" in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall (see Figure \ref{fig:corpus-overview}).
+For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \textit{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality" in the weak evidence condition and ``very high quality" in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall (see Figure \ref{fig:corpus-overview}).
 
 \begin{figure}[t!]
 	\includegraphics[width=\linewidth]{graphs/corpus-overview.pdf}
@@ -105,7 +112,7 @@ For training and testing the model, we use the Annotated Iterated Narration Corp
 	\label{fig:corpus-overview}
 \end{figure}
 
-After the corpus collection, \citeauthor{Kreiss:2019} annotated the corpus with human judgments. The questions were primarily related to different aspects of guilt perception but also for example perceived subjectivity of the story writing. Participants were recruited on Amazon Mechanical Turk and indicated their response on a continuous slider, here underlyingly coded as ranging from 0 to 1. Most interestingly for this project, they asked "How likely is it that the suspect is / the suspects in the crime are guilty?". Each story received approximately 20 ratings, ranging from 0 to 1. For the purpose of this work, we will consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure \ref{fig:corpus-annotations}. In contrast to the raw ratings, the means only range from 0.27 to 0.92. 
+After the corpus collection, \citeauthor{Kreiss:2019} annotated the corpus with human judgments. The questions were primarily related to different aspects of guilt perception but also for example perceived subjectivity of the story writing. Participants were recruited on Amazon Mechanical Turk and indicated their response on a continuous slider, here underlyingly coded as ranging from 0 to 1. Most interestingly for this project, they asked ``How likely is it that the suspect is / the suspects in the crime are guilty?". Each story received approximately 20 ratings, ranging from 0 to 1. For the purpose of this work, we will consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure \ref{fig:corpus-annotations}. In contrast to the raw ratings, the means only range from 0.27 to 0.92. 
 
 % Subsequent analyses revealed that there are correlations with the number of hedges in the story, the length of the stories and of course with the evidence condition and therefore content expressed. 
 
@@ -141,7 +148,7 @@ Overall, the model consists of four main modules (see Figure \ref{fig:model}). F
 
 
 \paragraph{Word embeddings (BERT)}
-We used a pretrained BERT model as the word embedding module (represented by the purple box in Figure \ref{fig:model}). The module receives the original crime story as an input and returns a word embedding for each token in the story $(x_1, x_2, ..., x_n)$. For tokenization, we used the BertTokenizer implementation in the python package 
+We used a pretrained BERT model as the word embedding module (represented by the yellow box in Figure \ref{fig:model}). The module receives the original crime story as an input and returns a word embedding for each token in the story $(x_1, x_2, ..., x_n)$. For tokenization, we used the BertTokenizer implementation in the python package 
 \textit{pytorch-pretrained-bert}
 \footnote{Huggingface Inc., https:\slash \slash github.com\slash huggingface\slash pytorch-pretrained-BERT, June 09 2019}. 
 The BERT word embeddings for each token were extracted from the Google-pretrained base BERT word embeddings (uncased) with 768 hidden layers. Note that given the requirements of the pretrained BERT model, the original story had been transformed to all lower-case letters.
@@ -177,7 +184,7 @@ $\mathbf{a_{out}} = a_w^T H$\\
 This is the output of the attention module.
 
 \paragraph{Output (Logistic regression)}
-The logistic regression module is represented by a green box in Figure \ref{fig:model}.
+The logistic regression module is represented by a blue box in Figure \ref{fig:model}.
 For a prediction, the output of the attention module ($\mathbf{a_{out}}$) is linearly transformed into a single number. 
 % $p = sigmoid(\mathbf{a_{out}})$\\
 The Sigmoid function ensures that the prediction lies between 0 and 1, just like the restriction on the guilt judgments it is trained on. 
@@ -258,16 +265,16 @@ In the original introduction of the attention mechanism, \citeauthor{Vaswani:201
 To investigate what might affect model predictions, we ran the model again on the final test data (as described in Section \ref{model-results}). Figure \ref{fig:viz} displays three of these stories with their attention weight distribution.
 
 \begin{figure*}
-	\includegraphics[width=\linewidth]{graphs/attention-viz-marked2.pdf}
+	\includegraphics[width=\linewidth]{graphs/attention-marked.pdf}
 	\caption{Visualization of the attention weights (y axis) for a tokenized story (x axis) from the test set. Because we took the softmax over the attention weights, the scale of the y axis is irrelevant. Interesting aspects are marked in yellow.}
 	\label{fig:viz}
 \end{figure*}
 
 The model seems to focus on phrases that explicitly describe uncertainty about the evidence (see Figure \ref{fig:viz}C). If present, they usually outweigh the rest of the story. This suggests that if there is an explicit claim that affects the evidence of the suspect's guilt, it is considered as the most important source to inform guilt judgment.
 
-Additionally, peaks occur on words and phrases which communicate turning points in a story, such as "however", "but", "even though" and "it turns out". This can be seen in all three stories in Figure \ref{fig:viz}. Those phrases could be relevant because they usually indicate a contrast to a prior narrative. Since those markers mostly follow reports of arrests, they might be strongly correlated with objections to those arrests which would in turn influence guilt perceptions.
+Additionally, peaks occur on words and phrases which communicate turning points in a story, such as ``however", ``but", ``even though" and ``it turns out". This can be seen in all three stories in Figure \ref{fig:viz}. Those phrases could be relevant because they usually indicate a contrast to a prior narrative. Since those markers mostly follow reports of arrests, they might be strongly correlated with objections to those arrests which would in turn influence guilt perceptions.
 
-Figure \ref{fig:viz}B shows a case where the model seems to find a simple declarative ("two boys destroyed") to be relevant for the final prediction. This is especially interesting, since declaratives on their own do not generally communicate guilt-related information. However, they are very important for guilt judgments because they do not allow any uncertainty about the association between crime and suspect.
+Figure \ref{fig:viz}B shows a case where the model seems to find a simple declarative (``two boys destroyed") to be relevant for the final prediction. This is especially interesting, since declaratives on their own do not generally communicate guilt-related information. However, they are very important for guilt judgments because they do not allow any uncertainty about the association between crime and suspect.
 
 In summary, the visualization of the attention weights contribute further evidence that the model learns meaningful patterns in the data.
 
@@ -276,7 +283,7 @@ In summary, the visualization of the attention weights contribute further eviden
 The model visualization provides evidence for the claim that the model picks up on meaningful patterns in the corpus. This allows us to use the model to inform new hypotheses.
 
 But does the model make reasonable predictions on newly constructed data points?
-The original corpus started out with five different crime stories. Each of these stories occurred in two conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as "allegedly" or "(un)likely". The corpus cannot inform us about the relationship between those uncertainty markers and the evidential manipulation. What happens if we ask the model to predict a guilt judgment for each of the original stories without those uncertainty markers/hedges?
+The original corpus started out with five different crime stories. Each of these stories occurred in two conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as ``allegedly" or ``(un)likely". The corpus cannot inform us about the relationship between those uncertainty markers and the evidential manipulation. What happens if we ask the model to predict a guilt judgment for each of the original stories without those uncertainty markers/hedges?
 
 To investigate how hedging influences model predictions, we rewrote those 10 original stories into versions without any uncertainty markers. Note that they remained as close to the original as possible, while still remaining grammatical.
 
