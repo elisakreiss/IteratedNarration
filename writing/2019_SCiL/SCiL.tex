@@ -59,15 +59,13 @@
 
 \section{Introduction}
 
-\ek{update according to framing proposal in email}
+%\ek{update according to framing proposal in email}
 
-Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights about language.
+Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights into language use. These more scientific applications raise the question of whether the models are processing data in a motivated way; their ``black box'' nature is often an obstacle to answering this question \citep{Alishah-etal:2019}. Recently, attention mechanisms, which capture the strength of association beween components of these networks \citep{bahdanau2014neural,luong-etal-2015-effective}, have not only improved performance, but also increased interpretability, potentially opening the door to new linguistic applications of these models (cf.~\citep{papers-that-challenge-this-idea}).
 
-However, deriving scientific insights presupposes that the networks are learning sensible representations, which is often in question. Attention mechanisms have improved model performance and also made our networks more interpretable.
+In this paper, we apply neural networks with attention to a task that has both linguistic and societal import: predicting whether the reader of a short narrative crime report will conclude that the main subject is guilty or innocent. Our networks achieve strong performance on this task, as defined by the dataset of \citet{Kreiss:2019}, which leads us to explore their learned parameters by inspecting how they predictions for new, carefully controlled examples. Our central finding is that, where the evidence is weak, the networks make robust use of markers of certainty and uncertainty, as indicated by the large attention weights for such terms. In contrast, where the evidence is strong, these markers contribute less (have smaller attention weights). To the extent that human adopt similar reading strategies, this can inform how the news is reported, in that it gives us insights into the contribution of words like \emph{allegedly} and \emph{possibly} in shaping readers' construal of newspaper articles.
 
-In this paper, we apply neural networks with attention to a task that has both linguistic and societal import: predicting whether the reader of a narrative text about a crime will conclude that its main subject is guilty or innocent.
 
-Our models are good at this task, which is nice. However, we are, in particular, interested in seeing how our networks attend to markers of certainty and uncertainty in these texts. To what extent do these epistemic markers guide network decisions?
 
 
 % In the current world we are constantly confronted with news. We consume it by reading the newspaper, listening to news channels, but also through social interactions, for example conversations with friends. 
@@ -87,7 +85,7 @@ Our models are good at this task, which is nice. However, we are, in particular,
 
 % We argue that neural network models are capable to predict human guilt judgments on the basis of news articles. Furthermore we argue that they learn meaningful patterns in the data that we can nourish. We show that simple neural network visualizations as well as inspecting guilt predictions while making controlled and systematic changes to the stories are promising ways to probe the inner workings of the model.
 
-\subsection{Related work}
+\section{Related work}
 
 The central challenge is to find a promising neural network architecture that can extract relevant features of an input paragraph. This can then be used to predict a value that represents a guilt judgment.
 
