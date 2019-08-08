@@ -16,6 +16,8 @@
 \usepackage{times}
 \usepackage{latexsym}
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
 
 \usepackage{url}
 
@@ -30,8 +32,13 @@
 
 \newcommand\BibTeX{B\textsc{ib}\TeX}
 
+\DeclareMathOperator{\softmax}{softmax}
+\DeclareMathOperator{\sigmoid}{sigmoid}
+
 \definecolor{Orange}{RGB}{255,140,0}
 \newcommand{\ek}[1]{\textcolor{Orange}{[ek: #1]}} 
+
+\newcommand{\aout}{\mathbf{a_{\text{out}}}}
 
 \title{Predicting guilt judgments from crime stories}
 
@@ -102,7 +109,7 @@ For short phrases, bidirectional LSTMs \cite{Hochreiter:1997,Schuster:1997,Grave
 \cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
 
 \section{Dataset}
-For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \textit{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality" in the weak evidence condition and ``very high quality" in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall (see Figure \ref{fig:corpus-overview}).
+For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission-chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall (see Figure~\ref{fig:corpus-overview}).
 
 \begin{figure}[t!]
 	\includegraphics[width=\linewidth]{graphs/corpus-overview.pdf}
@@ -110,7 +117,7 @@ For training and testing the model, we use the Annotated Iterated Narration Corp
 	\label{fig:corpus-overview}
 \end{figure}
 
-After the corpus collection, \citeauthor{Kreiss:2019} annotated the corpus with human judgments. The questions were primarily related to different aspects of guilt perception but also for example perceived subjectivity of the story writing. Participants were recruited on Amazon Mechanical Turk and indicated their response on a continuous slider, here underlyingly coded as ranging from 0 to 1. Most interestingly for this project, they asked ``How likely is it that the suspect is / the suspects in the crime are guilty?". Each story received approximately 20 ratings, ranging from 0 to 1. For the purpose of this work, we will consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure \ref{fig:corpus-annotations}. In contrast to the raw ratings, the means only range from 0.27 to 0.92. 
+After the corpus collection, \citeauthor{Kreiss:2019} annotated the corpus with human judgments. The questions were primarily related to different aspects of guilt perception but also, for example, perceived subjectivity of the story writing. Participants were recruited on Amazon Mechanical Turk and indicated their response on a continuous slider, here underlyingly coded as ranging from 0 to 1. Most interestingly for this project, they asked ``How likely is it that the suspect is / the suspects in the crime are guilty?'' Each story received approximately 20 ratings, ranging from 0 to 1. For the purposes of this work, we consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure~\ref{fig:corpus-annotations}. In contrast to the raw ratings, the means only range from 0.27 to 0.92. 
 
 % Subsequent analyses revealed that there are correlations with the number of hedges in the story, the length of the stories and of course with the evidence condition and therefore content expressed. 
 
@@ -120,77 +127,60 @@ After the corpus collection, \citeauthor{Kreiss:2019} annotated the corpus with 
 	\label{fig:corpus-annotations}
 \end{figure}
 
-In summary, the AINC is a corpus of reproduced news stories, annotated by human guilt judgments. Since the stories originated from only 5 unique stories (each in 2 conditions), a lot of information is shared between single data points.  Despite this similarity, the range of guilt judgments is still high, alluding to subtle differences that trigger this variance. 
-One of the challenges, this dataset poses, is its size. There are only 260 labeled examples that can be used for training and testing a model.
-Can a bidirectional LSTM with attention pick up on the patterns in human judgments with only very limited available data?
+In summary, the AINC is a corpus of reproduced news stories, annotated by human guilt judgments. Since the stories originated from only 5 unique stories (each in 2 conditions), a lot of information is shared between single data points.  Despite this similarity, the range of guilt judgments is still high, alluding to subtle differences that trigger this variance. We now turn to the question of whether a deep learning model can learn to predict the assessments of guilt the corpus provides.
+
+
+% One of the challenges, this dataset poses, is its size. There are only 260 labeled examples that can be used for training and testing a model.
+% Can a bidirectional LSTM with attention pick up on the patterns in human judgments with only very limited available data?
 
 \section{Model}
 
-The goal of this work was to determine whether neural networks can be a useful tool to investigate the formation of guilt judgments. To do this, we used a model which was based on the design proposed by \citeauthor{Lin:2017}. We chose to use this model as our base because of its promising performances in various NLP tasks. Furthermore, its attention module provides a straightforward way to investigate the inner workings of the model. 
-
-We made two major adjustments to the model proposed by \citeauthor{Lin:2017}. Firstly, we simplified the attention module to represent a vector and not a matrix. Second of all, we replaced the GloVe word embeddings by BERT embeddings\footnote{In their paper, \citeauthor{Devlin:2018} showed that BERT embeddings (can) improve existing NLP systems. Pilot runs in the development of the model showed that BERT improved the convergence of the model.}.
-
-The following sections will explain the model architecture and the training of the model in detail.
-
-\subsection{Architecture}
-\label{model-architecture}
-The tested model (see Figure \ref{fig:model}) receives a crime story as an input and outputs a value between 0 and 1. This value is interpreted as a continuous guilt assessment of the suspect in the story.
-
 \begin{figure}
-	\includegraphics[width=\linewidth]{graphs/model.pdf}
-	\caption{Proposed model architecture to predict guilt judgments (between 0 and 1) from news stories. The arrows indicate the information flow. The boxes stand for operations performed on the data.}
-	\label{fig:model}
+  \includegraphics[width=\linewidth]{graphs/model.pdf}
+  \caption{Model architecture. The network receives a crime
+    story as its input. We rely on BERT to tokenize this
+    text in a way that aligns with its token embedding \citep{wu2016google}.
+    The resulting token sequences is processed by BERT
+    to produce a sequence of contextual representations.
+    These are the input to a bidirectional LSTM layer,
+    which fine-tunes the BERT representations for our
+    task. This sequence of vectors is transformed into a
+    vector of weights, which are used to create a weighted
+    sum of those vectors that serves as the input to the
+    regression layer at the very top, which learns from
+    scalar guilt judgments.}
+  \label{fig:model}
 \end{figure}
 
-Overall, the model consists of four main modules (see Figure \ref{fig:model}). First the crime story is transformed into \textbf{word embeddings}. These are the input to a bidirectional \textbf{LSTM} with \textbf{attention}, which will output a single vector representation for the whole input sequence. To obtain the desired output in the range [0, 1], a simple \textbf{logistic regression} is performed on the vector. 
+Our starting point is a model first proposed by \citeauthor{Lin:2017}, which is fundementally a  bidirectional LSTM with attention mechanisms applied to its outputs. We chose this model primarily because its attention mechanisms seem especially promising for introspection.  The overall architecture is summarized in Figure~\ref{fig:model}.
 
+% The goal of this work was to determine whether neural networks can be a useful tool to investigate the formation of guilt judgments. To do this, we used a model which was based on the design proposed by \citeauthor{Lin:2017}. We chose to use this model as our base because of its promising performances in various NLP tasks. Furthermore, its attention module provides a straightforward way to investigate the inner workings of the model. 
 
-\paragraph{Word embeddings (BERT)}
-We used a pretrained BERT model as the word embedding module (represented by the yellow box in Figure \ref{fig:model}). The module receives the original crime story as an input and returns a word embedding for each token in the story $(x_1, x_2, ..., x_n)$. For tokenization, we used the BertTokenizer implementation in the python package 
-\textit{pytorch-pretrained-bert}
-\footnote{Huggingface Inc., https:\slash \slash github.com\slash huggingface\slash pytorch-pretrained-BERT, June 09 2019}. 
-The BERT word embeddings for each token were extracted from the Google-pretrained base BERT word embeddings (uncased) with 768 hidden layers. Note that given the requirements of the pretrained BERT model, the original story had been transformed to all lower-case letters.
+We made two major adjustments to the model proposed by \citeauthor{Lin:2017}. First, we replaced the GloVe word embeddings \citep{Pennington:2014} by BERT representations \citep{Devlin:2018}. Whereas GloVe provides a single embedding for each word, with no sensitivity to the context in which it occurs, BERT representations vary by syntactic context. \citeauthor{Devlin:2018} report that using these embeddings boosts performance in all of the 11 natural language tasks it was trained on compared to previous systems, and we saw comparable improvements when we switched from GloVe to BERT. To access pretrained BERT parameters, we used the Hugging Face toolkit.\footnote{\url{https://github.com/huggingface/pytorch-transformers}}
 
-This module takes the raw crime story as input and returns a word embedding representation for each of the $n$ tokens in the text. The output is therefore of size $n \times 768$.
+Second, we simplified \citeauthor{Lin:2017}'s attention module. The inputs to this module are the $n$ hidden states of the LSTM, which we store as a matrix $H \in \mathbb{R}^{n \times 400}$. In the attention module, we apply a dense layer with parameters $W_{a_{1}} \in \mathbb{R}^{400 \times 50}$ and a $\tanh$ activation function, resulting in matrix of 50-dimensional representations $A_{1} \in \mathbb{R}^{n \times 50}$:
+\[
+  A_{1} = \tanh(HW_{a_{1}})
+\]
 
-\paragraph{LSTM}
-The bidirectional LSTM (represented by the orange box in Figure \ref{fig:model}) takes the word embeddings as input to enhance the contextual representation of the story.
-% \begin{math}
-% 	\overrightarrow{h_t} = \overrightarrow{LSTM}(x_t, \overrightarrow{h_{t-1}})
-% \end{math}
+The matrix $A_1$ is further compressed to the attention weight vector $\mathbf{a_w}$ of size $50 \times 1$, with a softmax applied so that the weights sum to 1:
+\[
+  \mathbf{a_w} = \softmax(A_{1}\mathbf{w_{aw}})
+\]
 
-% \begin{math}
-% 	\overleftarrow{h_t} = \overleftarrow{LSTM}(x_t, \overleftarrow{h_{t-1}})
-% \end{math}\\
-The LSTM has 200 hidden dimensions. Since a bidirectional LSTM concatenates the hidden states of the forward and backward LSTM, each hidden layer has 400 hidden dimensions. 
-% $H = (\mathbf{h_1}, \mathbf{h_2}, ..., \mathbf{h_n})$\\
-Therefore, the LSTM module receives an input of size $n \times 768$ and returns a matrix $H$ of size $n \times 400$.
+Now we take the dot product of the LSTM hidden state matrix $H$ and the just obtained vector $a_w$ to obtain the attention output vector $\aout$ of size $400$. 
 
-\paragraph{Attention}
-The attention module (represented by the red box in Figure \ref{fig:model}) creates a weight for each input token before they are summed over. The boxes inside the attention module stand for linear operations that reduce the dimensionality of the input. Tanh and softmax are non-linear transformations on the output of these dense layers.
+\[
+  \aout = a_{w}^{\top} H
+\]
+This is the output of the attention module. Intuitively, the attention weights capture the relative importance of each token with regard to the final prediction, and $\aout$ synthesizes all of these weighted contributions into a single vector.
 
-The LSTM module returns $H$, i.e., $n$ hidden states of size 400. These are first linearly reduced to $n \times 50$ dimensions and tanh transformed. 
+Finally, the logistic regression module is represented by a blue box in Figure~\ref{fig:model}.  For a prediction, $\aout$ is linearly transformed into a single number $p = \sigmoid(\aout)$. The sigmoid function ensures that the prediction lies between 0 and 1, just like the restriction on the guilt judgments it is trained on.
 
-$A_1 = tanh(W_{a1} H)$\ek{Lin has here $H^T$, but this is not true for our model}\\
-The resulting matrix $A_1$ is further compressed to the attention weight vector $\mathbf{a_w}$ of size $n \times 1$. The softmax ensures that its values sum to 1.
-
-$\mathbf{a_w} = softmax(\mathbf{w_{aw}} A_1)$
-
-Now we take the dot product of the LSTM hidden state matrix $H$ and the just obtained vector $a_w$ to obtain the attention output vector $\mathbf{a_{out}}$ of size $400$. 
-
-$\mathbf{a_{out}} = a_w^T H$\\
-This is the output of the attention module.
-
-\paragraph{Output (Logistic regression)}
-The logistic regression module is represented by a blue box in Figure \ref{fig:model}.
-For a prediction, the output of the attention module ($\mathbf{a_{out}}$) is linearly transformed into a single number. 
-% $p = sigmoid(\mathbf{a_{out}})$\\
-The Sigmoid function ensures that the prediction lies between 0 and 1, just like the restriction on the guilt judgments it is trained on. 
-
-
-Overall, the model has 111,054,742 trainable parameters. Only 0.02\% of them are in the attention and output modules, and 1.40\% are in the LSTM module. These parameters were initialized randomly. The rest of the parameters (98.59\%) are the pretrained weights in the BERT word embedding module.
+Overall, the model has 111,054,742 trainable parameters. This sounds mismatched with our very small dataset, but only 0.02\% of these parameters are in the attention and output modules and 1.40\% are in the LSTM module. The rest of the parameters (98.59\%) are the pretrained weights in the BERT word embedding module.
 
 In summary, the model receives a crime story as an input. BERT word embeddings for the story feed into a bidirectional LSTM. The attention module computes the weighted sum over the LSTM's hidden states. The resulting attention vector is fed through a linear layer and a Sigmoid function to ensure that the prediction lies between 0 and 1.
+
 
 \subsection{Training}
 
