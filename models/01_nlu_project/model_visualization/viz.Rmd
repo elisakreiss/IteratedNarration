@@ -381,7 +381,7 @@ ggplot(toplot, aes(x=hedges, y=prediction, color=topic, group=topic)) +
   geom_point(alpha=0.7) +
   geom_line() +
   theme(legend.position = "top") +
-  theme(axis.text.x = element_text(angle=30, hjust=1)) +
+  # theme(axis.text.x = element_text(angle=30, hjust=1)) +
   xlab("Hedges") +
   ylab("Prediction") +
   # stat_summary(fun.y = "mean",
@@ -390,7 +390,7 @@ ggplot(toplot, aes(x=hedges, y=prediction, color=topic, group=topic)) +
   # stat_summary(fun.data = mean_cl_boot,
   #              geom = "errorbar",
   #              width = 0.1)
-  ggsave(here("writing/2019_SCiL/graphs/hedges.pdf"),height=4,width=4.5)
+  ggsave(here("writing/2019_SCiL/graphs/hedges.pdf"),height=3.5,width=4.5)
 
   
 ```
