@@ -94,8 +94,6 @@ In this paper, we apply neural networks with attention to a task that has both l
 
 \section{Related work}
 
-
-
 % \subsection{work on predicting guilt}
 Fausey 2010: investigate role of agentive language in guilt/blame and punishment/financial liability judgment (very strong and robust effect)
 
@@ -104,47 +102,47 @@ Kowsrihawat 2018: recurrent neural net with attention predicting guilt verdict b
 % \subsection{work on how people understand markers of (un)certainty}
 % \paragraph{markers of uncertainty -- names and definitions}
 
-summarized in Fraser 2010
-Wiener and Mehrabian 1968: qualification; imply uncertainty and separation between communicator and person/object of communication; can indicate less positive experience and unwillingness to communicate information
-
-Lakoff 1972: hedges ("words that make thing fuzzier or less fuzzy")
-
-Fraser 1975: performative hedging, e.g., can promise, must request, should apologize
-
-Erickson's definition of hedges (1978): "Forms which reduce the force of an assertion by allowing for exceptions for avoiding rigid commitments such as sort of, kind of, a little, ..."
-
-Prince 1982: propositional hedging (truth of proposition); speech act hedging (speaker's commitment to truth)
-
-Weintraub 1989: 3 kinds -- uncertainty expressions, weakening modifiers, vague phrases; expected vs unexpected us of expressions might be relevant for evaluation (e.g., about 8:10 is expected, therefore no equivocation)
-
-Coates 1996: main function of hedges is expression of doubt and less/more confidence
-
-?Adams 2006: equivocation
-
-Rubin 2007: Certainty/epistemic modality = linguistic expression of an estimation of the likelihood that a certain state of affairs is/has been/will be true (Nuyts, 2001)
-
-Crystal 2008: hedges = general term to express imprecision or qualification
-
-classes of hedges according to Prince (1982), Brown and Levinson (1987), Fraser (2010): Approximators (change original proposition; subcategories: adaptors, rounders); Shields (change speaker commitment; subcategories: plausibility, attribution)
+% Weinreich 1966
+% Wiener and Mehrabian 1968: qualification; imply uncertainty and separation between communicator and person/object of communication; can indicate less positive experience and unwillingness to communicate information
+% Lakoff 1972: hedges ("words that make thing fuzzier or less fuzzy")
+% Fraser 1975: performative hedging, e.g., can promise, must request, should apologize
+% Erickson's definition of hedges (1978): "Forms which reduce the force of an assertion by allowing for exceptions for avoiding rigid commitments such as sort of, kind of, a little, ..."
+% Prince 1982: propositional hedging (truth of proposition); speech act hedging (speaker's commitment to truth)
+% Weintraub 1989: 3 kinds -- uncertainty expressions, weakening modifiers, vague phrases; expected vs unexpected us of expressions might be relevant for evaluation (e.g., about 8:10 is expected, therefore no equivocation)
+% Coates 1996: main function of hedges is expression of doubt and less/more confidence
+% ?Adams 2006: equivocation
+% Rubin 2007: Certainty/epistemic modality = linguistic expression of an estimation of the likelihood that a certain state of affairs is/has been/will be true (Nuyts, 2001)
+% Crystal 2008: hedges = general term to express imprecision or qualification
+% classes of hedges according to Prince (1982), Brown and Levinson (1987), Fraser (2010): Approximators (change original proposition; subcategories: adaptors, rounders); Shields (change speaker commitment; subcategories: plausibility, attribution)
 
 
 % \paragraph{work on how people understand markers of (un)certainty}
-Wade 1993: hedges -- speakers who precede text with these are not fully committed to their accounts \ek{however, news articles aren't technically their accounts}
 
-Erickson 1978: powerful/powerless style influence attraction to witness and perceived credibility; powerless has lots of hedges and decreases attraction and credibility; speech style did not only affect credibility and attractiveness, but also their acceptance of the information contained in the testimony but "it seems like a complex relationship" \ek{the same sex issue might be reflected in professor story}
+In the literature, people categorized and labeled (un)certainty markers in numerous ways, e.g., \citep{lakoff1972hedges, prince1982hedging, brown1987politeness}\footnote{For a summary on ``the evolution of the concept of hedging'', readers are advised to consult \cite{fraser2010pragmatic}.}. 
+For this work, we use ``hedge'' as an umbrella term for all subclasses of uncertainty markers.
+\citeauthor{prince1982hedging} argues that hedges can make things ``fuzzy'' \citep{lakoff1972hedges} in two different ways. They either introduce uncertainty ``within the propositional content'' (approximators -- e.g., His feet were \textbf{sort of} blue.), or ``in the relationship between the propositional content and the speaker'' (shields -- e.g., \textbf{I think} his feet were blue.).
 
-Adams 2006: predicting veracity/deception from written criminal statements (made by suspects and victims); cues for deception: relative length of prologue (main), equivocation, negation; cues for veracity: unique sensory details (and emotions in epilogue); performance 82.1\%; "truthful suspect might be more likely to provide clear and definitive information", otherwise deceptive; Adams provides references that show a positive relationship between equivocation and deception in oral cases (this paper shows it for written) -- however Fraser 2010 argues that equivocation is not hedging
+But how do people understand hedges? Corpus studies as well as empirical studies show that hedges can have an affect on the perception of the speaker and the proposition itself. 
 
-Bonnefon 2006: the more severe an event, the more likely "possible" is understood as a politeness instead of uncertainty marker. the likelihood of getting "possibly insomnia" was rated lower than the likelihood of becoming "possibly deaf".
+An increased number of hedges has been reported to decrease the credibility of witness reports \citep{Erickson-etal:1978} and at the same time increase the trustworthiness of journalists and scientists \citep{jensen2008scientific}.
+Additionally, the position where hedges occur and whether they are professional or colloquial affects people's perception of a proposed policy as negative \citep{durik2008effects}. Furthermore, the interpretation of hedges is highly context dependent \citeauthor{bonnefon2006tactful,ferson2015natural}. E.g., the politeness can interact with the probability assessment of the event (possibly insomnia vs. possibly deaf).
+Finally, \citeauthor{rubin:2007:ShortPapers,ferson2015natural} remarked that the interpretation of hedges shows remarkable inter-individual variation.
 
-Durik 2008:  hedges placed on data statements (and not interpretation statements) lead to negative perceptions of the policy, source, and argument;  colloquial, but not professional, hedges placed on interpretation statements lead to more negative evaluations relative to no hedges
-
-Jensen 2008:  both scientists and journalists were viewed as more trustworthy
-(a) when news coverage of cancer research was hedged (e.g., study limitations were reported) and (b) when the hedging was attributed to the scientists responsible for the research (as opposed to scientists unaffiliated with the research)
-
-Fraser 2010:  Hedging in American culture (and I assume most others) is necessary in many circumstances, lest the speaker be perceived as impolite, offensive, or arrogant; The more confident a speaker is about his/her own position vis-a-vis the interlocutor, the less need there is for hedging for the purposes of self-protection. The same evading of responsibility occurs in (49), which were statements made in a newspaper.
-
-Ferson 2015: considerable inter-individual variation when interpreting approximators; those patterns were strongly modulated e.g., by magnitude of the number and roundness.
+% % hedges decrease author credibility (and potentially also acceptance of proposition)
+% Erickson 1978: powerful/powerless style influence attraction to witness and perceived credibility; powerless has lots of hedges and decreases attraction and credibility; speech style did not only affect credibility and attractiveness, but also their acceptance of the information contained in the testimony but "it seems like a complex relationship" \ek{the same sex issue might be reflected in professor story}
+% % hedges as a cue to predict deception (rather author based I think)
+% Adams 2006: predicting veracity/deception from written criminal statements (made by suspects and victims); cues for deception: relative length of prologue (main), equivocation, negation; cues for veracity: unique sensory details (and emotions in epilogue); performance 82.1\%; "truthful suspect might be more likely to provide clear and definitive information", otherwise deceptive; Adams provides references that show a positive relationship between equivocation and deception in oral cases (this paper shows it for written) -- however Fraser 2010 argues that equivocation is not hedging
+% % position and formality of hedges influence evaluations of proposition
+% Durik 2008:  hedges placed on data statements (and not interpretation statements) lead to negative perceptions of the policy, source, and argument;  colloquial, but not professional, hedges placed on interpretation statements lead to more negative evaluations relative to no hedges
+% % hedging increases trustworthiness of author
+% Jensen 2008:  both scientists and journalists were viewed as more trustworthy
+% (a) when news coverage of cancer research was hedged (e.g., study limitations were reported) and (b) when the hedging was attributed to the scientists responsible for the research (as opposed to scientists unaffiliated with the research)
+% % hedging as a matter of politeness (interaction between author and proposition)
+% Fraser 2010:  Hedging in American culture (and I assume most others) is necessary in many circumstances, lest the speaker be perceived as impolite, offensive, or arrogant; The more confident a speaker is about his/her own position vis-a-vis the interlocutor, the less need there is for hedging for the purposes of self-protection. The same evading of responsibility occurs in (49), which were statements made in a newspaper.
+% Bonnefon 2006: the more severe an event, the more likely "possible" is understood as a politeness instead of uncertainty marker. the likelihood of getting "possibly insomnia" was rated lower than the likelihood of becoming "possibly deaf".
+% % considerable inter-individual variation when assessing epistemically modalized/hedged language
+% Rubin 2007: dataset consisting of news articles; human annotators; shades of certainty in epistemically modalized statements (such as probability and possibility) are highly subjective and present difficulties in manual annotation; considerable inter-individual variation
+% Ferson 2015: considerable inter-individual variation (just like in Rubin 2007) when interpreting approximators; those patterns were strongly modulated e.g., by magnitude of the number and roundness.
 
 % \subsection{work on interpreting neural networks to gain linguistic insights}
 
