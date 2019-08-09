@@ -94,19 +94,80 @@ In this paper, we apply neural networks with attention to a task that has both l
 
 \section{Related work}
 
-The central challenge is to find a promising neural network architecture that can extract relevant features of an input paragraph. This can then be used to predict a value that represents a guilt judgment.
 
-\paragraph{Word embeddings}
-There are a variety of systems that investigate how to find meaningful word representations. In the literature, GloVe word embeddings \citep{Pennington:2014} have been widely used to represent word meanings. Those embeddings are context-independent, i.e., each word only has one respective vector representation independent of the context it occurs in.
 
-More recent advances in word embeddings aim to provide context-sensitive word representations to obtain richer and more informative word meaning representations (e.g., ELMo \cite{Peters:2018} and BERT \cite{Devlin:2018}). The BERT word embedding model is a Transformer based network which incorporates the context before and after the critical word to obtain a word representation. \citeauthor{Devlin:2018} report that using these embeddings boosts performance in all of the 11 natural language tasks it was trained on compared to previous systems.
+% \subsection{work on predicting guilt}
+Fausey 2010: investigate role of agentive language in guilt/blame and punishment/financial liability judgment (very strong and robust effect)
 
-\paragraph{Paragraph embeddings}
-While word embeddings are useful, we need to arrive at a meaningful \textbf{paragraph} representation for our purposes. In other words, the word embeddings need to be combined in a meaningful way to arrive at a more complex representation.
+Kowsrihawat 2018: recurrent neural net with attention predicting guilt verdict by Thai Supreme Court on the basis of facts and law text (see also Virtucio 2018 for prediction of guilt verdicts on Philippine Supreme Court with bag-of-words and SVM approach)
 
-For short phrases, bidirectional LSTMs \cite{Hochreiter:1997,Schuster:1997,Graves:2005} have been shown to be a useful tool. However, they have difficulty resolving long-term dependencies, which is why their performance decreases with longer input paragraphs \cite{Hochreiter:2001}. \cite{Vaswani:2017} developed am attention mechanism to resolve these issues in Transformers. However, a similar principle can be applied to LSTM architectures as well.
+% \subsection{work on how people understand markers of (un)certainty}
+% \paragraph{markers of uncertainty -- names and definitions}
 
-\cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
+summarized in Fraser 2010
+Wiener and Mehrabian 1968: qualification; imply uncertainty and separation between communicator and person/object of communication; can indicate less positive experience and unwillingness to communicate information
+
+Lakoff 1972: hedges ("words that make thing fuzzier or less fuzzy")
+
+Fraser 1975: performative hedging, e.g., can promise, must request, should apologize
+
+Erickson's definition of hedges (1978): "Forms which reduce the force of an assertion by allowing for exceptions for avoiding rigid commitments such as sort of, kind of, a little, ..."
+
+Prince 1982: propositional hedging (truth of proposition); speech act hedging (speaker's commitment to truth)
+
+Weintraub 1989: 3 kinds -- uncertainty expressions, weakening modifiers, vague phrases; expected vs unexpected us of expressions might be relevant for evaluation (e.g., about 8:10 is expected, therefore no equivocation)
+
+Coates 1996: main function of hedges is expression of doubt and less/more confidence
+
+?Adams 2006: equivocation
+
+Rubin 2007: Certainty/epistemic modality = linguistic expression of an estimation of the likelihood that a certain state of affairs is/has been/will be true (Nuyts, 2001)
+
+Crystal 2008: hedges = general term to express imprecision or qualification
+
+classes of hedges according to Prince (1982), Brown and Levinson (1987), Fraser (2010): Approximators (change original proposition; subcategories: adaptors, rounders); Shields (change speaker commitment; subcategories: plausibility, attribution)
+
+
+% \paragraph{work on how people understand markers of (un)certainty}
+Wade 1993: hedges -- speakers who precede text with these are not fully committed to their accounts \ek{however, news articles aren't technically their accounts}
+
+Erickson 1978: powerful/powerless style influence attraction to witness and perceived credibility; powerless has lots of hedges and decreases attraction and credibility; speech style did not only affect credibility and attractiveness, but also their acceptance of the information contained in the testimony but "it seems like a complex relationship" \ek{the same sex issue might be reflected in professor story}
+
+Adams 2006: predicting veracity/deception from written criminal statements (made by suspects and victims); cues for deception: relative length of prologue (main), equivocation, negation; cues for veracity: unique sensory details (and emotions in epilogue); performance 82.1\%; "truthful suspect might be more likely to provide clear and definitive information", otherwise deceptive; Adams provides references that show a positive relationship between equivocation and deception in oral cases (this paper shows it for written) -- however Fraser 2010 argues that equivocation is not hedging
+
+Bonnefon 2006: the more severe an event, the more likely "possible" is understood as a politeness instead of uncertainty marker. the likelihood of getting "possibly insomnia" was rated lower than the likelihood of becoming "possibly deaf".
+
+Durik 2008:  hedges placed on data statements (and not interpretation statements) lead to negative perceptions of the policy, source, and argument;  colloquial, but not professional, hedges placed on interpretation statements lead to more negative evaluations relative to no hedges
+
+Jensen 2008:  both scientists and journalists were viewed as more trustworthy
+(a) when news coverage of cancer research was hedged (e.g., study limitations were reported) and (b) when the hedging was attributed to the scientists responsible for the research (as opposed to scientists unaffiliated with the research)
+
+Fraser 2010:  Hedging in American culture (and I assume most others) is necessary in many circumstances, lest the speaker be perceived as impolite, offensive, or arrogant; The more confident a speaker is about his/her own position vis-a-vis the interlocutor, the less need there is for hedging for the purposes of self-protection. The same evading of responsibility occurs in (49), which were statements made in a newspaper.
+
+Ferson 2015: considerable inter-individual variation when interpreting approximators; those patterns were strongly modulated e.g., by magnitude of the number and roundness.
+
+% \subsection{work on interpreting neural networks to gain linguistic insights}
+
+
+
+
+
+% ####
+
+% TODO: move to model section
+% The central challenge is to find a promising neural network architecture that can extract relevant features of an input paragraph. This can then be used to predict a value that represents a guilt judgment.
+
+% \paragraph{Word embeddings}
+% There are a variety of systems that investigate how to find meaningful word representations. In the literature, GloVe word embeddings \citep{Pennington:2014} have been widely used to represent word meanings. Those embeddings are context-independent, i.e., each word only has one respective vector representation independent of the context it occurs in.
+
+% More recent advances in word embeddings aim to provide context-sensitive word representations to obtain richer and more informative word meaning representations (e.g., ELMo \cite{Peters:2018} and BERT \cite{Devlin:2018}). The BERT word embedding model is a Transformer based network which incorporates the context before and after the critical word to obtain a word representation. \citeauthor{Devlin:2018} report that using these embeddings boosts performance in all of the 11 natural language tasks it was trained on compared to previous systems.
+
+% \paragraph{Paragraph embeddings}
+% While word embeddings are useful, we need to arrive at a meaningful \textbf{paragraph} representation for our purposes. In other words, the word embeddings need to be combined in a meaningful way to arrive at a more complex representation.
+
+% For short phrases, bidirectional LSTMs \cite{Hochreiter:1997,Schuster:1997,Graves:2005} have been shown to be a useful tool. However, they have difficulty resolving long-term dependencies, which is why their performance decreases with longer input paragraphs \cite{Hochreiter:2001}. \cite{Vaswani:2017} developed am attention mechanism to resolve these issues in Transformers. However, a similar principle can be applied to LSTM architectures as well.
+
+% \cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
 
 \section{Dataset}
 For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission-chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall (see Figure~\ref{fig:corpus-overview}).
