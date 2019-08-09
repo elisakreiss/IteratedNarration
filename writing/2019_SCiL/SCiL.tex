@@ -68,7 +68,7 @@
 
 %\ek{update according to framing proposal in email}
 
-Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights into language use. These more scientific applications raise the question of whether the models are processing data in a motivated way; their ``black box'' nature is often an obstacle to answering this question \citep{Alishah-etal:2019}. Recently, attention mechanisms, which capture the strength of association beween components of these networks \citep{bahdanau2014neural,luong-etal-2015-effective}, have not only improved performance, but also increased interpretability, potentially opening the door to new linguistic applications of these models (cf.~\citep{papers-that-challenge-this-idea}).
+Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights into language use. These more scientific applications raise the question of whether the models are processing data in a motivated way; their ``black box'' nature is often an obstacle to answering this question \citep{Alishah-etal:2019}. Recently, attention mechanisms, which capture the strength of association between components of these networks \citep{bahdanau2014neural,luong-etal-2015-effective}, have not only improved performance, but also increased interpretability, potentially opening the door to new linguistic applications of these models (cf.~\citep{papers-that-challenge-this-idea}).
 
 In this paper, we apply neural networks with attention to a task that has both linguistic and societal import: predicting whether the reader of a short narrative crime report will conclude that the main subject is guilty or innocent. Our networks achieve strong performance on this task, as defined by the dataset of \citet{Kreiss:2019}, which leads us to explore their learned parameters by inspecting how they predictions for new, carefully controlled examples. Our central finding is that, where the evidence is weak, the networks make robust use of markers of certainty and uncertainty, as indicated by the large attention weights for such terms. In contrast, where the evidence is strong, these markers contribute less (have smaller attention weights). To the extent that human adopt similar reading strategies, this can inform how the news is reported, in that it gives us insights into the contribution of words like \emph{allegedly} and \emph{possibly} in shaping readers' construal of newspaper articles.
 
@@ -95,21 +95,35 @@ In this paper, we apply neural networks with attention to a task that has both l
 \section{Related work}
 
 \subsection{Predicting guilt}
-The challenge of predicting guilt judgments from text sources has not yet received a lot of attention. However, \citeauthor{Fausey:Boroditsky:2010} show that using agentive language increases blame and financial liability judgments people make. Furthermore, they find that this effect is robust against other evidence for example through short video material of the incident. Their results suggest that even subtle linguistic changes in crime reports can shape people's judgments of the events.
+% 1. Topic sentence (e.g., "There is extensive prior literature on how linguistic markers influence perceptions of guilt").
+The challenge of predicting guilt judgments from text sources has not yet received a lot of attention. 
+% 2. Basically a list of papers falling under the topic, with basic details about what the work does.
+However, \citeauthor{Fausey:Boroditsky:2010} show that using agentive language increases blame and financial liability judgments people make. Their results suggest that even subtle linguistic changes in crime reports can shape people's judgments of the events.
 More recent work has focused on predicting guilt verdicts from the Supreme Courts in the Philippines \citep{virtucio2018predicting} and Thailand \citep{kowsrihawat2018predicting} on the basis of facts presented and law texts. \citeauthor{kowsrihawat2018predicting} argue for a recurrent neural network with attention to make these predictions and achieves \ek{accuracy}. Note that this work is not concerned with the linguistic basis of subjective moral guilt judgments, but Court guilt verdicts on the basis of a given law text. 
+% 3. A final section explaining how the above relates to the current paper.
+It is our goal to train a network on subjective guilt ratings and then probe its parameters with respect to their linguistic basis.
 
 \subsection{Interpretation of hedges}
 
-% Giving clear definition is hard.
+% 1. Topic sentence (e.g., "There is extensive prior literature on how linguistic markers influence perceptions of guilt").
 In the literature, researchers have categorized and labeled (un)certainty markers in numerous ways, e.g., \citep{lakoff1972hedges, prince1982hedging, brown1987politeness}. For a summary we refer readers to consult \cite{fraser2010pragmatic}. 
-For this work, we use ``hedge'' as an umbrella term for all subclasses of uncertainty markers. In this vein, for our purposes, ``hedge" refers to any marker that introduces uncertainty ``within the propositional content'' (e.g., His feet were \textbf{sort of} blue.), or ``in the relationship between the propositional content and the speaker'' (e.g., \textbf{I think} his feet were blue.). 
+For this work, we use ``hedge'' as an umbrella term for all subclasses of uncertainty markers. For our purposes, ``hedge" refers to any marker that introduces uncertainty ``within the propositional content'' (e.g., His feet were \textbf{sort of} blue.), or ``in the relationship between the propositional content and the speaker'' (e.g., \textbf{I think} his feet were blue.). 
 
-But how do people understand hedges? Corpus studies as well as empirical studies show that hedges can have an effect on the perception of the speaker and the proposition itself \citep{Erickson-etal:1978, durik2008effects, bonnefon2006tactful, rubin:2007:ShortPapers, jensen2008scientific, ferson2015natural}. These studies have shown that hedges affect people's trustworthiness in differing ways, for example an increase in the number of hedges decreases the credibility of witness reports \citep{Erickson-etal:1978} but at the same time increases the trustworthiness of journalists and scientists \citep{jensen2008scientific}. Additionally, the interpretation of hedges is highly context dependent \citep{bonnefon2006tactful,ferson2015natural}, has individual variation \citep{rubin:2007:ShortPapers,ferson2015natural}, and is sensitive to the positioning of the hedges \citep{durik2008effects}. 
+% 1. Topic sentence
+There is also extensive prior literature on how hedges affect the perception of the speaker and proposition, painting a highly varied picture on the interpretation of hedges \citep{Erickson-etal:1978, durik2008effects, bonnefon2006tactful, rubin:2007:ShortPapers, jensen2008scientific, ferson2015natural}. 
+% 2. Basically a list of papers falling under the topic, with basic details about what the work does.
+These studies suggest that hedges affect people's judgments of credibility in differing ways, for example an increase in the number of hedges decreases the credibility of witness reports \citep{Erickson-etal:1978} but at the same time increases the trustworthiness of journalists and scientists \citep{jensen2008scientific}. Additionally, the interpretation of hedges is very context dependent \citep{bonnefon2006tactful,durik2008effects,ferson2015natural} and shows high individual variation \citep{rubin:2007:ShortPapers,ferson2015natural}. 
+% 3. A final section explaining how the above relates to the current paper.
+We investigate how neural network predictions about human judgments change when we manipulate the presence of those hedges in crime stories.
 
 \subsection{Gaining linguistic insights through neural networks}
 
-
-
+% 1. Topic sentence.
+Neural networks have been shown to achieve high performances on various NLP tasks, such as sentiment analysis and translation\ek{cite}. But there is an increasing interest again to use these systems again to gain insights about linguistic phenomena.
+% 2. Basically a list of papers falling under the topic, with basic details about what the work does.
+For example neural networks enabled a new way to think about and probe learning hypotheses \citep{tesar2000learnability, rumelhart1986learning}. For an overview on the interplay of generative linguistics and neural networks, we recommend \cite{pater2019generative}. Other work uses artificial language constraints on those networks to investigate language universals \ek{cite Greenberg, Michael Hahn}.\ek{more? dependency structure in BERT, Kevin Clark 2019; treat nns as human subjects, Levy and Futrell 2019}
+% 3. A final section explaining how the above relates to the current paper.
+In this work we pick out a particular feature of language use (hedges) and investigate model predictions in their presence and absence.
 
 
 % ####
@@ -314,12 +328,24 @@ When we remove the hedges again, we cannot see a common structure to the change 
 In this section we showed that our attention module provides intuitive insight into the model workings. Furthermore, the model makes interesting predictions on new data.\ek{...}
 
 \section{Discussion}
+\ek{past tense!}
+The way a crime and arrest is presented in a news article affects how readers perceive the suspect's guilt. In this paper we showed that a recurrent neural network with self-attention can predict readers' guilt judgments. 
+By visualizing the attention weights, we find that explicit evidence descriptions and phrases suggesting a turn of events influence predictions. 
 
-The results show that when given a news story, a bidirectional LSTM with self-attention can already capture something essential about human guilt judgments. Especially considering the limited amount of data (only 236 data points in the training set), the model can already extract meaningful features for guilt judgment predictions. 
+To gain linguistic insights into the neural network, we investigated its change in predictions when we exclude the hedges and information about the evidence from the stories. First of all the model makes similar predictions in the case where the evidence leading to an arrest is strong/convincing and the case where the evidence is not specified. 
+\ek{One possible interpretation of this result is that the model learns that there is an implicature of strong evidence if the evidence is underspecified?} The model predictions are affected the most when the weakness of the evidence is mentioned explicitly.
 
-So far, the model has not been subjected to hyperparameter tuning. It is likely that this will further boost the model's performance. Furthermore, it is plausible that training and testing the model on the guilt ratings directly instead of their means can further increase the performance, since only showing the means hides a vast amount of information about the underlying distribution of ratings which can be very meaningful. For example, a news story where participants highly vary in their judgments should influence the model predictions less than a story with low variance.
+Furthermore, we found that an exclusion of hedges in the stories only seems to affect predictions of stories in the weak evidence condition, where suspects are rated more guilty when there are no hedges. However, if the evidence is strong or underspecified, the model predictions do not seem to be affected. 
+Possibly, in case of strongly perceived evidence, the model has learned that the hedges become irrelevant.
 
-The introduced model is a promising first step to develop a better understanding of human guilt judgments. I am confident that in the future models like these can be used to inform hypotheses about what humans consider for their assessment. This can in turn inform us about how different reporting on a news story will influence these assessments.
+These results point to promising avenues for future investigations of hedging, particularly in the field of guilt perception. 
+
+\ek{how we perceive stories affects how we reproduce them; relevance for iterated chains}
+
+\ek{Note on professor seed as outlier: Story about sexual harrassment allegations against male professor; only story that has clear gender split between victim(s) and suspect; Erickson 1978 show that powerless style (which includes hedges) affects credibility ratings dependent on whether witness is same or other sex}
+
+\ek{Conclusion: propose a network that can predict guilt judgments and might be used to inform hypotheses for insight on linguistic features that determine guilt perception...}
+
 
 
 
