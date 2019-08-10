@@ -102,6 +102,7 @@ These studies suggest that hedges affect people's judgments of credibility in di
 % 3. A final section explaining how the above relates to the current paper.
 We investigate how neural network predictions about human judgments change when we manipulate the presence of those hedges in crime stories.
 
+<<<<<<< HEAD
 In addition, computational and theoretical work on veridicality has revealed that not all hedges serve merely to reduce speaker commitment. For instance, attitude predications like ``The company reported S'' and ``They said S'' are often used to convey evidence sources. In such utteraces, the speaker might wish to appear fully commited to the embedded content ``S'' \citep{Simons07,deMarneffe:Manning:Potts:2012,White:Rawlins:2018,White-etal:2018}. \citet{vonFintel:Gillies:2010} show that similarly evidential readings arise for epistemic ``must''. These findings show how complex these markers are pragmatically and highlight the value of usage-based studies of them.
 
 
@@ -114,6 +115,17 @@ Neural networks were originally motivated largely by questions in cognitive scie
 % . For an overview on the interplay of generative linguistics and neural networks, we recommend \cite{pater2019generative}. Other work uses artificial language constraints on those networks to investigate language universals \ek{cite Greenberg, Michael Hahn}.\ek{more? dependency structure in BERT, Kevin Clark 2019; treat nns as human subjects, Levy and Futrell 2019}
 % % 3. A final section explaining how the above relates to the current paper.
 % In this work we pick out a particular feature of language use (hedges) and investigate model predictions in their presence and absence.
+=======
+\subsection{Linguistic basis in neural networks}
+
+% 1. Topic sentence.
+% people have used attention weights to show that the network has learned something that seems aligned with what we think we know about language
+Neural networks have been shown to achieve high performances on various NLP tasks, such as sentiment analysis \cite{Socher:2013,Devlin:2018} and translation \cite{bahdanau2014neural}. A growing amount of literature has tried to gain linguistic insight from those neural networks \citep{belinkov2019analysis}.
+% 2. Basically a list of papers falling under the topic, with basic details about what the work does.
+For example, neural networks seem to learn some basic syntactic structures. \citeauthor{futrell-etal:2019-neural-language-models} find evidence for basic incremental syntactic state representations by treating neural network outputs like human subjects \citep{linzen2016assessing}. A vast amount of recent literature finds that that contextual word embedding models like BERT \citep{Devlin:2018} have structural information encoded \citep{jawahar-etal-2019-bert, Tenney:2019, clark2019what}. \citeauthor{clark2019what} find indications that particular attention heads in BERT specialize to specific aspects of syntax. Generally attention weights have been used for the analysis of neural language models, for example, in tasks such as NLI \citep{rocktaschel2015reasoning, yin2016abcnn}, sentiment analysis and \citep{wang2016attention, liu2017attention} summarization \citep{rush-etal-2015-neural, allamanis2016convolutional}. In these studies, attention weights seem to align with natural language intuitions and are used as windows into what guides predictions.
+% 3. A final section explaining how the above relates to the current paper.
+In this work we visualize the attention weights and probe the model outputs to gain insight into what the model learns for guilt prediction.
+>>>>>>> origin/master
 
 
 % ####
@@ -134,6 +146,7 @@ Neural networks were originally motivated largely by questions in cognitive scie
 % \cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
 
 \section{Dataset}
+<<<<<<< HEAD
 For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \citet{Kreiss:2019}.\footnote{\url{https://github.com/elisakreiss/iterated_narration}} The corpus was created for investigations on how news stories change when they are propagated from one person to another.
 
 First, the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Table~\ref{tab:examplestory} provides a complete example.
@@ -154,6 +167,9 @@ Each story was given to a participant who was asked to read and afterwards repro
 \label{tab:examplestory}
 \end{table*}
 
+=======
+For training and testing the model, we use the Annotated Iterated Narration Corpus (AINC) collected by \cite{Kreiss:2019}. \cp{I think we have to make this corpus public and include the URL to download it, else this will be seen as an indirect violation of anonymity.}\ek{I see, that makes sense. Chris/Judith: What is a good way to make the corpus public? Github?} The corpus was created for investigations on how news stories change when they are propagated from one person to another. First the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant who again reproduced it. This pattern was repeated for 5 generations of participants. The data collection therefore followed the transmission-chain paradigm, introduced by \cite{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions, and therefore 260 stories overall. % (see Figure~\ref{fig:corpus-overview}).
+>>>>>>> origin/master
 
 % \begin{figure}[t!]
 % 	\includegraphics[width=\linewidth]{graphs/corpus-overview.pdf}
