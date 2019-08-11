@@ -84,10 +84,10 @@ Our work draws on prior research concerning the relationship between language an
 
 \subsection{Predicting Guilt}
 % 1. Topic sentence (e.g., "There is extensive prior literature on how linguistic markers influence perceptions of guilt").
-The challenge of predicting guilt judgments from text sources has not yet received much  attention. 
+The challenge of predicting guilt judgments from text sources has not yet received much attention. 
 % 2. Basically a list of papers falling under the topic, with basic details about what the work does.
 However, \citet{Fausey:Boroditsky:2010} show that using agentive language increases blame and financial liability judgments people make. Their results suggest that even subtle linguistic changes in crime reports can shape people's judgments of the events.
-More recent work has focused on predicting guilt verdicts from the Supreme Courts in the Philippines \citep{virtucio2018predicting} and Thailand \citep{kowsrihawat2018predicting} on the basis of facts presented and legal texts. \citeauthor{kowsrihawat2018predicting}\ employ a recurrent neural network with attention to make these predictions.
+More recent work has focused on predicting guilt verdicts from the Supreme Courts in the Philippines \citep{virtucio2018predicting} and Thailand \citep{kowsrihawat2018predicting} on the basis of facts presented and legal texts. \citeauthor{kowsrihawat2018predicting} employ a recurrent neural network with attention to make these predictions.
 % 3. A final section explaining how the above relates to the current paper.
 This work is not concerned with the linguistic basis of subjective moral guilt judgments, but rather courtroom verdicts based on legal texts. We focus instead on subjective guilt judgments, and we train networks not primarily for their predictive capacity, but rather to probe their learned parameters.
 
@@ -105,7 +105,7 @@ These studies suggest that hedges affect people's judgments of credibility in di
 % 3. A final section explaining how the above relates to the current paper.
 Since neural networks can be trained flexibly in many different environments, they hold out the promise of systematically studying this kind of variation at scale -- as long as their representations are interpretable.
 
-In addition, computational and theoretical work on veridicality has revealed that not all hedges serve merely to reduce speaker commitment. For instance, attitude predications like \word{The company reported S} and \word{They said S} are often used to convey evidence sources. In such utterances, the speaker might wish to appear fully committed to the embedded content \word{S} despite the apparent hedging  \citep{Simons07,deMarneffe:Manning:Potts:2012,White:Rawlins:2018,White-etal:2018}. Similarly, \citet{vonFintel:Gillies:2010} show that related evidential readings arise for epistemic \word{must}. These findings show how complex these markers are pragmatically and highlight the value of usage-based studies of them.
+In addition, computational and theoretical work on veridicality has revealed that not all hedges serve merely to reduce speaker commitment. For instance, attitude predications like \word{The company reported S} and \word{They said S} are often used to convey evidence sources. In such utterances, the speaker might wish to appear fully committed to the embedded content \word{S} despite the apparent hedging \citep{Simons07,deMarneffe:Manning:Potts:2012,White:Rawlins:2018,White-etal:2018}. Similarly, \citet{vonFintel:Gillies:2010} show that related evidential readings arise for epistemic \word{must}. These findings show how complex these markers are pragmatically and highlight the value of usage-based studies of them.
 
 
 \subsection{Linguistic Insights from Neural Networks}
@@ -116,31 +116,6 @@ An obstacle to this work is the incredible representational power of these netwo
 
 Finally, \citet{linzen-etal-2016-assessing} argue for applying methods from psycholinguistics to trained neural networks, treating them as participants whose behavior we can observe and learn from (see also \citealt{gulordava-etal-2018-colorless,Futrell-etal:2019}). We employ similar methods to home in on which words our models are most attuned to.
 
-% 1. Topic sentence.
-% % people have used attention weights to show that the network has learned something that seems aligned with what we think we know about language
-% Neural networks have been shown to achieve high performances on various NLP tasks, such as sentiment analysis \cite{Socher:2013,Devlin:2018} and translation \cite{bahdanau2014neural}. A growing amount of literature has tried to gain linguistic insight from those neural networks \citep{belinkov2019analysis}.
-% % 2. Basically a list of papers falling under the topic, with basic details about what the work does.
-% For example, neural networks seem to learn some basic syntactic structures. \citeauthor{futrell-etal:2019-neural-language-models} find evidence for basic incremental syntactic state representations by treating neural network outputs like human subjects \citep{linzen2016assessing}. A vast amount of recent literature finds that that contextual word embedding models like BERT \citep{Devlin:2018} have structural information encoded \citep{jawahar-etal-2019-bert, Tenney:2019, clark2019what}. \citeauthor{clark2019what} find indications that particular attention heads in BERT specialize to specific aspects of syntax. Generally attention weights have been used for the analysis of neural language models, for example, in tasks such as NLI \citep{rocktaschel2015reasoning, yin2016abcnn}, sentiment analysis and \citep{wang2016attention, liu2017attention} summarization \citep{rush-etal-2015-neural, allamanis2016convolutional}. In these studies, attention weights seem to align with natural language intuitions and are used as windows into what guides predictions.
-% % 3. A final section explaining how the above relates to the current paper.
-% In this work we visualize the attention weights and probe the model outputs to gain insight into what the model learns for guilt prediction.
-
-
-% ####
-
-% TODO: move to model section
-% The central challenge is to find a promising neural network architecture that can extract relevant features of an input paragraph. This can then be used to predict a value that represents a guilt judgment.
-
-% \paragraph{Word embeddings}
-% There are a variety of systems that investigate how to find meaningful word representations. In the literature, GloVe word embeddings \citep{Pennington:2014} have been widely used to represent word meanings. Those embeddings are context-independent, i.e., each word only has one respective vector representation independent of the context it occurs in.
-
-% More recent advances in word embeddings aim to provide context-sensitive word representations to obtain richer and more informative word meaning representations (e.g., ELMo \cite{Peters:2018} and BERT \cite{Devlin:2018}). The BERT word embedding model is a Transformer based network which incorporates the context before and after the critical word to obtain a word representation. \citeauthor{Devlin:2018} report that using these embeddings boosts performance in all of the 11 natural language tasks it was trained on compared to previous systems.
-
-% \paragraph{Paragraph embeddings}
-% While word embeddings are useful, we need to arrive at a meaningful \textbf{paragraph} representation for our purposes. In other words, the word embeddings need to be combined in a meaningful way to arrive at a more complex representation.
-
-% For short phrases, bidirectional LSTMs \cite{Hochreiter:1997,Schuster:1997,Graves:2005} have been shown to be a useful tool. However, they have difficulty resolving long-term dependencies, which is why their performance decreases with longer input paragraphs \cite{Hochreiter:2001}. \cite{Vaswani:2017} developed am attention mechanism to resolve these issues in Transformers. However, a similar principle can be applied to LSTM architectures as well.
-
-% \cite{Lin:2017} introduce a bidirectional LSTM with self-attention that receives word embeddings as an input and outputs a paragraph representation. The bidirectional LSTM receives the GloVe embeddings of the paragraph as input. The self-attention layer is the weighted sum of all of the LSTM's hidden states. But instead of using a single weighted sum to arrive at a vector, they suggest to perform this multiple times with different weight vectors to arrive at an attention matrix. Furthermore, they introduce a penalization term which ensures that each attention vector in this attention matrix focuses on different semantic features of the input paragraph. Which semantic features are more important than others can in turn be learned again, dependent on the task it needs to solve. \citeauthor{Lin:2017} report that the model outperforms previous models in author profiling, sentiment classification and textual entailment.
 
 \section{Dataset}\label{sec:dataset}
 
@@ -158,7 +133,7 @@ Finally, \citet{linzen-etal-2016-assessing} argue for applying methods from psyc
 \label{tab:examplestory}
 \end{table*}
 
-Our experiments rely on the Annotated Iterated Narration Corpus (AINC) collected by \citet{Kreiss:2019}.\footnote{\url{https://github.com/elisakreiss/iterated_narration}} The corpus was created for investigations into how news stories change when they are propagated from one person to another.
+Our experiments rely on the Annotated Iterated Narration Corpus (AINC) collected by \citet{Kreiss:2019}.\footnote{\url{https://github.com/elisakreiss/iterated_narration}\ek{TODO: add proper corpus link!}} The corpus was created for investigations into how news stories change when they are propagated from one person to another.
 
 First, the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Table~\ref{tab:examplestory} provides a complete example.
 
@@ -226,13 +201,6 @@ Finally, the logistic regression module makes the prediction of guilt. For this 
 
 Overall, the model has $111,054,742$ trainable parameters. This sounds mismatched with our very small dataset, but only $0.02\%$ of these parameters are in the attention and output modules and $1.40\%$ are in the LSTM module. The rest of the parameters ($98.59\%$) are the pretrained weights in the BERT word embedding module, so they actually help us get traction on our small dataset by bringing in a lot of outside linguistic knowledge.
 
-% CP: I think we don't need this summary if we do a good job in the section.
-% Let's devote the space to something more informative.
-%
-% In summary, the model receives a crime story as an input. BERT word embeddings for the story feed into a bidirectional LSTM. The attention module computes the weighted sum over the LSTM's hidden states. The resulting attention vector is fed through a linear layer and a sigmoid function to ensure that the prediction lies between 0 and 1.
-
-
-
 
 \section{Experiment}
 
@@ -252,10 +220,6 @@ In each step of the 10-fold cross-validation, the model was trained on 206/207 s
 
 For training, the model uses mean squared error (MSE) as the loss function, stochastic gradient descent as the optimizer, and a learning rate of $0.1$. The model was implemented using PyTorch \citep{Paszke:2017}. It was trained for 30 epochs, for each of the 10 train/dev-test configurations in the cross-validation.
 
-%From the 260 stories with their respective mean suspect guilt rating, 26 were randomly held back as a final testing set. The guilt rating is the mean obtained from the previously described data collection and annotation. Crucially, the target values range between 0 and 1, which is why the model does not learn a classification, but regression task. The remaining 234 stories were used for training the model. 
-
-%To assess the model performance during development, we need to exclude more stories from training to be able to use them as dev-testing data. To make the most use of the limited amount of data, the model was trained using 10-fold cross-validation. The results can also inform us, whether there is strong variation given a different training/dev-testing split. It is very likely that given the small size of the dataset (and therefore dev-test set), the variation can be quite high. Given that there were 234 stories for training, each fold had between 23 and 24 stories, each associated with one guilt rating that functioned as the target label. 
-
 
 \subsection{Results}
 
@@ -267,7 +231,10 @@ The training loss approaches $0$ toward the end of the training in all cross-val
 
 The MSE loss alone is not sufficient to assess how well the model actually learns to predict the underlying distribution. Figure~\ref{fig:corr-cv0} shows the correlation between the actual target labels (on the x axis) and the model predictions (on the y axis) for one of the cross-validation folds. Before training (left), the models are undifferentiated. After training (right), the model predictions (blue) are highly correlated with the true labels ($r=0.85$), and the MSE is small ($0.007$).
 
-Qualitatively, these plots appear very similar throughout all cross-validation configurations and can be compared in Figure~\ref{fig:app-corr-pretraining} and \ref{fig:app-corr-posttraining} in the Appendix. Quantitatively, the correlation on the dev-test set does show variation, driven mainly by outliers.\footnote{In particular, the story about sexual harassment allegations against a male professor proved to look different from all the rest. It's the only story with a clear and relevant gender difference between victim(s) and suspect. \citet{Erickson-etal:1978} show that powerless style (which includes hedges) affects credibility ratings dependent on power structures.\label{fn:prof}} However, overall, the mean correlation between the model prediction and the human judgment on the testing set across all cross-validation steps is $0.68$. When we collapse over all cross-validation folds and examine the loss after training, the difference in loss between the model predictions and baseline is significant ($p<0.0001$) according to a linear regression.
+Qualitatively, these plots appear very similar throughout all cross-validation configurations and can be compared in Figure~\ref{fig:app-corr-pretraining} and \ref{fig:app-corr-posttraining} in the Appendix. Quantitatively, the correlation on the dev-test set does show variation, driven mainly by outliers.
+% That's plausible but I don't know that for these outliers
+% \footnote{In particular, the story about sexual harassment allegations against a male professor proved to look different from all the rest. It's the only story with a clear and relevant gender difference between victim(s) and suspect. \citet{Erickson-etal:1978} show that powerless style (which includes hedges) affects credibility ratings dependent on power structures.\label{fn:prof}} 
+However, overall, the mean correlation between the model prediction and the human judgment on the testing set across all cross-validation steps is $0.68$. When we collapse over all cross-validation folds and examine the loss after training, the difference in loss between the model predictions and baseline is significant ($p<0.0001$) according to a linear regression.
 
 As a final performance evaluation, we examine the target--prediction correlation on the held-out test set (Figure~\ref{fig:test-corr}). For predictions on the test set, we used the final model weights obtained by the first cross-validation configuration. This fold's model was chosen because of its low dev-set loss and strong predictions. This was the only evaluation that was performed on this held-out test set. The Pearson correlation on the held-out test set is still high ($0.84$) and almost identical with performance on the dev-set for this fold. This high correlation, and the fact that the high correlation reproduces with the held-out testing data, indicates that the model was able to learn to generalize accurately to new cases in our domain.
 
@@ -317,33 +284,25 @@ Figure~\ref{fig:viz} provides evidence for the claim that the model picks up on 
   \includegraphics[width=1\linewidth]{graphs/hedges.pdf}
   \caption{Model predictions for our hedge manipulation. In the `with' condition,
     the original hedges are left in the stories; in the `no' condition, they are
-    carefully edited out. In the strong evidence condition, this has no discernable
+    carefully edited out. In the strong evidence condition, this has no discernible
     effect. However, in the weak evidence condition, removing these markers
-    consistently increases guilt judgments. The only exception is the outlier
-    `professor' story mentioned in footnote~\ref{fn:prof}. In the `no evidence'
-    condition, the evidence statement is simply removed.}
+    consistently increases guilt judgments. 
+    The only exception is the outlier `professor' story mentioned in footnote~\ref{fn:prof}. 
+    In the `no evidence' condition, the evidence statement is simply removed.}
   \label{fig:hedges}
 \end{figure}
 
 
 We can, though, use the model to predict a guilt judgment for each of the original stories without these uncertainty markers/hedges. Thus, we rewrote those 10 original stories into versions without any uncertainty markers. They remained as close to the original as possible, while still remaining grammatical. Figure~\ref{fig:hedges} summarizes this analysis.
 
-The results suggest that uncertainty markers have different effects on guilt prediction in the two evidence conditions. When the evidence is strong (right panel), removing the uncertainty markers does not affect guilt judgments. However, when the evidence is weak (middle panel), removing those hedges increases guilt judgments. This has an intuitive interpretation: when the evidence already overwhelmingly speaks for the suspect's guilt, it outweighs the hedges; when the evidence is questionable, other sources of uncertainty are considered to inform a final judgment.
+The results suggest that uncertainty markers have different effects on guilt prediction in the two evidence conditions. When the evidence is strong (right panel), removing the uncertainty markers does not affect guilt judgments. However, when the evidence is weak (middle panel), removing those hedges increases guilt judgments.\footnote{The only exception is the outlier `professor' story, which is a story about sexual harassment allegations against a male professor. It's the only story with a clear and relevant gender difference between victim(s) and suspect. \citet{Erickson-etal:1978} show that powerless style (which includes hedges) affects credibility ratings dependent on power structures.\label{fn:prof}} This has an intuitive interpretation: when the evidence already overwhelmingly speaks for the suspect's guilt, it outweighs the hedges; when the evidence is questionable, other sources of uncertainty are considered to inform a final judgment.
 
 Finally, we can remove the evidence statement entirely and see how the network responds (right panel). What we find is that the predictions fall into the same overall range as for the strong evidence condition, regardless of whether the hedges are included or not. This suggests that our model is defaulting to a presumption of guilt, and that hedges alone do not suffice to alter that bias -- explicitly weak evidence is required for that.
 
-% Notably, if the evidence manipulation is excluded, the model predicts guilt judgments in the range of the strong evidence condition. In other words, the model assumes that additional justification for an arrest does not change the model's prediction of a guilty judgment. However, if reasons to question the arrest are given explicitly, they do affect the model's prediction. When we remove the hedges in the no evidence condition, the change in predictions neither resembles the change in the weak evidence condition, nor in the strong evidence condition. (however it seems a little more similar to the strong evidence ratings though).\cp{I am not sure I understand this last sentence. Could it be expanded?}\ek{I made some changes. Did that help?}
-
-% I think we don't need a separate section for this. Better to just ensure that
-% the previous section ends in a clear and strong way.
-%
-% \subsection{Conclusion}
-%
-% In this section we showed that our attention module provides intuitive insight into the model workings. Furthermore, the model makes interesting predictions on new data.\ek{...}
 
 \section{Discussion}
 
-We applied a neural network with attention mechanisms to the task of predicting subjective guilt judgments in the Annotated Iterated Narration Corpus of \citet{Kreiss:2019}. Though this corpus is small, our network was able to learn effectively from it, which opened the door to studying its learned parameters to see whether they can yield linguistic insights. In visualizing the attention weights, we observed that the network attends closely to markers of (un)certainty and contrast, which aligns well pragmatic characterizations of this language. However, in systematically varying examples to remove the (un)certainty markers, we uncovered an additional dimension to this finding: only where the evidence given is explicitly weak do these markers play a large role in shaping predictions. Where the evidence is strong, hedges play less of a role, and this seems to carry over to cases where no evidence statement appears explicitly, revealing that the narratives themselves create a default presumption of guilt in model.
+We applied a neural network with attention mechanisms to the task of predicting subjective guilt judgments in the Annotated Iterated Narration Corpus of \citet{Kreiss:2019}. Though this corpus is small, our network was able to learn effectively from it, which opened the door to studying its learned parameters to see whether they can yield linguistic insights. In visualizing the attention weights, we observed that the network attends closely to markers of (un)certainty and contrast, which aligns well pragmatic characterizations of this language. However, in systematically varying examples to remove the (un)certainty markers, we uncovered an additional dimension to this finding: only where the evidence given is explicitly weak do these markers play a large role in shaping predictions. Where the evidence is strong, hedges play less of a role, and this seems to carry over to cases where no evidence statement appears explicitly, revealing that the narratives themselves create a default presumption of guilt in the model.
 
 To what extent to these findings extend to human readers? Our networks are trained on human guilt judgments, so we expect their properties to reflect behavior at some level. If so, then our findings are cause for reflection, as it seems that markers of uncertainty in news report about crimes might not be having the stable effects that we might naively expect. This conclusion is indirectly supported by prior work on hedges in legal contexts and by prior linguistic analyses of evidentiality and speaker commitment, but it should be pursued in a more focused way in the context of guilt judgments, as they have direct relevance to questions of media bias and due process.
 

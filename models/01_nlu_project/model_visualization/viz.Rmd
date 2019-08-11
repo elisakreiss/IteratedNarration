@@ -30,7 +30,8 @@ df = left_join(df_stories, df_attention, by=c("tensor","story_id", "token_id")) 
 
 ```{r}
 df_plot = df %>% 
-  filter(reordered_story_id == 5 | reordered_story_id == 6 | reordered_story_id == 10)
+  filter(reordered_story_id == 5 | reordered_story_id == 6 | reordered_story_id == 10) %>% 
+  mutate_at(vars(reordered_story_id), funs(ifelse(. == 5, "A", ifelse(. == 6, "B", "C"))))
   # filter(reordered_story_id == 6)
 
 df_plot$xaxis = paste(df_plot$story_tokenized,df_plot$token_id,sep="_")
@@ -45,7 +46,7 @@ test_plot = ggplot(df_plot, aes(x=xaxis,y=attention, group = 1)) +
   # geom_text(data=df_text,aes(x=-Inf,y=y,vjust=hjust,label=label),hjust=0) +
   xlab("Tokenized story") +
   ylab("Attention weights") +
-  facet_wrap(~reordered_story_id, scales = "free", nrow=6) +
+  facet_wrap(~reordered_story_id, scales = "free", nrow=6, strip.position="left") +
   theme(axis.title = element_text(size = 14, color="#3c3c3c")) +
   theme(axis.title.x = element_text(margin = margin(t = 7, r = 0, b = 0, l = 0))) +
   theme(axis.title.y = element_text(margin = margin(t = 0, r = 7, b = 0, l = 0))) +
@@ -54,13 +55,13 @@ test_plot = ggplot(df_plot, aes(x=xaxis,y=attention, group = 1)) +
   theme(axis.text.y = element_blank()) +
   theme(axis.ticks.y = element_blank()) +
   theme(strip.background = element_blank(),
-        strip.text.x = element_blank()) +
+        strip.text.x = element_text(angle = 90)) +
   scale_x_discrete(labels= x_labels)
 
 test_plot
 
 
-ggsave(here("writing/2019_SCiL/graphs/attention-viz.pdf"),test_plot,height=7,width=9)
+ggsave(here("writing/2019_SCiL/graphs/attention-viz.pdf"),test_plot,height=7,width=9.5)
 # ggsave(filename="attention_viz1.png",path=here("models","01_nlu_project","model_visualization","graphs"), height = 24, width = 38)
 ```
 
@@ -362,35 +363,34 @@ toplot = df %>%
   select(story_cond, hedges, prediction) %>% 
   distinct() %>% 
   mutate(condition = ifelse(str_detect(story_cond,"jail"), 
-                            "strong evidence", 
+                            "strong\nevidence", 
                             ifelse(str_detect(story_cond,"free"),
-                                   "weak evidence",
-                                   "no evidence"))) %>% 
-  mutate(topic = ifelse(str_detect(story_cond,"jail"), 
+                                   "weak\nevidence",
+                                   "no\nevidence"))) %>% 
+  mutate(Topic = ifelse(str_detect(story_cond,"jail"), 
                         str_replace_all(story_cond,"_jail",""), 
                         ifelse(str_detect(story_cond,"free"),
                                str_replace_all(story_cond,"_free",""),
                                str_replace_all(story_cond, "_noev","")))) %>% 
-  mutate_at(vars(condition), funs(fct_relevel(., "strong evidence", "weak evidence", "no evidence"))) %>% 
+  mutate_at(vars(condition), funs(fct_relevel(., "strong\nevidence", "weak\nevidence", "no\nevidence"))) %>% 
   mutate_at(vars(hedges), funs(ifelse(hedges, "with", "no"))) %>% 
-  mutate_at(vars(hedges), funs(fct_relevel(., "with", "no")))
+  mutate_at(vars(hedges), funs(fct_relevel(., "with", "no"))) %>% 
+  mutate_at(vars(Topic), funs(str_replace_all(., "\'", "")))
 
-ggplot(toplot, aes(x=hedges, y=prediction, color=topic, group=topic)) +
-# ggplot(toplot, aes(x=hedges, y=prediction)) +
+ggplot(toplot, aes(x=hedges, y=prediction, color=Topic, group=Topic)) +
   facet_wrap(~condition) +
-  geom_point(alpha=0.7) +
-  geom_line() +
+  geom_line(size=1.5,alpha=0.7) +
+  geom_point(size=2.5,alpha=0.7) +
   theme(legend.position = "top") +
-  # theme(axis.text.x = element_text(angle=30, hjust=1)) +
   xlab("Hedges") +
   ylab("Prediction") +
-  # stat_summary(fun.y = "mean",
-  #              geom = "point",
-  #              size = 4) +
-  # stat_summary(fun.data = mean_cl_boot,
-  #              geom = "errorbar",
-  #              width = 0.1)
-  ggsave(here("writing/2019_SCiL/graphs/hedges.pdf"),height=3.5,width=4.5)
+  theme(axis.title = element_text(size=16)) +
+  theme(axis.text.x = element_text(size=14)) +
+  theme(axis.text.y = element_text(size=12)) +
+  theme(strip.text = element_text(size=15)) +
+  theme(legend.title = element_text(size=14)) +
+  theme(legend.text = element_text(size=11)) +
+  ggsave(here("writing/2019_SCiL/graphs/hedges.pdf"),height=4,width=5.5)
 
   
 ```
