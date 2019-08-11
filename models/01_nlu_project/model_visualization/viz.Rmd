@@ -61,7 +61,7 @@ test_plot = ggplot(df_plot, aes(x=xaxis,y=attention, group = 1)) +
 test_plot
 
 
-ggsave(here("writing/2019_SCiL/graphs/attention-viz.pdf"),test_plot,height=7,width=9.5)
+# ggsave(here("writing/2019_SCiL/graphs/attention-viz.pdf"),test_plot,height=7,width=9.5)
 # ggsave(filename="attention_viz1.png",path=here("models","01_nlu_project","model_visualization","graphs"), height = 24, width = 38)
 ```
 
@@ -95,7 +95,7 @@ test_plot = ggplot(df_plot, aes(x=xaxis,y=attention, group = 1)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   scale_x_discrete(labels= x_labels)
 
-ggsave(filename="attention_viz1.png",path=here("models","01_nlu_project","model_visualization","graphs"), height = 24, width = 38)
+# ggsave(filename="attention_viz1.png",path=here("models","01_nlu_project","model_visualization","graphs"), height = 24, width = 38)
 ```
 
 
@@ -169,7 +169,7 @@ plot=ggplot(df_simpleavg, aes(x=reorder(story_tokenized,-avgAttention), y=avgAtt
 ```{r}
 df_orig = read_csv(here("models/01_nlu_project/data/data_prep/suspect_guilt_testing.csv"))
 
-hedges = c("about", "actually", "allege", "almost", "appear to be", "apparently", "approximately", "around", "assume", "at least", "believe", "could", "doubt", "estimate", "few", "frequently", "generally", "if", "indicate", "kind of", "kinda", "largely", "little", "like", "look like", "mainly", "may", "might", "mostly", "nearly", "occasionally", "over", "partially", "perhaps", "possibility", "possibly", "probably", "quite", "rather", "roughly", "seem", "should", "somehow", "sometimes", "somewhat", "sort of", "sorta", "speculate", "suggest", "supposedly", "sure", "tend", "think", "up to", "vaguely", "virtually", "would")
+hedges = c("about", "actually", "allege", "almost", "appear to be", "apparently", "approximately", "around", "assume", "at least", "believe", "claim", "could", "doubt", "estimate", "few", "frequently", "generally", "if", "indicate", "kind of", "kinda", "largely", "little", "like", "look like", "mainly", "may", "might", "mostly", "nearly", "occasionally", "over", "partially", "perhaps", "possibility", "possibly", "probably", "quite", "rather", "roughly", "seem", "should", "somehow", "sometimes", "somewhat", "sort of", "sorta", "speculate", "suggest", "suspect", "supposedly", "sure", "tend", "think", "up to", "vaguely", "virtually", "would")
 
 h_str = str_c(hedges, collapse = "|")
 
