@@ -21,6 +21,7 @@
 \usepackage{booktabs}
 \usepackage{url}
 
+\usepackage{color}
 %\aclfinalcopy % Uncomment this line for the final submission
 %\def\aclpaperid{***} %  Enter the acl Paper ID here
 
@@ -43,6 +44,11 @@
 \newcommand{\word}[1]{\emph{#1}}
 
 \newcommand{\aout}{\mathbf{a_{\text{out}}}}
+
+
+\definecolor{Red}{RGB}{255,0,0}
+\newcommand{\red}[1]{\textcolor{Red}{#1}}
+\newcommand{\jd}[1]{\textcolor{Red}{[jd: #1]}} 
 
 % \title{Predicting guilt judgments from crime stories}
 \title{Attention Weights as a Window into How Crime Narratives Shape Subjective Assessments of Guilt}
@@ -70,11 +76,11 @@
 
 \section{Introduction}
 
-Deep learning models are increasingly applied to language tasks not only to develop technologies but also to derive new insights into language use. These more scientific applications raise the question of whether the models are processing data in a motivated way; their ``black box'' nature is often an obstacle to answering this question \citep{Alishah-etal:2019}. Recently, attention mechanisms, which capture the strength of association between components of these networks \citep{bahdanau2014neural,luong-etal-2015-effective}, have not only improved performance, but also increased interpretability, potentially opening the door to new linguistic applications of these models (but see \citealt{Serrano:2019} for a critical perspective).
+Deep learning models are increasingly applied to language tasks not just to develop technologies but also to derive new insights into language use. These more scientific applications raise the question of whether these models process data in a motivated way; their ``black box'' nature is often an obstacle to answering this question \citep{Alishah-etal:2019}. Recently, attention mechanisms, which capture the strength of association between components of these networks \citep{bahdanau2014neural,luong-etal-2015-effective}, have not only improved performance, but also increased interpretability, potentially opening the door to new linguistic applications of these models (but see \citealt{Serrano:2019} for a critical perspective).
 
 In this paper, we apply neural networks with attention to a task that has both linguistic and societal import: predicting whether the reader of a short narrative crime report will conclude that the main subject is guilty or innocent. Our networks rely on the attention mechanisms of \citet{Lin:2017}, which learn a weighting of the words in examples based on their contribution to the output prediction. These networks achieve strong performance on the task, as defined by the dataset of \citet{Kreiss:2019}, which leads us to explore their learned parameters by inspecting how they make predictions for new, carefully controlled inputs.
 
-We find that the networks make robust use of markers of certainty and uncertainty, as well as discourse connectives that signal contrast. In addition, by systematically removing this language from test examples, we see that these markers have a large impact where the evidence is weak but have little or no impact where the evidence is strong. These findings align well with the well-known semantic and pragmatic complexity of hedges and other epistemic markers \citep{Simons07,vonFintel:Gillies:2010,deMarneffe:Manning:Potts:2012,White-etal:2018}. In addition, to the extent that humans adopt similar reading strategies, this can inform how the news is reported, in that it yields insights into the complex ways that words like \word{allegedly} and \word{possibly} shape readers' construals of newspaper articles \citep{Erickson-etal:1978,jensen2008scientific}.
+We find that the networks make robust use of markers of certainty and uncertainty, as well as discourse connectives that signal contrast. In addition, by systematically removing this language from test examples, we find that these markers have a large impact where the evidence is weak but have little or no impact where the evidence is strong. These findings align well with the well-known semantic and pragmatic complexity of hedges and other epistemic markers \citep{Simons07,vonFintel:Gillies:2010,deMarneffe:Manning:Potts:2012,White-etal:2018}. In addition, to the extent that humans adopt similar reading strategies, this can inform how the news is reported, in that it yields insights into the complex ways that words like \word{allegedly} and \word{possibly} shape readers' construals of newspaper articles \citep{Erickson-etal:1978,jensen2008scientific}.
 
 
 \section{Related Work}
@@ -87,9 +93,9 @@ Our work draws on prior research concerning the relationship between language an
 The challenge of predicting guilt judgments from text sources has not yet received much attention. 
 % 2. Basically a list of papers falling under the topic, with basic details about what the work does.
 However, \citet{Fausey:Boroditsky:2010} show that using agentive language increases blame and financial liability judgments people make. Their results suggest that even subtle linguistic changes in crime reports can shape people's judgments of the events.
-More recent work has focused on predicting guilt verdicts from the Supreme Courts in the Philippines \citep{virtucio2018predicting} and Thailand \citep{kowsrihawat2018predicting} on the basis of facts presented and legal texts. \citeauthor{kowsrihawat2018predicting} employ a recurrent neural network with attention to make these predictions.
+More recent work has focused on predicting guilt verdicts from the Supreme Courts in the Philippines \citep{virtucio2018predicting} and Thailand \citep{kowsrihawat2018predicting} on the basis of presented facts  and legal texts. \citeauthor{kowsrihawat2018predicting} employ a recurrent neural network with attention to make these predictions.
 % 3. A final section explaining how the above relates to the current paper.
-This work is not concerned with the linguistic basis of subjective moral guilt judgments, but rather courtroom verdicts based on legal texts. We focus instead on subjective guilt judgments, and we train networks not primarily for their predictive capacity, but rather to probe their learned parameters.
+This previous work is not concerned with the linguistic basis of subjective guilt judgments, but rather with courtroom verdicts based on legal texts. Here we instead focus on subjective guilt judgments, and we train networks not primarily for their predictive capacity, but rather to probe their learned parameters.
 
 
 \subsection{The Interpretation of Hedges}
@@ -103,7 +109,7 @@ There is extensive prior literature on how hedges affect perceptions of the spea
 % 2. Basically a list of papers falling under the topic, with basic details about what the work does.
 These studies suggest that hedges affect people's judgments of credibility in differing ways. For example, an increase in the number of hedges decreases the credibility of witness reports \citep{Erickson-etal:1978}, but, at the same time, increases the trustworthiness of journalists and scientists \citep{jensen2008scientific}. Additionally, the interpretation of hedges is context dependent \citep{bonnefon2006tactful,durik2008effects,ferson2015natural} and shows high individual variation \citep{rubin:2007:ShortPapers,ferson2015natural}. 
 % 3. A final section explaining how the above relates to the current paper.
-Since neural networks can be trained flexibly in many different environments, they hold out the promise of systematically studying this kind of variation at scale -- as long as their representations are interpretable.
+Since neural networks can be trained flexibly in many different environments, they hold the promise of systematically studying this kind of variation at scale -- as long as their representations are interpretable.
 
 In addition, computational and theoretical work on veridicality has revealed that not all hedges serve merely to reduce speaker commitment. For instance, attitude predications like \word{The company reported S} and \word{They said S} are often used to convey evidence sources. In such utterances, the speaker might wish to appear fully committed to the embedded content \word{S} despite the apparent hedging \citep{Simons07,deMarneffe:Manning:Potts:2012,White:Rawlins:2018,White-etal:2018}. Similarly, \citet{vonFintel:Gillies:2010} show that related evidential readings arise for epistemic \word{must}. These findings show how complex these markers are pragmatically and highlight the value of usage-based studies of them.
 
@@ -112,7 +118,7 @@ In addition, computational and theoretical work on veridicality has revealed tha
 
 Neural networks were originally motivated largely by questions in cognitive science \citep{pater2019generative}, especially concerning issues of representation and learning (e.g., \citealt{rumelhart1986learning,tesar2000learnability}). Today, they are more closely associated with engineering efforts, but there is increasing interest in returning to these models' cognitive motivations and in using them to try to gain insights about linguistic phenomena.
 
-An obstacle to this work is the incredible representational power of these networks, which can make their representations inscrutable. However, recent efforts are overcoming this. For instance, \citet{N16-3020} and \citet{Koh:Liang:2017} develop general methods for probing complex models to understand which features are guiding their predictions. Attention weights are increasingly playing a role in such efforts. For instance, \citet{jawahar-etal-2019-bert}, \citet{clark2019what}, and \citet{tenney-etal-2019-bert} present evidence that BERT language models systematically encode core aspects of linguistic structure. We present a similar argument here, but focused on usage-based patterns.
+An obstacle to this work is the incredible representational power of these networks, which can make their representations inscrutable. However, recent efforts are overcoming this. For instance, \citet{N16-3020} and \citet{Koh:Liang:2017} develop general methods for probing complex models to understand which features  guide their predictions. Attention weights are increasingly playing a role in such efforts. For instance, \citet{jawahar-etal-2019-bert}, \citet{clark2019what}, and \citet{tenney-etal-2019-bert} present evidence that BERT language models systematically encode core aspects of linguistic structure. We present a similar argument here, but focused on usage-based patterns.\jd{not sure i understand what this last sentence is supposed to mean}
 
 Finally, \citet{linzen-etal-2016-assessing} argue for applying methods from psycholinguistics to trained neural networks, treating them as participants whose behavior we can observe and learn from (see also \citealt{gulordava-etal-2018-colorless,Futrell-etal:2019}). We employ similar methods to home in on which words our models are most attuned to.
 
@@ -142,11 +148,11 @@ Each story was given to a participant who was asked to read and afterwards repro
 \begin{figure}[tp]
   \includegraphics[width=\linewidth]{graphs/subjguilt.pdf}
   \caption{A point represents the mean subject guilt rating for a story in the corpus,
-    color-coded for condition.}
+    color-coded for condition.\jd{why is this a scatterplot instead of a histogram or density plot?}}
   \label{fig:corpus-annotations}
 \end{figure}
 
-After the corpus collection, \citeauthor{Kreiss:2019}\ obtained human responses pertaining to a range of issues. Participants were recruited on Amazon Mechanical Turk. The questions were primarily related to different aspects of guilt perception but also, for example, perceived subjectivity of the story writing. We focus here on the question ``How likely is it that the suspect(s) in the crime is/are are guilty?'' Participants indicated their responses on a continuous slider labeled with `very unlikely' at its lowest point and `very likely' at its highest. Each story received approximately 20 ratings. For the purposes of this work, we rescale the responses into $[0,1]$ and consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure~\ref{fig:corpus-annotations}. In contrast to the raw ratings, the means range only from $0.27$ to $0.92$. 
+After the corpus collection, \citeauthor{Kreiss:2019}\ obtained human responses pertaining to a range of issues. Participants were recruited on Amazon Mechanical Turk. The questions were primarily related to different aspects of guilt perception but also, for example, perceived subjectivity of the story writing. We focus here on the question ``How likely is it that the suspect(s) in the crime is/are are guilty?'' Participants indicated their responses on a continuous slider labeled `very unlikely' at its lowest point and `very likely' at its highest. Each story received approximately 20 ratings. For the purpose of this work, we rescale the responses into $[0,1]$ and consider the mean rating for each story as its guilt judgment label. The labels of each story are shown in Figure~\ref{fig:corpus-annotations}. In contrast to the raw ratings, the means range only from $0.27$ to $0.92$. 
 
 In summary, the AINC is a corpus of reproduced news stories, annotated with human guilt judgments. Since the stories originated from only 5 unique stories (each in 2 conditions), a lot of information is shared between single data points.  Despite this similarity, the range of guilt judgments is still high, alluding to subtle differences that trigger this variance. We now turn to the question of whether a deep learning model can learn to predict the assessments of guilt the corpus provides.
 
@@ -197,7 +203,7 @@ Finally, we take the dot product of the LSTM hidden state matrix $H$ and the jus
 %
 This is a compressed representation of the entire input sequence. Intuitively, the attention weights capture the relative importance of each token with regard to the final prediction, and $\aout$ synthesizes all of these weighted contributions into a single vector.
 
-Finally, the logistic regression module makes the prediction of guilt. For this step, $\aout$ is linearly transformed into a single number $p = \sigmoid(\mathbf{x}\,\aout^{\top} + b)$, where $\mathbf{x}$ is a vector of regression weights (dimension $1 \times 400$) and $b$ is a bias term. The sigmoid function ensures that the prediction lies between $0$ and $1$, just like the restriction on the guilt judgments it is trained on.
+Finally, the logistic regression module makes a guilt prediction. For this step, $\aout$ is linearly transformed into a single number $p = \sigmoid(\mathbf{x}\,\aout^{\top} + b)$, where $\mathbf{x}$ is a vector of regression weights (dimension $1 \times 400$) and $b$ is a bias term. The sigmoid function ensures that the prediction lies between $0$ and $1$, just like the restriction on the guilt judgments it is trained on.
 
 Overall, the model has $111,054,742$ trainable parameters. This sounds mismatched with our very small dataset, but only $0.02\%$ of these parameters are in the attention and output modules and $1.40\%$ are in the LSTM module. The rest of the parameters ($98.59\%$) are the pretrained weights in the BERT word embedding module, so they actually help us get traction on our small dataset by bringing in a lot of outside linguistic knowledge.
 
@@ -216,7 +222,7 @@ Our initial goal is to assess the extent to which our bidirectional LSTM with se
 
 To begin, we held out 26 randomly selected stories (from the 260 stories in total) as the final test set. The remaining 234 stories were then used for model training and validation, which was done using 10-fold cross validation. The cross-validation results inform us about the model variation observed across train/validation splits. It is likely that, given the small size of the dataset, this variation will be high, so we want to be attuned to it.
 
-In each step of the 10-fold cross-validation, the model was trained on 206/207 stories and 23/24 were held out for dev-testing. As noted above, this guilt rating is the mean participant guilt rating obtained from the previously described data collection and annotation.
+In each step of the 10-fold cross-validation, the model was trained on 206/207 stories and 23/24 were held out for dev-testing. As noted above, the predicted guilt rating was the mean participant guilt rating obtained from the previously described data collection and annotation.
 
 For training, the model uses mean squared error (MSE) as the loss function, stochastic gradient descent as the optimizer, and a learning rate of $0.1$. The model was implemented using PyTorch \citep{Paszke:2017}. It was trained for 30 epochs, for each of the 10 train/dev-test configurations in the cross-validation.
 
@@ -258,7 +264,7 @@ We have established that the proposed model can predict human guilt judgments wh
 \begin{figure*}[t]
   \centering
   \includegraphics[width=1\linewidth]{graphs/attention-marked.pdf}
-  \caption{Visualization of the attention weights (y axis) for a tokenized story (x axis) from the test set. Because we took the softmax over the attention weights, the scale of the y axis is irrelevant. Areas of high attention weight are marked in yellow and correlate with markers of (un)certainty as well as markers of contrast.}
+  \caption{Visualization of the attention weights (y axis) for a tokenized story (x axis) from the test set. Because we took the softmax over the attention weights, the scale of the y axis is irrelevant. Areas of high attention weight are marked in yellow and correlate with markers of (un)certainty as well as markers of contrast.\jd{A, B, and C come from different stories, no? indicate in caption?}}
   \label{fig:viz}
 \end{figure*}
 
@@ -278,7 +284,7 @@ In summary, visualizing the attention weights contributes further evidence that 
 
 \subsection{Qualitative Analysis}
 
-Figure~\ref{fig:viz} provides evidence for the claim that the model picks up on meaningful patterns in the corpus. But does the model make reasonable predictions on newly constructed examples?  The original corpus started out with 5 different crime stories. Each of these stories occurred in 2 conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as \word{allegedly} and \word{(un)likely}, which we expect to have an impact on guilt judgments. However, the corpus cannot inform us about this relationship.
+Figure~\ref{fig:viz} provides evidence for the claim that the model picks up on meaningful patterns in the corpus. \jd{for three cherry-picked examples, yes. is there any way to quantify this? eg, you've annotated all the hedges. could one do sth simple like test the extent to which, within one sentence, mean attention to hedges is greater than to other expressions?} But does the model make reasonable predictions on newly constructed examples?  The original corpus started out with 5 different crime stories. Each of these stories occurred in 2 conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as \word{allegedly} and \word{(un)likely}, which we expect to have an impact on guilt judgments. However, the corpus cannot inform us about this relationship.
 
 \begin{figure}
   \includegraphics[width=1\linewidth]{graphs/hedges.pdf}
@@ -302,9 +308,9 @@ Finally, we can remove the evidence statement entirely and see how the network r
 
 \section{Discussion}
 
-We applied a neural network with attention mechanisms to the task of predicting subjective guilt judgments in the Annotated Iterated Narration Corpus of \citet{Kreiss:2019}. Though this corpus is small, our network was able to learn effectively from it, which opened the door to studying its learned parameters to see whether they can yield linguistic insights. In visualizing the attention weights, we observed that the network attends closely to markers of (un)certainty and contrast, which aligns well pragmatic characterizations of this language. However, in systematically varying examples to remove the (un)certainty markers, we uncovered an additional dimension to this finding: only where the evidence given is explicitly weak do these markers play a large role in shaping predictions. Where the evidence is strong, hedges play less of a role, and this seems to carry over to cases where no evidence statement appears explicitly, revealing that the narratives themselves create a default presumption of guilt in the model.
+We applied a neural network with attention mechanisms to the task of predicting subjective guilt judgments in the Annotated Iterated Narration Corpus of \citet{Kreiss:2019}. Though this corpus is small, our network was able to learn effectively from it, which opened the door to studying its learned parameters to see whether they can yield linguistic insights. In visualizing the attention weights, we observed that the network attends closely to markers of (un)certainty and contrast, which aligns with pragmatic characterizations of this language. However, in systematically varying examples to remove the (un)certainty markers, we uncovered an additional dimension to this finding: only where the evidence given is explicitly weak do these markers play a large role in shaping predictions. Where the evidence is strong, hedges play less of a role, and this carries over to cases where no evidence statement appears explicitly, revealing that the narratives themselves create a default presumption of guilt in the model.
 
-To what extent to these findings extend to human readers? Our networks are trained on human guilt judgments, so we expect their properties to reflect behavior at some level. If so, then our findings are cause for reflection, as it seems that markers of uncertainty in news report about crimes might not be having the stable effects that we might naively expect. This conclusion is indirectly supported by prior work on hedges in legal contexts and by prior linguistic analyses of evidentiality and speaker commitment, but it should be pursued in a more focused way in the context of guilt judgments, as they have direct relevance to questions of media bias and due process.
+To what extent do these findings extend to human readers?\jd{do you mean what can we conclude about human guilt perception from the model findings? i'd be generally really wary of concluding anything in that regard. or rather, i don't think there is anything to conclude about human guilt perception that we couldn't directly conclude from the human judgments. the model has nothing to say about that.} Our networks are trained on human guilt judgments, so we expect their properties to reflect human behavior at some level. If so, then our findings are cause for reflection, as it seems that markers of uncertainty in news report about crimes might not be having the stable effects that we might naively expect.\jd{what stable effects do we naively expect?} This conclusion is indirectly supported by prior work on hedges in legal contexts and by prior linguistic analyses of evidentiality and speaker commitment, but it should be pursued in a more focused way in the context of guilt judgments, as they have direct relevance to questions of media bias and due process.
 
 
 % probed the network's behavior more systematically 
