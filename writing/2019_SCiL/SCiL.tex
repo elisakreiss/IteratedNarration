@@ -71,7 +71,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  Neural network attention mechanisms have led to performance gains on a variety of tasks in natural language understanding, and they have also provided clues as to how these complex networks represent language, opening up new avenues for linguistic investigation. In this spirit, we apply neural networks with attention to the task of modeling human judgments about guilt based on short crime narratives. The networks are successful at the task. Probing their attention weights reveals that they rely heavily on markers of (un)certainty and discourse contrast where the surrounding evidence is weak, but that these linguistic devices are less important where the evidence is strong. We relate these findings to prior linguistic work on verdicality and evidentiality.
+  Neural network attention mechanisms have led to performance gains on a variety of tasks in natural language understanding, and they have also provided clues as to how these complex networks represent language, opening up new avenues for linguistic investigation. In this spirit, we apply neural networks with attention to the task of modeling human judgments about guilt based on short crime narratives. The networks are successful at the task. Probing their attention weights reveals that they rely heavily on markers of (un)certainty and discourse contrast where the surrounding evidence is weak, but that these linguistic devices are less important where the evidence is strong. We relate these findings to prior linguistic work on veridicality and evidentiality.
   % The findings reflect the pragmatic complexity of these linguistic devices, and they suggest new ideas about how crimes might be more effectively reported in the news media.
 \end{abstract}
 
@@ -275,7 +275,7 @@ We have established that the proposed model can predict human guilt judgments wh
 
 We begin by inspecting the learned attention weight vector $\mathbf{a}$ in equation (\ref{eq:attn}). Since the softmax forces the sum of the weights to be 1, we cannot interpret the weights on their own for each word or across stories. Instead, the relevance lies in the differences between words and phrases within each story, and patterns of similarities between stories.
 
-To investigate what might affect model predictions, we ran the model again on the final test data. Figure~\ref{fig:viz} displays three of these stories with their attention weight distribution.
+To investigate what might affect model predictions, we ran the model again on the final test data. Figure~\ref{fig:viz} displays three of these stories with their attention weight distribution. A randomly drawn sample of eight more stories from the test set is displayed in Figure~\ref{fig:app-attention-viz} in the Appendix.
 We see that the model seems to focus on phrases that explicitly describe uncertainty about the evidence (see Figure~\ref{fig:viz}C). If present, these cues usually outweigh the rest of the story. This suggests that, if there is an explicit claim that affects the evidence of the suspect's guilt, it is considered as the most important source to inform guilt judgment.
 
 Additionally, peaks occur on words and phrases which convey contrast, such as \word{however}, \word{but}, \word{even though}, and \word{it turns out}. This can be seen in all three stories in Figure~\ref{fig:viz}. These phrases not only correspond to turning points in the story, but also tend to signal argument structure, changes in expectations, and concessions \citep{RLakoff:1971,Merin:1999,Blakemore01}. In our stories, these markers mostly follow reports of arrests, so they might be correlated with objections to those arrests which would influence guilt perceptions.
@@ -287,7 +287,7 @@ In summary, visualizing the attention weights contributes further evidence that 
 
 \subsection{Qualitative Analysis}
 
-Figure~\ref{fig:viz} provides evidence for the claim that the model picks up on meaningful patterns in the corpus. \jd{for three cherry-picked examples, yes. is there any way to quantify this? eg, you've annotated all the hedges. could one do sth simple like test the extent to which, within one sentence, mean attention to hedges is greater than to other expressions?} But does the model make reasonable predictions on newly constructed examples?  The original corpus started out with 5 different crime stories. Each of these stories occurred in 2 conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as \word{allegedly} and \word{(un)likely}, which we expect to have an impact on guilt judgments. However, the corpus cannot inform us about this relationship.
+Figure~\ref{fig:viz} provides evidence for the claim that the model picks up on meaningful patterns in the corpus. But does the model make reasonable predictions on newly constructed examples?  The original corpus started out with 5 different crime stories. Each of these stories occurred in 2 conditions -- one suggesting that the evidence that led to the arrest was weak, and the other that the evidence provided a strong case. Additionally, the stories were filled with uncertainty markers such as \word{allegedly} and \word{(un)likely}, which we expect to have an impact on guilt judgments. However, the corpus cannot inform us about this relationship.
 
 \begin{figure}
   \includegraphics[width=1\linewidth]{graphs/hedges.pdf}
@@ -352,6 +352,12 @@ We applied a neural network with attention mechanisms to the task of predicting 
 	\includegraphics[width=\linewidth]{graphs/all-pred-target-epoch30.pdf}
 	\caption{Testing label (x axis) vs. model prediction (y axis) after training; faceted over cross-validation configurations.}
 	\label{fig:app-corr-posttraining}
+\end{figure*}
+
+\begin{figure*}[!htb]
+	\includegraphics[width=\linewidth]{graphs/attention-viz-appendix-marked.pdf}
+	\caption{Visualization of the attention weights (y axis) for tokenized stories (x axis) randomly drawn from the test set. Because we took the softmax over the attention weights, the scale of the y axis is irrelevant. Areas of high attention weight are marked in yellow and correlate with markers of (un)certainty as well as markers of contrast.}
+	\label{fig:app-attention-viz}
 \end{figure*}
 
 \end{document}

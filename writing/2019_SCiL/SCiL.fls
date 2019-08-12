@@ -138,7 +138,6 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm1
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
-INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
@@ -157,10 +156,9 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmb7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmb8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmr7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
-INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmri7t.vf
-INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmb7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmb8r.tfm
+INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmbi7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
@@ -179,6 +177,8 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr7t.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 INPUT /usr/local/texlive/2018/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/courier/pcrr7t.tfm
+INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmri7t.vf
+INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmbi7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmbi8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmr7t.vf
@@ -235,6 +235,9 @@ INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/all-pred-target-epoch30.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/all-pred-target-epoch30.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/all-pred-target-epoch30.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-viz-appendix-marked.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-viz-appendix-marked.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-viz-appendix-marked.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.aux
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.out
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.out
