@@ -121,7 +121,7 @@ In addition, computational and theoretical work on veridicality has revealed tha
 
 Neural networks were originally motivated largely by questions in cognitive science \citep{pater2019generative}, especially concerning issues of representation and learning (e.g., \citealt{rumelhart1986learning,tesar2000learnability}). Today, they are more closely associated with engineering efforts, but there is increasing interest in returning to these models' cognitive motivations and in using them to try to gain insights about linguistic phenomena.
 
-An obstacle to this work is the incredible power of these networks, which can make their representations inscrutable. However, recent efforts are overcoming this. For instance, \citet{N16-3020} and \citet{Koh:Liang:2017} develop general methods for probing complex models to understand which features  guide their predictions. Attention weights are increasingly playing a role in such efforts. For instance, \citet{jawahar-etal-2019-bert}, \citet{clark2019what}, and \citet{tenney-etal-2019-bert} present evidence that BERT language models systematically encode core aspects of linguistic structure. We present a similar argument here, but focused on usage-based patterns rather than the structural elements of language.
+An obstacle to this work is the incredible power of these networks, which can make their representations inscrutable. However, recent efforts are overcoming this. For instance, \citet{N16-3020} and \citet{Koh:Liang:2017} develop general methods for probing complex models to understand which features  guide their predictions. Attention weights are increasingly playing a role in such efforts. For instance, \citet{jawahar-etal-2019-bert}, \citet{clark2019what}, and \citet{tenney-etal-2019-bert} present evidence that BERT language models \citep{Devlin:2018} systematically encode core aspects of linguistic structure. We present a similar argument here, but focused on usage-based patterns rather than the structural elements of language.
 
 Finally, \citet{linzen-etal-2016-assessing} argue for applying methods from psycholinguistics to trained neural networks, treating them as participants whose behavior we can observe and learn from (see also \citealt{gulordava-etal-2018-colorless,Futrell-etal:2019}). We employ similar methods to home in on which words our models are most attuned to.
 
@@ -142,16 +142,16 @@ Finally, \citet{linzen-etal-2016-assessing} argue for applying methods from psyc
 \label{tab:examplestory}
 \end{table*}
 
-Our experiments rely on the Annotated Iterated Narration Corpus (AINC) collected by \citet{Kreiss:2019}.\footnote{\url{https://github.com/elisakreiss/iterated_narration}\ek{TODO: add proper corpus link!}} The corpus was created for investigations into how news stories change when they are propagated from one person to another.
+Our experiments rely on the Annotated Iterated Narration Corpus (AINC) collected by \citet{Kreiss:2019}.\footnote{\url{https://github.com/elisakreiss/iteratednarration}} The corpus was created for investigations into how news stories change when they are propagated from one person to another.
 
-First, the authors created five stories of approximately 850 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Table~\ref{tab:examplestory} provides a complete example.
+First, the authors created five stories of approximately 170 words, which are called the \emph{seed} stories. All of them report a crime and an arrest of one or more suspects. Each of these five seed stories exists in a weak and a strong evidence condition. The stories are identical up to the last phrase, which then either raises doubts about the arrest or emphasizes its validity. For example, if a suspect was arrested on the basis of camera footage, this footage was described as being of ``very poor quality'' in the weak evidence condition and ``very high quality'' in the strong evidence condition. Table~\ref{tab:examplestory} provides a complete example.
 
 Each story was given to a participant who was asked to read and afterwards reproduce it. The reproduced story was then given to the next participant, who again reproduced it. The data collection therefore followed the transmission-chain paradigm introduced by \citet{Bartlett:1932}. Following this schema, each story and condition was reproduced in 5 chains over 5 generations, resulting in 250 reproductions and thus 260 stories overall.
 
 \begin{figure}[tp]
   \includegraphics[width=\linewidth]{graphs/subjguilt.pdf}
   \caption{A point represents the mean subject guilt rating for a story in the corpus,
-    color-coded for condition. The lines represent the density of these ratings.\jd{why is this a scatterplot instead of a histogram or density plot?}\ek{is this better?}}
+    color-coded for condition. The lines represent the density of these ratings.}
   \label{fig:corpus-annotations}
 \end{figure}
 
@@ -223,7 +223,7 @@ Our initial goal is to assess the extent to which our bidirectional LSTM with se
 
 \subsection{Optimization}
 
-To begin, we held out 26 randomly selected stories (from the 260 stories in total) as the final test set. The remaining 234 stories were then used for model training and validation, which was done using 10-fold cross validation. The cross-validation results inform us about the model variation observed across train/validation splits. It is likely that, given the small size of the dataset, this variation will be high, so we want to be attuned to it.
+To begin, we held out 26 randomly selected stories (from the 260 stories in total) as the final test set. The remaining 234 stories were then used for model training and validation, which was done using 10-fold cross-validation. The cross-validation results inform us about the model variation observed across train/validation splits. It is likely that, given the small size of the dataset, this variation will be high, so we want to be attuned to it.
 
 In each step of the 10-fold cross-validation, the model was trained on 206/207 stories and 23/24 were held out for dev-testing. As noted above, the predicted guilt rating was the mean participant guilt rating obtained from the previously described data collection and annotation.
 

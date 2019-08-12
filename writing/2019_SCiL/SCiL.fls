@@ -187,8 +187,6 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmr7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/courier/pcrr7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/courier/pcrr8r.tfm
-INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmr7t.vf
-INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/subjguilt.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/subjguilt.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/subjguilt.pdf
@@ -201,12 +199,6 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/lossPlotCropped.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/lossPlotCropped.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/lossPlotCropped.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
-INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm
@@ -217,6 +209,12 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam1
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/cv0-pred-target-epoch0-29.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
+INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/test-corr.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-marked.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-marked.pdf
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/attention-marked.pdf
@@ -227,6 +225,8 @@ INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.bbl
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.bbl
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri7t.tfm
+INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmr7t.vf
+INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/vf/adobe/times/ptmri7t.vf
 INPUT /usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/times/ptmri8r.tfm
 INPUT /Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/graphs/all-pred-target-epoch1.pdf
