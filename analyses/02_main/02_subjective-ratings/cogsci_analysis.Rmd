@@ -79,6 +79,21 @@ length(unique(df_filtered$anon_worker_id))
 # write_csv(df_filtered,here("data","02_main","02_subjective-ratings","filtered_data.csv"))
 ```
 
+```{r corpus creation, include=False}
+corpus = df_filtered %>% 
+  mutate(condition=ifelse(str_detect(story_title,"free"),"weak evidence","strong evidence")) %>%  
+  mutate(story_topic = str_replace_all(story_title,"_free|_jail","")) %>% 
+  rename(rating = slider_val) %>% 
+  filter(!str_detect(trial_type,"control")) %>%
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"<u>",""))) %>% 
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"</u>",""))) %>% 
+  rename(question_topic = trial_type) %>% 
+  select(question_topic, rating, condition, chain, generation, question, story_topic, story_reproduction)
+
+write_csv(corpus,here("corpus","corpus.csv"))
+```
+
+
 ```{r per_condition, include=FALSE}
 library(stringdist)
 

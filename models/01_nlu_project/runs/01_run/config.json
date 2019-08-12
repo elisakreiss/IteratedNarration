@@ -1,8 +1,0 @@
-{
-    "ling_measure": "suspect_guilt",
-    "cv_fold": 10,
-    "hidden_dim": 200,
-    "loss_function": "nn.MSELoss()",
-    "optimizer": "optim.SGD(model.parameters(), lr=0.1)",
-    "num_epochs": 30
-}

@@ -199,90 +199,90 @@ ggplot(df_suspguilt,
 ```
 
 ```{r judgments suspect guilt only in paper, echo=FALSE}
-df_suspguilt = df_reformatted %>% 
-  filter(trial_type == "suspect guilt") %>% 
-  mutate_at(vars(slider_val),funs(./100)) %>% 
-  group_by(chain,generation,story_title,condition) %>%
-  summarize(story_mean=mean(slider_val)) %>%
-  ungroup() %>%
-  mutate(x = row_number())
-  # mutate(story_mean=mean(slider_val)) %>% 
-  # ungroup()
-  
-ggplot(df_suspguilt,
-       aes(x=x,
-           y=story_mean,
-           # group=condition,
-           color=condition
-           # fill=condition
-           )) +
-  geom_point(alpha=0.6,
-             size = 4
-             # position = position_dodge(width = 0.9),
-             # position = position_jitter()
-             ) +
-  # stat_summary(fun.y = "mean",
-  #              geom = "point",
-  #              size = 6
-  #              # position = position_dodge(width = 0.9)
-  #              ) +
-  # stat_summary(fun.data = "mean_cl_boot",
-  #              geom = "linerange",
-  #              color = "darkgrey"
-  #              # position = position_dodge(width = 0.9)
-  #              ) +
-  # facet_wrap(vars(condition),nrow=1) +
-  xlab("Crime stories") +
-  ylab("Mean slider rating") +
-  scale_color_manual(values=c(color_strongc,color_weakc)) +
-  theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA)) +
-  theme(axis.text.x = element_blank()) +
-  theme(axis.ticks.x = element_blank()) +
-  ylim(0,1)
-
-ggplot(df_suspguilt,
-       aes(x=story_mean,
-           y=x,
-           color=condition
-           )) +
-  geom_point(alpha=0.6,
-             size = 4
-             ) +
-  ylab("Crime stories") +
-  xlab("Mean slider rating") +
-  scale_color_manual(values=c(color_strongc,color_weakc)) +
-  theme(legend.position = "top") +
-  theme(strip.background = element_rect(fill = NA, colour = NA)) +
-  # theme(axis.text.x = element_blank()) +
-  # theme(axis.ticks.x = element_blank()) +
-  xlim(0,1)
-
-ggplot(df_suspguilt, aes(x=story_mean, fill=condition)) +
-  geom_histogram() +
-  ylab("Number of crime stories") +
-  xlab("Mean slider rating") +
-  scale_fill_manual(values=c(color_strongc,color_weakc)) +
-  scale_color_manual(values=c("black","black")) +
-  theme(legend.position = "top") +
-  xlim(0,1)
-
-ggplot(df_suspguilt, aes(x=story_mean, color=condition)) +
-  geom_point(aes(y=-0.5), 
-             size=1, 
-             alpha=0.4, 
-             position = position_jitter(width=0, height=0.2)) +
-  stat_density(geom = "line", size=1) +
-  ylab("Number of crime stories") +
-  xlab("Mean slider rating") +
-  scale_color_manual(values=c(color_strongc,color_weakc)) +
-  # scale_color_manual(values=c("black","black")) +
-  theme(axis.text.y = element_blank()) +
-  theme(axis.ticks.y = element_blank()) +
-  theme(legend.position = "top") +
-  xlim(0,1)
-
-ggsave(filename="subjguilt.pdf",path=here(), height = 3, width = 4.5)
+# df_suspguilt = df_reformatted %>% 
+#   filter(trial_type == "suspect guilt") %>% 
+#   mutate_at(vars(slider_val),funs(./100)) %>% 
+#   group_by(chain,generation,story_title,condition) %>%
+#   summarize(story_mean=mean(slider_val)) %>%
+#   ungroup() %>%
+#   mutate(x = row_number())
+#   # mutate(story_mean=mean(slider_val)) %>% 
+#   # ungroup()
+#   
+# ggplot(df_suspguilt,
+#        aes(x=x,
+#            y=story_mean,
+#            # group=condition,
+#            color=condition
+#            # fill=condition
+#            )) +
+#   geom_point(alpha=0.6,
+#              size = 4
+#              # position = position_dodge(width = 0.9),
+#              # position = position_jitter()
+#              ) +
+#   # stat_summary(fun.y = "mean",
+#   #              geom = "point",
+#   #              size = 6
+#   #              # position = position_dodge(width = 0.9)
+#   #              ) +
+#   # stat_summary(fun.data = "mean_cl_boot",
+#   #              geom = "linerange",
+#   #              color = "darkgrey"
+#   #              # position = position_dodge(width = 0.9)
+#   #              ) +
+#   # facet_wrap(vars(condition),nrow=1) +
+#   xlab("Crime stories") +
+#   ylab("Mean slider rating") +
+#   scale_color_manual(values=c(color_strongc,color_weakc)) +
+#   theme(legend.position = "top") +
+#   theme(strip.background = element_rect(fill = NA, colour = NA)) +
+#   theme(axis.text.x = element_blank()) +
+#   theme(axis.ticks.x = element_blank()) +
+#   ylim(0,1)
+# 
+# ggplot(df_suspguilt,
+#        aes(x=story_mean,
+#            y=x,
+#            color=condition
+#            )) +
+#   geom_point(alpha=0.6,
+#              size = 4
+#              ) +
+#   ylab("Crime stories") +
+#   xlab("Mean slider rating") +
+#   scale_color_manual(values=c(color_strongc,color_weakc)) +
+#   theme(legend.position = "top") +
+#   theme(strip.background = element_rect(fill = NA, colour = NA)) +
+#   # theme(axis.text.x = element_blank()) +
+#   # theme(axis.ticks.x = element_blank()) +
+#   xlim(0,1)
+# 
+# ggplot(df_suspguilt, aes(x=story_mean, fill=condition)) +
+#   geom_histogram() +
+#   ylab("Number of crime stories") +
+#   xlab("Mean slider rating") +
+#   scale_fill_manual(values=c(color_strongc,color_weakc)) +
+#   scale_color_manual(values=c("black","black")) +
+#   theme(legend.position = "top") +
+#   xlim(0,1)
+# 
+# ggplot(df_suspguilt, aes(x=story_mean, color=condition)) +
+#   geom_point(aes(y=-0.5), 
+#              size=1, 
+#              alpha=0.4, 
+#              position = position_jitter(width=0, height=0.2)) +
+#   stat_density(geom = "line", size=1) +
+#   ylab("Number of crime stories") +
+#   xlab("Mean slider rating") +
+#   scale_color_manual(values=c(color_strongc,color_weakc)) +
+#   # scale_color_manual(values=c("black","black")) +
+#   theme(axis.text.y = element_blank()) +
+#   theme(axis.ticks.y = element_blank()) +
+#   theme(legend.position = "top") +
+#   xlim(0,1)
+# 
+# ggsave(filename="subjguilt.pdf",path=here(), height = 3, width = 4.5)
 ```
 
 ```{r judgments suspect guilt only, echo=FALSE}
