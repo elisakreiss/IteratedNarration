@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex SCiL"] 1565578996 "SCiL.aux" "SCiL.bbl" "SCiL" 1565578998
+["bibtex SCiL"] 1565581117 "SCiL.aux" "SCiL.bbl" "SCiL" 1565582892
   "./acl_natbib.bst" 1546963142 47585 c671f071a8f3957857acb307a7173505 ""
-  "SCiL.aux" 1565578997 9966 9e7b0807d87dee007c378b1eb17ab3a5 ""
+  "SCiL.aux" 1565582892 10012 f335a78eda2d2dc71fe03fd1685c772b ""
   "acl2019.bib" 1565491788 80125 eab7b6796cbac2633d7b29c4e4d93f1c ""
   (generated)
   "SCiL.bbl"
   "SCiL.blg"
-["pdflatex"] 1565578997 "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.tex" "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.pdf" "SCiL" 1565578998
-  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.aux" 1565578997 9966 9e7b0807d87dee007c378b1eb17ab3a5 ""
-  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.tex" 1565578994 39520 8a4d63c64580bf5320bb6629974cfac1 ""
+["pdflatex"] 1565582891 "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.tex" "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.pdf" "SCiL" 1565582892
+  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.aux" 1565582892 10012 f335a78eda2d2dc71fe03fd1685c772b ""
+  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.tex" 1565582890 40528 35b5fe88b04956c8671b1b4630da2fbe ""
   "/usr/local/texlive/2018/texmf-dist/fonts/enc/dvips/base/8r.enc" 1480098666 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/adobe/courier/pcrr7t.tfm" 1480098688 960 379cc0019370a9e0208a0a3f949f847a ""
@@ -126,10 +126,10 @@
   "/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1523934492 2717033 f61a5287d9c22a39a74f1979fe3f905c ""
   "/usr/local/texlive/2018/texmf-var/web2c/pdftex/pdflatex.fmt" 1523934516 4220280 10cab8fbd7c5a7c52aba9917e190d018 ""
   "/usr/local/texlive/2018/texmf.cnf" 1523934483 577 0b39adfd7c93507ff20c9c14c2f1a33f ""
-  "SCiL.aux" 1565578997 9966 9e7b0807d87dee007c378b1eb17ab3a5 ""
-  "SCiL.bbl" 1565578997 16641 f6937f1586f9f382d31ead6b87d606ed "bibtex SCiL"
-  "SCiL.out" 1565578997 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "SCiL.tex" 1565578994 39520 8a4d63c64580bf5320bb6629974cfac1 ""
+  "SCiL.aux" 1565582892 10012 f335a78eda2d2dc71fe03fd1685c772b ""
+  "SCiL.bbl" 1565581117 16641 f6937f1586f9f382d31ead6b87d606ed "bibtex SCiL"
+  "SCiL.out" 1565582891 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "SCiL.tex" 1565582890 40528 35b5fe88b04956c8671b1b4630da2fbe ""
   "acl2019.sty" 1546963142 22052 527a462da91f4fc7ec79d8dbc895cad4 ""
   "graphs/all-pred-target-epoch1.pdf" 1564632800 25806 2bf1f89d0a3349edf33e02d31995ea94 ""
   "graphs/all-pred-target-epoch30.pdf" 1564632756 26341 da4e2a86634a81a5e008a5b4b22f1321 ""
@@ -142,9 +142,9 @@
   "graphs/subjguilt.pdf" 1565540090 24953 2de29a7cb56a595a1f394dafe6ee2248 ""
   "graphs/test-corr.pdf" 1564634027 5795 711979b6da9ea9656b4da7a0f300db5e ""
   (generated)
-  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.pdf"
-  "SCiL.out"
-  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.log"
   "SCiL.log"
   "SCiL.aux"
   "SCiL.pdf"
+  "SCiL.out"
+  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.log"
+  "/Users/elisakreiss/Documents/business/projects/iteratednarration/writing/2019_SCiL/SCiL.pdf"
