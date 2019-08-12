@@ -1,6 +1,6 @@
 # The Annotated Iterated Narration Corpus (AINC)
 
-The AINC is a corpus of crime stories and retellings of it. We're working on a user-friendly interface and documentation right now, but feel free to already use it. You can download the csv file [here](https://github.com/elisakreiss/iteratednarration/corpus).
+The AINC is a corpus of crime stories and retellings of it. We're working on a user-friendly interface and documentation right now, but feel free to already use it. You can download the csv file [here](https://github.com/elisakreiss/iteratednarration/tree/master/corpus).
 
 ## Citation
 
