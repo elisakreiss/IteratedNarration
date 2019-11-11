@@ -80,17 +80,33 @@ length(unique(df_filtered$anon_worker_id))
 ```
 
 ```{r corpus creation, include=False}
-corpus = df_filtered %>% 
+corpus_full = df_filtered %>% 
   mutate(condition=ifelse(str_detect(story_title,"free"),"weak evidence","strong evidence")) %>%  
   mutate(story_topic = str_replace_all(story_title,"_free|_jail","")) %>% 
-  rename(rating = slider_val) %>% 
   filter(!str_detect(trial_type,"control")) %>%
-  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"<u>",""))) %>% 
-  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"</u>",""))) %>% 
   rename(question_topic = trial_type) %>% 
-  select(question_topic, rating, condition, chain, generation, question, story_topic, story_reproduction)
+  rename(rating = slider_val) %>% 
+  rename(sliderlabel_left = slider_left) %>% 
+  rename(sliderlabel_right = slider_right) %>% 
+  mutate(story_reproduction_suspectmarking = story_reproduction) %>% 
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"<u>",""))) %>% 
+  mutate_at(vars(story_reproduction),funs(str_replace_all(.,"</u>",""))) %>%
+  select(question_topic, rating, condition, chain, generation, question, story_topic, story_reproduction, story_reproduction_suspectmarking, sliderlabel_left, sliderlabel_right, suspect_underlined, trial_number, anon_worker_id, age, gender, education, enjoyment, languages, comments)
 
-write_csv(corpus,here("corpus","corpus.csv"))
+write_csv(corpus_full, here("corpus","03corpus_ratings_full.csv"))
+
+corpus_simple = corpus_full %>% 
+  group_by(question_topic, condition, chain, generation, question, story_topic, story_reproduction) %>% 
+  summarize(mean_rating = mean(rating)) %>% 
+  ungroup() %>% 
+  select(question_topic, mean_rating, condition, chain, generation, question, story_topic, story_reproduction)
+
+write_csv(corpus_simple, here("corpus","02corpus_ratings_simple.csv"))
+
+corpus_repro = corpus_full %>% 
+  distinct(chain, generation, condition, story_topic, story_reproduction)
+
+write_csv(corpus_repro, here("corpus","01corpus_reproductions.csv"))
 ```
 
 
